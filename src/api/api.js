@@ -1,6 +1,13 @@
 import axios from 'axios';
+import queryString from 'qs';
+import _ from 'lodash';
+import config from './config'
 
 let base = '';
+
+let instance = axios.create({
+    headers: {'content-type': 'application/x-www-form-urlencoded'}
+});
 
 export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
@@ -13,3 +20,44 @@ export const removeUser = params => { return axios.get(`${base}/user/remove`, { 
 export const editUser = params => { return axios.get(`${base}/user/edit`, { params: params }); };
 
 export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }); };
+
+export default {
+    get:(url,params)=>{
+
+        url=config.baseUrl+url;
+        if(params){
+            url+='?'+queryString.stringify(params);
+        }
+        console.log(url)
+        return instance.get(url)
+                .then(res=>{
+                    console.log(res);
+                    return res.data
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
+
+    },
+    post:(url,body,option)=>{
+        url=config.baseUrl+url;
+        body=queryString.stringify(body||{})
+        let options=_.assign({},config.header,option||{});
+        console.log(url)
+        return instance.post(url,body,options)
+            .then((res)=>{
+                console.log(res)
+              return  res.data
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+    },
+    //并发
+    all:(arr)=>{
+        return axios.all(arr)
+//             .then(axios.spread(function (acct, perms) {
+//     // 两个请求现在都执行完成
+//   }));
+    }
+}

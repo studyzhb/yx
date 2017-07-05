@@ -38,19 +38,15 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="name" label="订单号" width="100" sortable>
+                <el-table-column prop="order_sn" label="订单号" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="手机号" width="100" sortable>
+                <el-table-column prop="tel" label="手机号" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="时间" width="100" sortable>
+                <el-table-column prop="created_at" label="时间" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="addr" label="金额" width="120" sortable>
+                <el-table-column prop="pay_amount" label="支付金额" width="120" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="商品状态" width="120" :formatter="formatSex" sortable>
-                </el-table-column>
-                <el-table-column prop="sex" label="订单状态" width="150" :formatter="formatSex" sortable>
-                </el-table-column>
-                <el-table-column prop="sex" label="操作" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="status" label="订单状态" width="150" :formatter="formatSex" sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
@@ -115,12 +111,13 @@
 <script>
 import util from '../../common/util'
 import NProgress from 'nprogress'
-import { getUserListPage, removeUser, editUser, addUser } from '../../api/api';
+import request from 'api';
+import config from 'config';
 
 export default {
     data() {
         return {
-            activeName:'first',
+            activeName: 'first',
             filters: {
                 name: '',
                 dates: '',
@@ -129,6 +126,7 @@ export default {
             users: [],
             total: 0,
             page: 1,
+            pagesize: 10,
             listLoading: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
@@ -154,10 +152,10 @@ export default {
     methods: {
         //性别显示转换
         formatSex(row, column) {
-            return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+            return row.sex == 1 ? '未发货' : row.sex == 0 ? '未支付' : '已发货';
         },
-        handleClick(){
-
+        handleClick(tab,event) {
+            console.log(tab,event)
         },
         audit() {
 
@@ -165,6 +163,9 @@ export default {
         handleCurrentChange(val) {
             this.page = val;
             this.getUsers();
+        },
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
         },
         //获取用户列表
         getUsers() {
@@ -174,12 +175,24 @@ export default {
             };
             this.listLoading = true;
             NProgress.start();
-            getUserListPage(para).then((res) => {
-                this.total = res.data.total;
-                this.users = res.data.users;
-                this.listLoading = false;
-                NProgress.done();
-            });
+            request.get(config.api.order.index, para)
+                .then((res) => {
+                    this.listLoading = false;
+                    NProgress.done();
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+                        this.total = data.cnt.total;
+                        this.users = data.cnt.data;
+                        this.pagesize = data.cnt.per_page || 10;
+                    }
+                })
+            
         },
         //删除
         handleDel: function (row) {

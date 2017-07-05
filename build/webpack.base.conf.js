@@ -26,7 +26,10 @@ module.exports = {
       'vue$': 'vue/dist/vue',
       'src': path.resolve(__dirname, '../src'),
       'assets': path.resolve(__dirname, '../src/assets'),
-      'components': path.resolve(__dirname, '../src/components')
+      'components': path.resolve(__dirname, '../src/components'),
+      'api':path.resolve(__dirname,'../src/api/api'),
+      'config':path.resolve(__dirname,'../src/api/config'),
+      'util':path.resolve(__dirname,'../src/common/util'),
     }
   },
   resolveLoader: {

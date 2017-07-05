@@ -4,19 +4,22 @@
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filters">
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="手机号"></el-input>
+                    <el-input v-model="filters.user_mobile" placeholder="手机号"></el-input>
                 </el-form-item>
                 <el-form-item label="范围选择">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.dates" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.s_time" style="width: 100%;"></el-date-picker>
                     </el-col>
                     <el-col class="line" :span="2"> - </el-col>
                     <el-col :span="11">
-                        <el-time-picker type="fixed-time" placeholder="选择时间" v-model="filters.datee" style="width: 100%;"></el-time-picker>
+                        <el-time-picker type="date" placeholder="选择时间" v-model="filters.e_time" style="width: 100%;"></el-time-picker>
                     </el-col>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" >导出</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -35,21 +38,17 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="name" label="手机号" width="100" sortable>
+                <el-table-column prop="user_mobile" label="用户名" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="用户名" width="100" sortable>
+                <el-table-column prop="card_tip" label="开户行" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="开户行" width="100" sortable>
+                <el-table-column prop="card_num" label="卡号" width="120" sortable>
                 </el-table-column>
-                <el-table-column prop="addr" label="卡号" width="120" sortable>
+                <el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="状态" width="120" :formatter="formatSex" sortable>
+                <el-table-column prop="money" label="金额" width="150" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="金额" width="150" :formatter="formatSex" sortable>
-                </el-table-column>
-                <el-table-column prop="name" label="时间" width="150" sortable>
-                </el-table-column>
-                <el-table-column prop="sex" label="操作" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="created_at" label="时间" width="150" sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
@@ -61,10 +60,10 @@
         </template>
     
         <!--分页-->
-        <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-            </el-pagination>
-        </el-col>
+		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
+			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			</el-pagination>
+		</el-col>
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -114,7 +113,8 @@
 <script>
 import util from '../../common/util'
 import NProgress from 'nprogress'
-import { getUserListPage, removeUser, editUser, addUser } from '../../api/api';
+import request from 'api';
+import config from 'config';
 
 export default {
     data() {
@@ -153,7 +153,7 @@ export default {
     methods: {
         //性别显示转换
         formatSex(row, column) {
-            return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+            return row.status == 1 ? '启用' : row.sex == 0 ? '停用' : '未知';
         },
         handleClick(){
 
@@ -165,6 +165,9 @@ export default {
             this.page = val;
             this.getUsers();
         },
+        handleSizeChange(val) {
+			console.log(`每页 ${val} 条`);
+		},
         //获取用户列表
         getUsers() {
             let para = {
@@ -173,12 +176,24 @@ export default {
             };
             this.listLoading = true;
             NProgress.start();
-            getUserListPage(para).then((res) => {
-                this.total = res.data.total;
-                this.users = res.data.users;
-                this.listLoading = false;
-                NProgress.done();
-            });
+
+            request.get(config.api.fund.showlist,para)
+				.then((res) => {
+					this.listLoading = false;
+					NProgress.done();
+					let { message, code, data } = res;
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						this.total = data.cnt.total;
+						this.users = data.cnt.data;
+						this.pagesize = data.cnt.per_page || 10;
+					}
+				})
         },
         //删除
         handleDel: function (row) {

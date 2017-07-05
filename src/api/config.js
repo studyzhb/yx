@@ -1,0 +1,36 @@
+export default {
+    header:{
+        headers:{
+            'Accept':'application/json',
+            'Content-Type':'application/json'
+        },
+        withCredentials:true
+    },
+    baseUrl:'/api',
+    api:{
+        //店铺
+        shop:{
+            showlist:'/shop/list',
+            //添加店铺
+            addshop:'/shop/add',
+            //编辑店铺
+            updateshop:'/shop/edit',
+            //队列详情
+            shopqueuedetail:'/lines/queueInfo',
+            //队列订单列表
+            shopqueuelist:"/lines/linesLists"
+        },
+        //会员提现
+        fund:{
+            //用户在平台提现列表
+            showlist:"/widthdraw/list",
+
+        },
+        //订单
+        order:{
+            index:'/order/show',
+            send:'/order/edit'
+        },
+        login:'/login/login'
+    }
+}

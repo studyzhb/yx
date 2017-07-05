@@ -12,6 +12,7 @@ import echarts from '../pages/charts/echarts.vue'
 
 import Shop from '../pages/shop/index'
 import Addshop from '../pages/shop/addshop'
+import ShopOrder from '../pages/shop/shoporder'
 
 //会员管理
 import Vip from '../pages/vip/index'
@@ -74,7 +75,9 @@ export default [
                 //     }
                 // ]
             },{
-                path: '/addshop', component: Addshop
+                path: '/addshop/:id', component: Addshop
+            },{
+                path: '/shoporder/:id', component: ShopOrder
             }
              
         ]
