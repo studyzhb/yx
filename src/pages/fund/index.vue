@@ -26,11 +26,11 @@
     
         <el-col :span="24" class="toolbar">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="全部" name="first"></el-tab-pane>
-                <el-tab-pane label="未审核" name="second"></el-tab-pane>
-                <el-tab-pane label="已审核" name="third"></el-tab-pane>
-                <el-tab-pane label="已打款" name="fourth"></el-tab-pane>
-                <el-tab-pane label="拒绝" name="five"></el-tab-pane>
+                <el-tab-pane label="全部" name="10" ></el-tab-pane>
+                <el-tab-pane label="未审核" name="0" ></el-tab-pane>
+                <el-tab-pane label="打款中" name="1" ></el-tab-pane>
+                <el-tab-pane label="已打款" name="2" ></el-tab-pane>
+                <el-tab-pane label="拒绝" name="3" ></el-tab-pane>
             </el-tabs>
         </el-col>
         <!--列表-->
@@ -38,11 +38,11 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="user_mobile" label="用户名" width="100" sortable>
+                <el-table-column prop="user_mobile" label="用户名" width="180" sortable>
                 </el-table-column>
                 <el-table-column prop="card_tip" label="开户行" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="card_num" label="卡号" width="120" sortable>
+                <el-table-column prop="card_num" label="卡号" width="180" sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
                 </el-table-column>
@@ -53,7 +53,9 @@
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button size="small" @click="audit">审核</el-button>
-                        <el-button size="small" @click="handleEdit(row)">明细</el-button>
+                        <el-button size="small" @click="audit">打款完成</el-button>
+                        <el-button size="small" @click="audit"></el-button>
+                        <!--<el-button size="small" @click="handleEdit(row)">明细</el-button>-->
                     </span>
                 </el-table-column>
             </el-table>
@@ -119,15 +121,17 @@ import config from 'config';
 export default {
     data() {
         return {
-            activeName:'first',
+            activeName:'10',
             filters: {
                 name: '',
                 dates: '',
-                datee: ''
+                datee: '',
+                status:'10'
             },
             users: [],
             total: 0,
             page: 1,
+            pagesize:10,
             listLoading: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
@@ -153,10 +157,22 @@ export default {
     methods: {
         //性别显示转换
         formatSex(row, column) {
-            return row.status == 1 ? '启用' : row.sex == 0 ? '停用' : '未知';
+            switch(row.status){
+                case 0:
+                    return '未审核';
+                case 1:
+                    return '打款中';
+                case 2:
+                    return '已打款';
+                case 3:
+                    return '已拒绝';
+                
+            }
+            
         },
-        handleClick(){
-
+        handleClick(tab,event){            
+            this.filters.status=tab.name;
+            this.getUsers();
         },
         audit() {
 
@@ -172,7 +188,8 @@ export default {
         getUsers() {
             let para = {
                 page: this.page,
-                name: this.filters.name
+                name: this.filters.name,
+                status:this.filters.status
             };
             this.listLoading = true;
             NProgress.start();

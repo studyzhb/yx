@@ -13,11 +13,13 @@ import echarts from '../pages/charts/echarts.vue'
 import Shop from '../pages/shop/index'
 import Addshop from '../pages/shop/addshop'
 import ShopOrder from '../pages/shop/shoporder'
+import ShopLog from '../pages/shop/shoplog'
 
 //会员管理
 import Vip from '../pages/vip/index'
 import ShopRecord from '../pages/vip/shop-record'
 import PlatFormRecord from '../pages/vip/platform-record'
+import Viplog from '../pages/vip/userlog'
 
 //资金中心
 import Fund from '../pages/fund/index'
@@ -32,7 +34,6 @@ import Sort from '../pages/goods/sort'
 import Brand from '../pages/goods/brand'
 import Supplier from '../pages/goods/supplier'
 
-
 //订单管理
 import Order from '../pages/order/index'
 
@@ -46,6 +47,7 @@ import Menu from '../pages/origination/menu'
 
 //帮助审核
 import Help from '../pages/help/index'
+import Bank from '../pages/help/bank'
 
 
 //
@@ -76,9 +78,9 @@ export default [
                 // ]
             },{
                 path: '/addshop/:id', component: Addshop
-            },{
-                path: '/shoporder/:id', component: ShopOrder
-            }
+            },
+            {path: '/shoporder/:id', component: ShopOrder},
+            {path: '/shoplog/:id', component: ShopLog}
              
         ]
     },
@@ -91,7 +93,8 @@ export default [
             //{ path: '/main', component: Main },
             { path: '/vip', component: Vip, name: '会员资料' },
             { path: '/shop-record', component: ShopRecord, name: '店铺队列流水' },
-            { path: '/platform-record', component: PlatFormRecord, name: '平台购物流水' }
+            { path: '/platform-record', component: PlatFormRecord, name: '平台购物流水' },
+            { path: '/viplog/:id', component: Viplog }
         ]
     },
     {
@@ -102,8 +105,8 @@ export default [
         children: [
             //{ path: '/main', component: Main },
             { path: '/fund', component: Fund, name: '会员提现' },
-            { path: '/shop-fund', component: ShopFund, name: '店铺资金审核' },
-            { path: '/share-money', component: ShareMoney, name: '分润金报表审核' },
+            { path: '/shop-fund', component: ShopFund},
+            { path: '/share-money', component: ShareMoney },
         ]
     },
     {
@@ -151,7 +154,8 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/help', component: Help, name: '帮助列表' }
+            { path: '/help', component: Help, name: '帮助列表' },
+            { path: '/bank', component: Bank, name: '银行类型' },
         ]
     }
 ]

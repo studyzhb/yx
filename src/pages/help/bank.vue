@@ -4,53 +4,36 @@
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filters">
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="手机号"></el-input>
+                    <el-input v-model="filters.name" placeholder="姓名"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="订单号"></el-input>
-                </el-form-item>
-                <el-form-item label="范围选择">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.dates" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col class="line" :span="2"> - </el-col>
-                    <el-col :span="11">
-                        <el-time-picker type="fixed-time" placeholder="选择时间" v-model="filters.datee" style="width: 100%;"></el-time-picker>
-                    </el-col>
+                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">搜索</el-button>
+                    <el-button type="primary" @click="handleAdd">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
     
-        <el-col :span="24" class="toolbar">
-            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="全部" name="first"></el-tab-pane>
-                <el-tab-pane label="未发货" name="second"></el-tab-pane>
-                <el-tab-pane label="已发货" name="third"></el-tab-pane>
-                <el-tab-pane label="未付款" name="fourth"></el-tab-pane>
-                <el-tab-pane label="已付款" name="five"></el-tab-pane>
-            </el-tabs>
-        </el-col>
         <!--列表-->
         <template>
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="order_sn" label="订单号" width="180" sortable>
+                <el-table-column prop="name" label="名称" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="tel" label="手机号" width="180" sortable>
+                <el-table-column prop="logo" label="图标" width="120" sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间" width="180" sortable>
+                <el-table-column prop="status" label="状态" width="150" sortable>
+                    <template scope="scope">
+                        <el-tag :type="scope.row.status === '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-tag>
+                    </template>
                 </el-table-column>
-                <el-table-column prop="pay_amount" label="支付金额" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="status" label="订单状态" width="150" :formatter="formatSex" sortable>
+                <el-table-column prop="created_at" label="创建时间" min-width="180" sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
-                        <el-button :loading="sendLoading" size="small" v-if='status==1' @click="audit(row)">发货</el-button>
+                        <el-button size="small" @click="handleEdit(row)">编辑</el-button>
                     </span>
                 </el-table-column>
             </el-table>
@@ -58,45 +41,27 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-                <el-form-item label="手机号" prop="name">
+                <el-form-item label="名称" prop="name">
                     <el-input v-model="editForm.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="昵称" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                <el-form-item label="logo" prop="name">
+                    <el-upload action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <el-dialog v-model="dialogVisible" size="tiny">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
                 </el-form-item>
-                <el-form-item label="会员状态">
-                    <el-switch on-text="" off-text="" v-model="editForm.delivery"></el-switch>
-                </el-form-item>
-                <el-form-item label="队列资格">
-                    <el-switch on-text="" off-text="" v-model="editForm.delivery"></el-switch>
-                </el-form-item>
-                <el-form-item label="密码" prop="ceshi">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="姓名" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="身份证" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="籍贯" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="开户行" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="银行卡" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="editForm.addr"></el-input>
+    
+                <el-form-item label="logo" prop="name">
+                    <el-input v-model="editForm.logo" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -104,24 +69,25 @@
                 <el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
             </div>
         </el-dialog>
+    
     </section>
 </template>
 
 <script>
 import util from '../../common/util'
 import NProgress from 'nprogress'
-import request from 'api';
+import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
 
 export default {
     data() {
         return {
-            activeName: 'first',
             filters: {
-                name: '',
-                dates: '',
-                datee: ''
+                name: ''
             },
+            //图片上传
+            dialogImageUrl: '',
+            dialogVisible: false,
             users: [],
             total: 0,
             page: 1,
@@ -129,17 +95,22 @@ export default {
             listLoading: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
+            shopdetailVisible: false,
+            shopdetailtitle: '店铺详情',
+            shopdetailobj: {
+
+            },
             //编辑界面数据
             editForm: {
                 id: 0,
                 name: '',
+                logo: '',
                 sex: -1,
                 age: 0,
                 birth: '',
                 addr: ''
             },
             editLoading: false,
-            sendLoading: false,
             btnEditText: '提 交',
             editFormRules: {
                 name: [
@@ -151,13 +122,27 @@ export default {
     },
     methods: {
         //性别显示转换
-        formatSex(row, column) {
-            return row.sex == 1 ? '未发货' : row.sex == 0 ? '未支付' : '已发货';
+        formatSex: function (row, column) {
+            return row.status == 1 ? '已启用' : row.sex == 0 ? '已停用' : '未知';
         },
-        handleClick(tab, event) {
-            console.log(tab, event)
+        //图片上传
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
         },
-
+        handlePictureCardPreview(file) {
+            console.log(file)
+            console.log('qianzhi')
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
+        getUpstr(){
+            
+        },
+        filterTag(value, row) {
+            console.log(value)
+            console.log(row)
+            return row.status === value;
+        },
         handleCurrentChange(val) {
             this.page = val;
             this.getUsers();
@@ -167,13 +152,20 @@ export default {
         },
         //获取用户列表
         getUsers() {
+
             let para = {
                 page: this.page,
                 name: this.filters.name
             };
             this.listLoading = true;
             NProgress.start();
-            request.get(config.api.order.index, para)
+            // getUserListPage(para).then((res) => {
+            // 	this.total = res.data.total;
+            // 	this.users = res.data.users;
+            // 	this.listLoading = false;
+            // 	NProgress.done();
+            // });
+            request.get(config.api.help.bank)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -190,7 +182,6 @@ export default {
                         this.pagesize = data.cnt.per_page || 10;
                     }
                 })
-
         },
         //删除
         handleDel: function (row) {
@@ -217,42 +208,37 @@ export default {
 
             });
         },
+        showshopdetail(row) {
+            this.shopdetailVisible = true;
+            request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
+                .then((res) => {
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+                        this.shopdetailobj = data.cnt;
+                    }
+                })
+        },
+        //显示店铺订单
+        showorder(row) {
+            this.$router.push('/shoporder');
+        },
         //显示编辑界面
         handleEdit: function (row) {
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             this.editForm.id = row.id;
             this.editForm.name = row.name;
-            this.editForm.sex = row.sex;
+            this.editForm.logo = row.logo;
             this.editForm.age = row.age;
             this.editForm.birth = row.birth;
             this.editForm.addr = row.addr;
-        },
-        audit(row) {
-            this.$confirm('确认发货吗？', '提示', {})
-                .then(() => {
-                    this.sendLoading = true;
-                    NProgress.start();
-                    request.post(config.api.order.send, { id: row.id })
-                        .then((res) => {
-                            this.sendLoading = false;
-                            NProgress.done();
-                            let { message, code, data } = res;
-                            if (code !== 200) {
-                                this.$notify({
-                                    title: '错误',
-                                    message: message,
-                                    type: 'error'
-                                });
-                            } else {
-                                this.$notify({
-                                    title: '成功',
-                                    message: message,
-                                    type: 'success'
-                                });
-                            }
-                        })
-                })
+
         },
         //编辑 or 新增
         editSubmit: function () {

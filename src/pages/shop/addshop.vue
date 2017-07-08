@@ -1,6 +1,6 @@
 <template>
-	<el-form ref="form" :model="form" label-width="80px" @submit.prevent="onSubmit" style="margin:20px;width:60%;min-width:600px;">
-		<el-form-item label="店铺名字">
+	<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit" style="margin:20px;width:60%;min-width:600px;">
+		<el-form-item label="店铺名字" prop="name">
 			<el-input v-model="form.shopname"></el-input>
 		</el-form-item>
 		<el-form-item label="店铺所有人">
@@ -9,14 +9,13 @@
 		<el-form-item label="密码">
 			<el-input v-model="form.password"></el-input>
 		</el-form-item>
-		<el-form-item label="头像">
-			<el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList2" list-type="picture">
-				<el-button size="small" type="primary">点击上传</el-button>
-				<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+		<el-form-item label="头像" prop="name">
+			<el-upload action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+				<i class="el-icon-plus"></i>
 			</el-upload>
-			<el-input type="hidden" v-model="form.avata"></el-input>
-			<el-input type="hidden" v-model="form.latitude"></el-input>
-			<el-input type="hidden" v-model="form.longitude"></el-input>
+			<el-dialog v-model="dialogVisible" size="tiny">
+				<img width="100%" :src="dialogImageUrl" alt="">
+			</el-dialog>
 		</el-form-item>
 		<el-form-item label="微信">
 			<el-input v-model="form.wx"></el-input>
@@ -50,21 +49,17 @@
 			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="form.status"></el-switch>
 		</el-form-item>
 		<el-form-item label="地址">
-			<el-select v-model="form.province" style="width:30%;" placeholder="请选择活动区域">
-				<el-option label="区域一" value="shanghai"></el-option>
-				<el-option label="区域二" value="beijing"></el-option>
-			</el-select>
-			<el-select v-model="form.city" style="width:30%;" placeholder="请选择活动区域">
-				<el-option label="区域一" value="shanghai"></el-option>
-				<el-option label="区域二" value="beijing"></el-option>
-			</el-select>
-			<el-select v-model="form.area" style="width:30%;" placeholder="请选择活动区域">
-				<el-option label="区域一" value="shanghai"></el-option>
-				<el-option label="区域二" value="beijing"></el-option>
-			</el-select>
+			<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleChange">
+			</el-cascader>
 		</el-form-item>
 		<el-form-item label="详细地址">
 			<el-input v-model="form.address"></el-input>
+		</el-form-item>
+		<el-form-item>
+			<el-amap vid="amapDemo" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
+				<el-amap-marker :position="marker.position" >
+				</el-amap-marker>
+			</el-amap>
 		</el-form-item>
 		<el-form-item>
 			<el-button v-loading.fullscreen.lock="editLoading" type="primary" @click="saveShop">立即创建</el-button>
@@ -74,39 +69,89 @@
 </template>
 
 <script>
+import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data';
 import config from 'config';
 import request from 'api';
 import NProgress from 'nprogress'
 import util from 'util'
+import AMap from 'vue-amap';
 export default {
 	data() {
 		return {
-			editLoading:false,
+			editLoading: false,
+			//图片上传
+			dialogImageUrl: '',
+			dialogVisible: false,
+			zoom: 12,
+			marker: {
+				position: [30, 130]
+			},
+			editFormRules:{
+				name: [
+					{ required: true, message: '请输入姓名', trigger: 'blur' }
+				]
+			},
+			plugins: [
+				{
+					pName: 'Geocoder',
+					events: {
+						init(instance) {
+							console.log(instance)
+							this.amap=instance.CLASS_NAME;
+							console.log(typeof instance.CLASS_NAME)
+						}
+					}
+				},
+				{
+					pName: 'MapType',
+					defaultType: 0,
+					events: {
+						init(instance) {
+							console.log(instance);
+						}
+					}
+				}
+			],
+			events: {
+				'moveend': () => {
+				},
+				'zoomchange': () => {
+				},
+				'click': (e) => {
+					console.log(e);
+					// console.log(Geocoder)
+					console.log(AMap)
+
+					this.marker.position = [e.lnglat.lng, e.lnglat.lat]
+				}
+			},
 			form: {
-				id:0,
+				id: 0,
 				shopname: '',
 				shopuser: '',
-				password:'',
+				password: '',
 				avatar: '',
 				phone: '',
 				tel: '',
-				card:'',
-				place:'',
-				province:'',
-				city:'',
+				card: '',
+				place: '',
+				province: '',
+				city: '',
 				area: '',
-				address:'',
-				latitude:'',
-				longitude:'',
-				wx:'',
-				qq:'',
-				status:'',
-				displayorder:'',
-				email:'',
+				address: '',
+				latitude: '',
+				longitude: '',
+				wx: '',
+				qq: '',
+				status: '',
+				displayorder: '',
+				email: '',
 				bank: '',
 				branch: '',
 				bankCard: '',
 			},
+			options: regionDataPlus,
+			selectedOptions: [],
 			formRules: {
 				name: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
@@ -115,24 +160,53 @@ export default {
 		}
 	},
 	mounted() {
-		
-		let {params}=this.$route;
-		if(params.id){
-			this.form.id == params.id;
-			request
-		}else{
-			this.form.id == 0
+
+		let { params } = this.$route;
+		console.log(params)
+		if (params.id!=0) {
+			this.form.id = params.id;
+			request.get(config.api.shop.getSingleShop,{id:this.form.id})
+				.then((res)=>{
+					let { message, code, data } = res;
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						this.form = data.cnt;
+					}
+				})
+				.catch(e=>{
+					console.log(e);
+				})
+		} else {
+			this.form.id = 0
 		}
 	},
 	methods: {
+		//图片上传
 		handleRemove(file, fileList) {
 			console.log(file, fileList);
+		},
+		handlePictureCardPreview(file) {
+			console.log(file)
+			console.log('qianzhi')
+			this.dialogImageUrl = file.url;
+			this.dialogVisible = true;
+		},
+		getUpstr() {
+
 		},
 		handlePreview(file) {
 			console.log(file);
 		},
 		onSubmit() {
 			console.log('submit!');
+		},
+		handleChange(value) {
+			console.log(value)
 		},
 		saveShop() {
 			var _this = this;
@@ -166,8 +240,8 @@ export default {
 							// 	_this.formVisible = false;
 							// 	_this.getUsers();
 							// });
-							request.post(config.api.shop.addshop,_this.form)
-								.then(res=>{
+							request.post(config.api.shop.addshop, _this.form)
+								.then(res => {
 									console.log(res)
 									_this.editLoading = false;
 								})
@@ -181,8 +255,8 @@ export default {
 								birth: _this.form.birth == '' ? '' : util.formatDate.format(new Date(_this.form.birth), 'yyyy-MM-dd'),
 								addr: _this.form.addr,
 							};
-							request.post(config.api.shop.addshop,_this.form)
-								.then(res=>{
+							request.post(config.api.shop.addshop, _this.form)
+								.then(res => {
 									console.log(res)
 									_this.editLoading = false;
 								})

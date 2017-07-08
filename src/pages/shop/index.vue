@@ -34,7 +34,7 @@
 					<span>
 						<el-button size="small" @click="showshopdetail(row)">队列资料</el-button>
 						<el-button size="small" @click="showorder(row)">订单</el-button>
-						<el-button size="small">流水</el-button>
+						<el-button size="small" @click="getShopLog(row)">流水</el-button>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
 					</span>
@@ -239,6 +239,9 @@ export default {
 		showorder(row){
 			this.$router.push('/shoporder/'+row.id);
 		},
+		getShopLog(row){
+			this.$router.push('/shoplog/'+row.id);
+		},
 		//显示编辑界面
 		handleEdit: function (row) {
 			// this.editFormVisible = true;
@@ -249,7 +252,7 @@ export default {
 			// this.editForm.age = row.age;
 			// this.editForm.birth = row.birth;
 			// this.editForm.addr = row.addr;
-			this.$router.push('/addshop');
+			this.$router.push('/addshop/'+row.id);
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -328,7 +331,7 @@ export default {
 			// this.editForm.age = 0;
 			// this.editForm.birth = '';
 			// this.editForm.addr = '';
-			this.$router.push('/addshop');
+			this.$router.push('/addshop/0');
 		}
 	},
 	mounted() {

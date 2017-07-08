@@ -36,8 +36,6 @@
 			</el-pagination>
 		</el-col>
 	
-
-
 	</section>
 </template>
 

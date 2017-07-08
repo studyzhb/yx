@@ -9,20 +9,31 @@ import Vuex from 'vuex'
 import NProgress from 'nprogress'//页面顶部进度条
 import 'nprogress/nprogress.css'
 
-
-
 import routes from './router/index.js'
 // start mock
 import Mock from './mock';
+
+import './common/sign';
+
+import AMap from 'vue-amap';
+Vue.use(AMap);
+
+
 Mock.bootstrap();
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
+// 初始化vue-amap
+AMap.initAMapApiLoader({
+  // 申请的高德key
+  key: '3ee94aaafab3217e125bbebc24942494',
+  // 插件集合
+  plugin: ['Autocomplete', 'PlaceSearch', 'Scale', 'OverView', 'ToolBar', 'MapType', 'PolyEditor', 'AMap.CircleEditor','AMap.Geocoder']
+});
+
 NProgress.configure({ showSpinner: false });
-
-
 
 const router = new VueRouter({
   routes
