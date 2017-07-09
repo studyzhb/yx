@@ -17,6 +17,8 @@ export default {
             getSingleShop:'/shop/one',
             //编辑店铺
             updateshop:'/shop/edit',
+            //删除店铺
+            delete:'/shop/delete',
             //队列详情
             shopqueuedetail:'/lines/queueInfo',
             //队列订单列表
@@ -37,7 +39,19 @@ export default {
         //会员提现
         fund:{
             //用户在平台提现列表
-            showlist:"/widthdraw/list"
+            showlist:"/widthdraw/list",
+            //用户提现审核第一步\
+            checking:'/widthdraw/checking',
+            //用户提现完成
+            widthok:'/widthdraw/ok',
+            //提现拒绝
+            widthfalse:'/widthdraw/false',
+            //会员流水导出
+            outputexcel:'/widthdraw/excel',
+            //店铺提现
+            shopapplylist:'/withdr/list',
+            //更新审核状态
+            updateShopApplyStatus:'/withdr/status'
         },
         //订单
         order:{
@@ -46,7 +60,13 @@ export default {
         },
         login:'/login/login',
         help:{
-            bank:'/cardType/list'
+            bank:'/cardType/list',
+            //添加银行卡
+            addbank:'/cardType/add',
+            //状态更改
+            updatestatus:'/cardType/status',
+            //更新银行卡信息
+            updatebank:'/cardType/update'
         },
         goods:{
             index:'/goods/show',

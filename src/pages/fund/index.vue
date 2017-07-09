@@ -19,18 +19,18 @@
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" >导出</el-button>
+                    <el-button @click="outputexcel" type="primary">导出</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
     
         <el-col :span="24" class="toolbar">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="全部" name="10" ></el-tab-pane>
-                <el-tab-pane label="未审核" name="0" ></el-tab-pane>
-                <el-tab-pane label="打款中" name="1" ></el-tab-pane>
-                <el-tab-pane label="已打款" name="2" ></el-tab-pane>
-                <el-tab-pane label="拒绝" name="3" ></el-tab-pane>
+                <el-tab-pane label="全部" name="10"></el-tab-pane>
+                <el-tab-pane label="未审核" name="0"></el-tab-pane>
+                <el-tab-pane label="打款中" name="1"></el-tab-pane>
+                <el-tab-pane label="已打款" name="2"></el-tab-pane>
+                <el-tab-pane label="拒绝" name="3"></el-tab-pane>
             </el-tabs>
         </el-col>
         <!--列表-->
@@ -52,9 +52,8 @@
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
-                        <el-button size="small" @click="audit">审核</el-button>
-                        <el-button size="small" @click="audit">打款完成</el-button>
-                        <el-button size="small" @click="audit"></el-button>
+                        <el-button v-if="row.status==0" size="small" @click="audit(row)">审核</el-button>
+                        <el-button v-if="row.status==1" size="small" @click="confirmdone(row)">确认打款</el-button>
                         <!--<el-button size="small" @click="handleEdit(row)">明细</el-button>-->
                     </span>
                 </el-table-column>
@@ -62,10 +61,10 @@
         </template>
     
         <!--分页-->
-		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>
+        <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            </el-pagination>
+        </el-col>
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -121,17 +120,18 @@ import config from 'config';
 export default {
     data() {
         return {
-            activeName:'10',
+            activeName: '10',
             filters: {
                 name: '',
                 dates: '',
+                page: 1,
                 datee: '',
-                status:'10'
+                status: '10'
             },
             users: [],
             total: 0,
             page: 1,
-            pagesize:10,
+            pagesize: 10,
             listLoading: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
@@ -157,7 +157,7 @@ export default {
     methods: {
         //性别显示转换
         formatSex(row, column) {
-            switch(row.status){
+            switch (row.status) {
                 case 0:
                     return '未审核';
                 case 1:
@@ -166,51 +166,110 @@ export default {
                     return '已打款';
                 case 3:
                     return '已拒绝';
-                
+
             }
-            
-        },
-        handleClick(tab,event){            
-            this.filters.status=tab.name;
-            this.getUsers();
-        },
-        audit() {
 
         },
+        //导出
+        outputexcel(){
+            open(config.api.fund.outputexcel,'_blank')
+        },
+        handleClick(tab, event) {
+            this.filters.status = tab.name;
+            this.getUsers();
+        },
+        audit(row) {
+            let para = {
+                id: row.id
+            }
+            this.$confirm('确认?', '提示', {
+                //type: 'warning'
+            }).then(() => {
+                this.listLoading = true;
+                NProgress.start();
+                request.post(config.api.fund.checking, para)
+                    .then(res => {
+                        this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            })
+        },
+        confirmdone(row) {
+            this.$msgbox({
+                title: '消息',
+                message: h('p', null, [
+                    h('span', null, '请选择 '),
+                    h('i', { style: 'color: teal' }, '121331')
+                ]),
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '拒绝',
+                beforeClose: (action, instance, done) => {
+                    if (action === 'confirm') {
+                        instance.confirmButtonLoading = true;
+                        instance.confirmButtonText = '执行中...';
+                        setTimeout(() => {
+                            done();
+                            setTimeout(() => {
+                                instance.confirmButtonLoading = false;
+                            }, 300);
+                        }, 3000);
+                    } else {
+                        done();
+                    }
+                }
+            }).then(action => {
+                this.$message({
+                    type: 'info',
+                    message: 'action: ' + action
+                });
+            });
+        },
         handleCurrentChange(val) {
-            this.page = val;
+            this.filters.page = val;
             this.getUsers();
         },
         handleSizeChange(val) {
-			console.log(`每页 ${val} 条`);
-		},
+            console.log(`每页 ${val} 条`);
+        },
         //获取用户列表
         getUsers() {
-            let para = {
-                page: this.page,
-                name: this.filters.name,
-                status:this.filters.status
-            };
+            let para = this.filters;
             this.listLoading = true;
             NProgress.start();
 
-            request.get(config.api.fund.showlist,para)
-				.then((res) => {
-					this.listLoading = false;
-					NProgress.done();
-					let { message, code, data } = res;
-					if (code !== 200) {
-						this.$notify({
-							title: '错误',
-							message: message,
-							type: 'error'
-						});
-					} else {
-						this.total = data.cnt.total;
-						this.users = data.cnt.data;
-						this.pagesize = data.cnt.per_page || 10;
-					}
-				})
+            request.get(config.api.fund.showlist, para)
+                .then((res) => {
+                    this.listLoading = false;
+                    NProgress.done();
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+                        this.total = data.cnt.total;
+                        this.users = data.cnt.data;
+                        this.pagesize = data.cnt.per_page || 10;
+                    }
+                })
         },
         //删除
         handleDel: function (row) {

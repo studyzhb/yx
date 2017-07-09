@@ -1,106 +1,126 @@
 <template>
-    <section>
-        <!--工具条-->
-        <el-col :span="24" class="toolbar">
-            <el-form :inline="true" :model="filters">
-                <el-form-item label="分类">
-                    <el-input v-model="filters.name" placeholder="分类"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">搜索</el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
-    
-        <!--列表-->
-        <template>
-            <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
-                <el-table-column type="index" width="60">
-                </el-table-column>
-                <el-table-column prop="name" label="名称" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="name" label="排序" width="120" sortable>
-                </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="320">
-                    <span>
-                        <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-                        <!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
-                    </span>
-                </el-table-column>
-            </el-table>
-        </template>
-    
-        <!--分页-->
+	<section>
+		<!--工具条-->
+		<el-col :span="24" class="toolbar">
+			<el-form :inline="true" :model="filters">
+				<el-form-item label="分类">
+					<el-input v-model="filters.name" placeholder="分类"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getUsers">搜索</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="handleAdd">新增</el-button>
+				</el-form-item>
+			</el-form>
+		</el-col>
+	
+		<!--列表-->
+		<template>
+			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
+				<el-table-column type="expand">
+					<template scope="props">
+						<el-table :data="props.row.sub_type" style="width: 100%">
+							<el-table-column type="index" width="60">
+							</el-table-column>
+							<el-table-column prop="name" width="120" sortable>
+							</el-table-column>
+							<el-table-column prop="status" :formatter="formatSex" width="120" sortable>
+							</el-table-column>
+							<el-table-column prop="name"  width="120" sortable>
+							</el-table-column>
+							<el-table-column inline-template :context="_self"  min-width="320">
+								<span>
+									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+									<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
+								</span>
+							</el-table-column>
+						</el-table>
+					</template>
+				</el-table-column>
+				<el-table-column type="index" width="60">
+				</el-table-column>
+				<el-table-column prop="name" label="名称" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="name" label="排序" width="120" sortable>
+				</el-table-column>
+				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+					<span>
+						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
+					</span>
+				</el-table-column>
+			</el-table>
+		</template>
+	
+		<!--分页-->
 		<!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>-->
-    
-        <!--编辑界面-->
-        <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-            <el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
-    
-                <el-form-item label="类型">
-                    <el-select v-model="editForm.sex" placeholder="请选择">
-                        <el-option label="现金券" :value="1"></el-option>
-                        <el-option label="满减券" :value="0"></el-option>
-                        <el-option label="打折券" :value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-    
-                <el-form-item label="分类">
-                    <el-select v-model="editForm.sex" placeholder="请选择">
-                        <el-option label="现金券" :value="1"></el-option>
-                        <el-option label="满减券" :value="0"></el-option>
-                        <el-option label="打折券" :value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-    
-                <el-form-item label="使用店铺" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="优惠券名称" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="优惠券面额" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="优惠券折扣" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="最低消费" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="优惠券数量" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="领券时间">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="editForm.date1" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker type="date" placeholder="选择时间" v-model="editForm.date2" style="width: 100%;"></el-time-picker>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="优惠券说明">
-                    <el-input type="textarea" v-model="editForm.desc"></el-input>
-                </el-form-item>
-                <el-form-item label="使用说明">
-                    <el-input type="textarea" v-model="editForm.desc"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click.native="editFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
-            </div>
-        </el-dialog>
-    </section>
+						<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+						</el-pagination>
+					</el-col>-->
+	
+		<!--编辑界面-->
+		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
+	
+				<el-form-item label="类型">
+					<el-select v-model="editForm.sex" placeholder="请选择">
+						<el-option label="现金券" :value="1"></el-option>
+						<el-option label="满减券" :value="0"></el-option>
+						<el-option label="打折券" :value="2"></el-option>
+					</el-select>
+				</el-form-item>
+	
+				<el-form-item label="分类">
+					<el-select v-model="editForm.sex" placeholder="请选择">
+						<el-option label="现金券" :value="1"></el-option>
+						<el-option label="满减券" :value="0"></el-option>
+						<el-option label="打折券" :value="2"></el-option>
+					</el-select>
+				</el-form-item>
+	
+				<el-form-item label="使用店铺" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="优惠券名称" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="优惠券面额" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="优惠券折扣" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="最低消费" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="优惠券数量" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="领券时间">
+					<el-col :span="11">
+						<el-date-picker type="date" placeholder="选择日期" v-model="editForm.date1" style="width: 100%;"></el-date-picker>
+					</el-col>
+					<el-col class="line" :span="2">-</el-col>
+					<el-col :span="11">
+						<el-time-picker type="date" placeholder="选择时间" v-model="editForm.date2" style="width: 100%;"></el-time-picker>
+					</el-col>
+				</el-form-item>
+				<el-form-item label="优惠券说明">
+					<el-input type="textarea" v-model="editForm.desc"></el-input>
+				</el-form-item>
+				<el-form-item label="使用说明">
+					<el-input type="textarea" v-model="editForm.desc"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="editFormVisible = false">取 消</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
+			</div>
+		</el-dialog>
+	</section>
 </template>
 
 <script>
@@ -124,7 +144,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
-			shopdetailobj:{
+			shopdetailobj: {
 
 			},
 			//编辑界面数据
@@ -164,7 +184,7 @@ export default {
 			let para = {
 				page: this.page,
 				name: this.filters.name,
-                // shop_id:this.$route.params.id
+				// shop_id:this.$route.params.id
 			};
 			this.listLoading = true;
 			NProgress.start();
@@ -174,7 +194,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.goods.sortindex,para)
+			request.get(config.api.goods.sortindex, para)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -219,7 +239,7 @@ export default {
 		},
 		showshopdetail(row) {
 			this.shopdetailVisible = true;
-			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+			request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
 				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
@@ -229,12 +249,12 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.shopdetailobj=data.cnt;
+						this.shopdetailobj = data.cnt;
 					}
 				})
 		},
 		//显示店铺订单
-		showorder(row){
+		showorder(row) {
 			this.$router.push('/shoporder');
 		},
 		//显示编辑界面
@@ -337,16 +357,16 @@ export default {
 
 <style scoped>
 .el-card__header {
-    background-color: #E4E4E4
+	background-color: #E4E4E4
 }
 
 .clearfix:before,
 .clearfix:after {
-    display: table;
-    content: "";
+	display: table;
+	content: "";
 }
 
 .clearfix:after {
-    clear: both
+	clear: both
 }
 </style>

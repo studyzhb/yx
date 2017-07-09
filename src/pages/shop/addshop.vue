@@ -1,16 +1,19 @@
 <template>
 	<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit" style="margin:20px;width:60%;min-width:600px;">
-		<el-form-item label="店铺名字" prop="name">
+		<el-form-item label="店铺名字" prop="shopname">
 			<el-input v-model="form.shopname"></el-input>
 		</el-form-item>
 		<el-form-item label="店铺所有人">
 			<el-input v-model="form.shopuser"></el-input>
 		</el-form-item>
+		<el-form-item label="所有人电话">
+			<el-input v-model="form.tel"></el-input>
+		</el-form-item>
 		<el-form-item label="密码">
 			<el-input v-model="form.password"></el-input>
 		</el-form-item>
-		<el-form-item label="头像" prop="name">
-			<el-upload action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+		<el-form-item label="头像" prop="logo">
+			<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
 				<i class="el-icon-plus"></i>
 			</el-upload>
 			<el-dialog v-model="dialogVisible" size="tiny">
@@ -19,6 +22,7 @@
 		</el-form-item>
 		<el-form-item label="微信">
 			<el-input v-model="form.wx"></el-input>
+			<el-input type="hidden" v-model="form.avatar"></el-input>
 		</el-form-item>
 		<el-form-item label="邮箱">
 			<el-input v-model="form.email"></el-input>
@@ -49,7 +53,7 @@
 			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="form.status"></el-switch>
 		</el-form-item>
 		<el-form-item label="地址">
-			<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleChange">
+			<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleaddresschange">
 			</el-cascader>
 		</el-form-item>
 		<el-form-item label="详细地址">
@@ -57,12 +61,12 @@
 		</el-form-item>
 		<el-form-item>
 			<el-amap vid="amapDemo" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
-				<el-amap-marker :position="marker.position" >
+				<el-amap-marker :position="marker.position">
 				</el-amap-marker>
 			</el-amap>
 		</el-form-item>
 		<el-form-item>
-			<el-button v-loading.fullscreen.lock="editLoading" type="primary" @click="saveShop">立即创建</el-button>
+			<el-button :loading="editLoading" type="primary" @click="saveShop">{{btnEditText}}</el-button>
 			<el-button @click.native.prevent="returnShop">取消</el-button>
 		</el-form-item>
 	</el-form>
@@ -75,19 +79,22 @@ import request from 'api';
 import NProgress from 'nprogress'
 import util from 'util'
 import AMap from 'vue-amap';
+import client from 'common/sign'
 export default {
 	data() {
 		return {
 			editLoading: false,
 			//图片上传
 			dialogImageUrl: '',
+			filelist: [],
 			dialogVisible: false,
 			zoom: 12,
+			btnEditText:'提交',
 			marker: {
 				position: [30, 130]
 			},
-			editFormRules:{
-				name: [
+			editFormRules: {
+				shopname: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
 				]
 			},
@@ -97,7 +104,7 @@ export default {
 					events: {
 						init(instance) {
 							console.log(instance)
-							this.amap=instance.CLASS_NAME;
+							this.amap = instance.CLASS_NAME;
 							console.log(typeof instance.CLASS_NAME)
 						}
 					}
@@ -123,6 +130,9 @@ export default {
 					console.log(AMap)
 
 					this.marker.position = [e.lnglat.lng, e.lnglat.lat]
+
+					this.form.longitude = e.lnglat.lng;
+					this.form.latitude = e.lnglat.lat;
 				}
 			},
 			form: {
@@ -132,7 +142,7 @@ export default {
 				password: '',
 				avatar: '',
 				phone: '',
-				tel: '',
+				tel:'',
 				card: '',
 				place: '',
 				province: '',
@@ -144,13 +154,13 @@ export default {
 				wx: '',
 				qq: '',
 				status: '',
-				displayorder: '',
+				displayorder: '1',
 				email: '',
 				bank: '',
 				branch: '',
 				bankCard: '',
 			},
-			options: regionDataPlus,
+			options: regionData,
 			selectedOptions: [],
 			formRules: {
 				name: [
@@ -163,10 +173,10 @@ export default {
 
 		let { params } = this.$route;
 		console.log(params)
-		if (params.id!=0) {
+		if (params.id != 0) {
 			this.form.id = params.id;
-			request.get(config.api.shop.getSingleShop,{id:this.form.id})
-				.then((res)=>{
+			request.get(config.api.shop.getSingleShop, { id: this.form.id })
+				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
 						this.$notify({
@@ -176,9 +186,10 @@ export default {
 						});
 					} else {
 						this.form = data.cnt;
+
 					}
 				})
-				.catch(e=>{
+				.catch(e => {
 					console.log(e);
 				})
 		} else {
@@ -205,8 +216,35 @@ export default {
 		onSubmit() {
 			console.log('submit!');
 		},
-		handleChange(value) {
+		handlechange(value) {
 			console.log(value)
+		},
+		handleaddresschange(value) {
+			this.form.province = CodeToText[value[0]]
+			this.form.city = CodeToText[value[1]]
+			this.form.area = CodeToText[value[value.length - 1]]
+		},
+		handleBeforeup() {
+			console.log('handleBeforeup ')
+		},
+		handleRequestOss(files) {
+
+
+			// client.list({
+			//     'max-keys': 10
+			// }).then(res => {
+			//     console.log(res)
+			// }).catch(err => {
+			//     console.log(err)
+			// })
+
+			let file = files.file
+			client.multipartUpload(file.name, file)
+				.then(res => {
+					this.form.avatar = res.url;
+				}).catch(err => {
+					console.log(err)
+				})
 		},
 		saveShop() {
 			var _this = this;
@@ -220,58 +258,61 @@ export default {
 						_this.btnEditText = '提交中';
 
 						if (_this.form.id == 0) {
+
 							//新增
-							let para = {
-								name: _this.form.name,
-								sex: _this.form.sex,
-								age: _this.form.age,
-								birth: _this.form.birth == '' ? '' : util.formatDate.format(new Date(_this.form.birth), 'yyyy-MM-dd'),
-								addr: _this.form.addr,
-							};
-							// addUser(para).then((res) => {
-							// 	_this.editLoading = false;
-							// 	NProgress.done();
-							// 	_this.btnEditText = '提 交';
-							// 	_this.$notify({
-							// 		title: '成功',
-							// 		message: '提交成功',
-							// 		type: 'success'
-							// 	});
-							// 	_this.formVisible = false;
-							// 	_this.getUsers();
-							// });
-							request.post(config.api.shop.addshop, _this.form)
+							let para = _this.form;
+							delete para.id;
+
+
+							request.post(config.api.shop.addshop, para)
 								.then(res => {
-									console.log(res)
+									let { message, code, data } = res;
 									_this.editLoading = false;
+									NProgress.done();
+									_this.btnEditText = '提 交';
+									if (code !== 200) {
+										this.$notify({
+											title: '错误',
+											message: message,
+											type: 'error'
+										});
+									} else {
+										_this.$notify({
+											title: '成功',
+											message: '提交成功',
+											type: 'success'
+										});
+										_this.editFormVisible = false;
+										_this.$router.replace('/shop')
+									}
 								})
 						} else {
 							//编辑
 							let para = {
-								id: _this.form.id,
-								name: _this.form.name,
-								sex: _this.form.sex,
-								age: _this.form.age,
-								birth: _this.form.birth == '' ? '' : util.formatDate.format(new Date(_this.form.birth), 'yyyy-MM-dd'),
-								addr: _this.form.addr,
+								
 							};
-							request.post(config.api.shop.addshop, _this.form)
+							request.post(config.api.shop.updateshop, _this.form)
 								.then(res => {
-									console.log(res)
+									let { message, code, data } = res;
 									_this.editLoading = false;
+									NProgress.done();
+									_this.btnEditText = '提 交';
+									if (code !== 200) {
+										this.$notify({
+											title: '错误',
+											message: message,
+											type: 'error'
+										});
+									} else {
+										_this.$notify({
+											title: '成功',
+											message: '提交成功',
+											type: 'success'
+										});
+										_this.editFormVisible = false;
+										_this.$router.replace('/shop')
+									}
 								})
-							// editUser(para).then((res) => {
-							// 	_this.editLoading = false;
-							// 	NProgress.done();
-							// 	_this.btnEditText = '提 交';
-							// 	_this.$notify({
-							// 		title: '成功',
-							// 		message: '提交成功',
-							// 		type: 'success'
-							// 	});
-							// 	_this.formVisible = false;
-							// 	_this.getUsers();
-							// });
 
 						}
 

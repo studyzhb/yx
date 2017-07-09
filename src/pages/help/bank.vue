@@ -23,10 +23,13 @@
                 <el-table-column prop="name" label="名称" width="180" sortable>
                 </el-table-column>
                 <el-table-column prop="logo" label="图标" width="120" sortable>
+                    <template scope="scope">
+                        <img width="24" :src="scope.row.logo" alt="">
+                    </template>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="150" sortable>
                     <template scope="scope">
-                        <el-tag :type="scope.row.status === '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-tag>
+                        <el-button size="small" @click="updatestatus(scope.row)" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column prop="created_at" label="创建时间" min-width="180" sortable>
@@ -51,8 +54,8 @@
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="editForm.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="logo" prop="name">
-                    <el-upload action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                <el-form-item label="logo" prop="logo">
+                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
                         <i class="el-icon-plus"></i>
                     </el-upload>
                     <el-dialog v-model="dialogVisible" size="tiny">
@@ -60,8 +63,8 @@
                     </el-dialog>
                 </el-form-item>
     
-                <el-form-item label="logo" prop="name">
-                    <el-input v-model="editForm.logo" auto-complete="off"></el-input>
+                <el-form-item>
+                    <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -74,11 +77,11 @@
 </template>
 
 <script>
-import util from '../../common/util'
+import util from 'common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-
+import client from 'common/sign'
 export default {
     data() {
         return {
@@ -100,21 +103,22 @@ export default {
             shopdetailobj: {
 
             },
+            filelist: [],
             //编辑界面数据
             editForm: {
                 id: 0,
                 name: '',
-                logo: '',
-                sex: -1,
-                age: 0,
-                birth: '',
-                addr: ''
+                logo: ''
             },
             editLoading: false,
+            editstatusLoading:false,
             btnEditText: '提 交',
             editFormRules: {
                 name: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
+                ],
+                logo: [
+                    { required: true, message: '请添加图片', trigger: 'blur' }
                 ]
             }
 
@@ -135,8 +139,14 @@ export default {
             this.dialogImageUrl = file.url;
             this.dialogVisible = true;
         },
-        getUpstr(){
-            
+        getUpstr() {
+            console.log('chenggongshi ')
+        },
+        handlechange() {
+            console.log('handlechange ')
+        },
+        handleBeforeup() {
+            console.log('handleBeforeup ')
         },
         filterTag(value, row) {
             console.log(value)
@@ -149,6 +159,25 @@ export default {
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
+        },
+        handleRequestOss(files) {
+
+
+            // client.list({
+            //     'max-keys': 10
+            // }).then(res => {
+            //     console.log(res)
+            // }).catch(err => {
+            //     console.log(err)
+            // })
+
+            let file = files.file
+            client.multipartUpload(file.name, file)
+                .then(res => {
+                    this.editForm.logo = res.url;
+                }).catch(err => {
+                    console.log(err)
+                })
         },
         //获取用户列表
         getUsers() {
@@ -230,15 +259,13 @@ export default {
         },
         //显示编辑界面
         handleEdit: function (row) {
+            console.log(row)
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             this.editForm.id = row.id;
             this.editForm.name = row.name;
             this.editForm.logo = row.logo;
-            this.editForm.age = row.age;
-            this.editForm.birth = row.birth;
-            this.editForm.addr = row.addr;
-
+            this.filelist = [{ name: 'editlogo', url: row.logo }]
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -256,45 +283,60 @@ export default {
                             //新增
                             let para = {
                                 name: _this.editForm.name,
-                                sex: _this.editForm.sex,
-                                age: _this.editForm.age,
-                                birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-                                addr: _this.editForm.addr,
+                                logo: _this.editForm.logo,
                             };
-                            addUser(para).then((res) => {
-                                _this.editLoading = false;
-                                NProgress.done();
-                                _this.btnEditText = '提 交';
-                                _this.$notify({
-                                    title: '成功',
-                                    message: '提交成功',
-                                    type: 'success'
-                                });
-                                _this.editFormVisible = false;
-                                _this.getUsers();
-                            });
+                            request.post(config.api.help.addbank, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '提交成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
                         } else {
                             //编辑
                             let para = {
                                 id: _this.editForm.id,
                                 name: _this.editForm.name,
-                                sex: _this.editForm.sex,
-                                age: _this.editForm.age,
-                                birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-                                addr: _this.editForm.addr,
+                                logo: _this.editForm.logo,
+
                             };
-                            editUser(para).then((res) => {
-                                _this.editLoading = false;
-                                NProgress.done();
-                                _this.btnEditText = '提 交';
-                                _this.$notify({
-                                    title: '成功',
-                                    message: '提交成功',
-                                    type: 'success'
-                                });
-                                _this.editFormVisible = false;
-                                _this.getUsers();
-                            });
+                            request.post(config.api.help.updatebank, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '更新成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
 
                         }
 
@@ -313,10 +355,37 @@ export default {
 
             this.editForm.id = 0;
             this.editForm.name = '';
-            this.editForm.sex = 1;
-            this.editForm.age = 0;
-            this.editForm.birth = '';
-            this.editForm.addr = '';
+            this.editForm.logo = '';
+        },
+        //更新状态
+        updatestatus(row) {
+            let _this=this;
+            this.editstatusLoading=true;
+            let para = {
+                id:row.id,
+                status:row.status==0?1:0
+            };
+            request.post(config.api.help.updatestatus, para)
+                .then(res => {
+                    let { message, code, data } = res;
+                    _this.editstatusLoading = false;
+                    NProgress.done();
+                    _this.btnEditText = '提 交';
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+                        _this.$notify({
+                            title: '成功',
+                            message: '更新成功',
+                            type: 'success'
+                        });
+                        _this.getUsers();
+                    }
+                })
         }
     },
     mounted() {

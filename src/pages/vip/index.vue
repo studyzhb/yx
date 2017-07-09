@@ -50,11 +50,11 @@
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="手机号" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				<el-form-item label="手机号" prop="user_mobile">
+					<el-input v-model="editForm.user_mobile" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="昵称" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				<el-form-item label="昵称" prop="nickname">
+					<el-input v-model="editForm.nickname" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="会员状态">
 					<el-switch on-text="" off-text="" v-model="editForm.delivery"></el-switch>
@@ -63,22 +63,22 @@
 					<el-switch on-text="" off-text="" v-model="editForm.delivery"></el-switch>
 				</el-form-item>
 				<el-form-item label="密码" prop="ceshi">
+					<el-input v-model="editForm.password" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="姓名" prop="real_name">
+					<el-input v-model="editForm.real_name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="身份证" prop="id_card">
+					<el-input v-model="editForm.id_card" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="籍贯" prop="">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				<el-form-item label="开户行" prop="">
+					<el-input v-model="editForm.bank" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="身份证" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="籍贯" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="开户行" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="银行卡" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				<el-form-item label="银行卡" prop="">
+					<el-input v-model="editForm.card" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="备注">
 					<el-input type="textarea" v-model="editForm.addr"></el-input>
@@ -113,12 +113,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			//编辑界面数据
 			editForm: {
-				id: 0,
-				name: '',
-				sex: -1,
-				age: 0,
-				birth: '',
-				addr: ''
+				id: 0
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -198,12 +193,7 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			this.editForm.id = row.id;
-			this.editForm.name = row.name;
-			this.editForm.sex = row.sex;
-			this.editForm.age = row.age;
-			this.editForm.birth = row.birth;
-			this.editForm.addr = row.addr;
+			this.editForm=row;
 		},
 		//会员流水
 		getUserLog(row){
@@ -223,47 +213,55 @@ export default {
 
 						if (_this.editForm.id == 0) {
 							//新增
-							let para = {
-								name: _this.editForm.name,
-								sex: _this.editForm.sex,
-								age: _this.editForm.age,
-								birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-								addr: _this.editForm.addr,
-							};
-							addUser(para).then((res) => {
-								_this.editLoading = false;
-								NProgress.done();
-								_this.btnEditText = '提 交';
-								_this.$notify({
-									title: '成功',
-									message: '提交成功',
-									type: 'success'
-								});
-								_this.editFormVisible = false;
-								_this.getUsers();
-							});
+							let para = _this.editForm;
+							delete para.id;
+							request.post(config.api.vip.update, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '提交成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
 						} else {
 							//编辑
-							let para = {
-								id: _this.editForm.id,
-								name: _this.editForm.name,
-								sex: _this.editForm.sex,
-								age: _this.editForm.age,
-								birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-								addr: _this.editForm.addr,
-							};
-							editUser(para).then((res) => {
-								_this.editLoading = false;
-								NProgress.done();
-								_this.btnEditText = '提 交';
-								_this.$notify({
-									title: '成功',
-									message: '提交成功',
-									type: 'success'
-								});
-								_this.editFormVisible = false;
-								_this.getUsers();
-							});
+							let para = _this.editForm;
+							request.post(config.api.vip.update, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '更新成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
 
 						}
 

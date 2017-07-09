@@ -26,9 +26,12 @@
 				</el-table-column>
 				<el-table-column prop="shopuser" label="姓名" width="120" sortable>
 				</el-table-column>
+				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
+	
+				</el-table-column>
 				<el-table-column prop="card" label="身份证号" width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="created_at" label="注册时间" width="180" :formatter="formatSex" sortable>
+				<el-table-column prop="created_at" label="注册时间" width="180" sortable>
 				</el-table-column>
 				<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
@@ -36,7 +39,7 @@
 						<el-button size="small" @click="showorder(row)">订单</el-button>
 						<el-button size="small" @click="getShopLog(row)">流水</el-button>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
-						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
+						<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
 					</span>
 				</el-table-column>
 			</el-table>
@@ -56,9 +59,9 @@
 				</el-form-item>
 				<el-form-item label="性别">
 					<!--<el-select v-model="editForm.sex" placeholder="请选择性别">
-									<el-option label="男" :value="1"></el-option>
-									<el-option label="女" :value="0"></el-option>
-								</el-select>-->
+										<el-option label="男" :value="1"></el-option>
+										<el-option label="女" :value="0"></el-option>
+									</el-select>-->
 					<el-radio-group v-model="editForm.sex">
 						<el-radio class="radio" :label="1">男</el-radio>
 						<el-radio class="radio" :label="0">女</el-radio>
@@ -101,7 +104,7 @@
 					<el-input type="textarea" v-model="shopdetailobj.desc"></el-input>
 				</el-form-item>
 			</el-form>
-
+	
 		</el-dialog>
 	</section>
 </template>
@@ -127,7 +130,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
-			shopdetailobj:{
+			shopdetailobj: {
 
 			},
 			//编辑界面数据
@@ -152,7 +155,7 @@ export default {
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
-			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			return row.status == 1 ? '启用' : row.status == 0 ? '停用' : '未知';
 		},
 		handleCurrentChange(val) {
 			this.page = val;
@@ -204,16 +207,26 @@ export default {
 				_this.listLoading = true;
 				NProgress.start();
 				let para = { id: row.id };
-				removeUser(para).then((res) => {
-					_this.listLoading = false;
-					NProgress.done();
-					_this.$notify({
-						title: '成功',
-						message: '删除成功',
-						type: 'success'
-					});
-					_this.getUsers();
-				});
+				request.post(config.api.shop.delete,para)
+					.then((res) => {
+						_this.listLoading = false;
+						NProgress.done();
+						let { message, code, data } = res;
+						if (code !== 200) {
+							_this.$notify({
+								title: '错误',
+								message: message,
+								type: 'error'
+							});
+						} else {
+							_this.$notify({
+								title: '成功',
+								message: message,
+								type: 'sucess'
+							});
+							_this.getUsers();
+						}
+					})
 
 			}).catch(() => {
 
@@ -221,7 +234,7 @@ export default {
 		},
 		showshopdetail(row) {
 			this.shopdetailVisible = true;
-			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+			request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
 				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
@@ -231,16 +244,16 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.shopdetailobj=data.cnt;
+						this.shopdetailobj = data.cnt;
 					}
 				})
 		},
 		//显示店铺订单
-		showorder(row){
-			this.$router.push('/shoporder/'+row.id);
+		showorder(row) {
+			this.$router.push('/shoporder/' + row.id);
 		},
-		getShopLog(row){
-			this.$router.push('/shoplog/'+row.id);
+		getShopLog(row) {
+			this.$router.push('/shoplog/' + row.id);
 		},
 		//显示编辑界面
 		handleEdit: function (row) {
@@ -252,7 +265,7 @@ export default {
 			// this.editForm.age = row.age;
 			// this.editForm.birth = row.birth;
 			// this.editForm.addr = row.addr;
-			this.$router.push('/addshop/'+row.id);
+			this.$router.push('/addshop/' + row.id);
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -332,6 +345,35 @@ export default {
 			// this.editForm.birth = '';
 			// this.editForm.addr = '';
 			this.$router.push('/addshop/0');
+		},
+		updatestatus(row) {
+			let _this = this;
+
+			let para = {
+				id: row.id,
+				status: row.status == 0 ? 1 : 0
+			};
+			request.post('', para)
+				.then(res => {
+					let { message, code, data } = res;
+
+					NProgress.done();
+
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						_this.$notify({
+							title: '成功',
+							message: '更新成功',
+							type: 'success'
+						});
+						_this.getUsers();
+					}
+				})
 		}
 	},
 	mounted() {

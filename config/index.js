@@ -29,13 +29,6 @@ module.exports = {
         pathRewrite:{
           '^/':'/'
         }
-      },
-      '/':{
-        target:'http://a.ejiabl.com',
-        changeOrigin:true,
-        pathRewrite:{
-          '^/':'/'
-        }
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

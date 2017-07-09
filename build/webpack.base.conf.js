@@ -30,6 +30,7 @@ module.exports = {
       'api':path.resolve(__dirname,'../src/api/api'),
       'config':path.resolve(__dirname,'../src/api/config'),
       'util':path.resolve(__dirname,'../src/common/util'),
+      'common':path.resolve(__dirname,'../src/common')
     }
   },
   resolveLoader: {

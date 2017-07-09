@@ -4,21 +4,33 @@
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filters">
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="商户号"></el-input>
+                    <el-input v-model="filters.user_mobile" placeholder="手机号"></el-input>
+                </el-form-item>
+                <el-form-item label="范围选择">
+                    <el-col :span="11">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.s_time" style="width: 100%;"></el-date-picker>
+                    </el-col>
+                    <el-col class="line" :span="2"> - </el-col>
+                    <el-col :span="11">
+                        <el-time-picker type="date" placeholder="选择时间" v-model="filters.e_time" style="width: 100%;"></el-time-picker>
+                    </el-col>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">搜索</el-button>
+                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary">导出</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
     
         <el-col :span="24" class="toolbar">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="全部" name="first"></el-tab-pane>
-                <el-tab-pane label="未审核" name="second"></el-tab-pane>
-                <el-tab-pane label="已审核" name="third"></el-tab-pane>
-                <el-tab-pane label="已打款" name="fourth"></el-tab-pane>
-                <el-tab-pane label="拒绝" name="five"></el-tab-pane>
+                <el-tab-pane label="全部" name=""></el-tab-pane>
+                <el-tab-pane label="未审核" name="1"></el-tab-pane>
+                <el-tab-pane label="打款中" name="2"></el-tab-pane>
+                <el-tab-pane label="已打款" name="3"></el-tab-pane>
+                <el-tab-pane label="拒绝" name="4"></el-tab-pane>
             </el-tabs>
         </el-col>
         <!--列表-->
@@ -26,26 +38,27 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="name" label="手机号" width="100" sortable>
+                <el-table-column prop="shopname" label="商户号" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="用户名" width="100" sortable>
+                <el-table-column prop="shopname" label="商户名" width="100" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="开户行" width="100" sortable>
+                <el-table-column prop="card_num" label="姓名" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="addr" label="卡号" width="120" sortable>
+                <el-table-column prop="bank" label="开户行" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="状态" width="120" :formatter="formatSex" sortable>
+                <el-table-column prop="bank_card" label="卡号" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="金额" width="150" :formatter="formatSex" sortable>
+                <el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="时间" width="150" sortable>
+                <el-table-column prop="money" label="金额" width="150" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="操作" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="created_at" label="时间" width="150" sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
-                        <el-button size="small" @click="audit">审核</el-button>
-                        <el-button size="small" @click="handleEdit(row)">明细</el-button>
+                        <el-button v-if="row.status==1" size="small" @click="audit(row)">审核</el-button>
+                        <el-button v-if="row.status==2" size="small" @click="confirmdone(row)">确认打款</el-button>
+                        <!--<el-button size="small" @click="handleEdit(row)">明细</el-button>-->
                     </span>
                 </el-table-column>
             </el-table>
@@ -53,7 +66,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -105,20 +118,24 @@
 <script>
 import util from '../../common/util'
 import NProgress from 'nprogress'
-import { getUserListPage, removeUser, editUser, addUser } from '../../api/api';
+import request from 'api';
+import config from 'config';
 
 export default {
     data() {
         return {
-            activeName:'first',
+            activeName: '',
             filters: {
                 name: '',
                 dates: '',
-                datee: ''
+                page: 1,
+                datee: '',
+                status: ''
             },
             users: [],
             total: 0,
             page: 1,
+            pagesize: 10,
             listLoading: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
@@ -144,32 +161,131 @@ export default {
     methods: {
         //性别显示转换
         formatSex(row, column) {
-            return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-        },
-        handleClick(){
+            switch (row.status) {
+                case 1:
+                    return '未审核';
+                case 2:
+                    return '打款中';
+                case 3:
+                    return '已打款';
+                case 4:
+                    return '已拒绝';
+
+            }
 
         },
-        audit() {
-
+        handleClick(tab, event) {
+            this.filters.status = tab.name;
+            this.getUsers();
+        },
+        audit(row) {
+            let para = {
+                id: row.id
+            }
+            this.$prompt('备注信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: '邮箱格式不正确'
+            }).then(({ value }) => {
+                this.$message({
+                    type: 'success',
+                    message: '你的邮箱是: ' + value
+                });
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消输入'
+                });
+            });
+            this.$confirm('确认?', '提示', {
+                //type: 'warning'
+            }).then(() => {
+                this.listLoading = true;
+                NProgress.start();
+                request.post(config.api.fund.checking, para)
+                    .then(res => {
+                        this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            })
+        },
+        confirmdone(row) {
+            this.$msgbox({
+                title: '消息',
+                message: h('p', null, [
+                    h('span', null, '请选择 '),
+                    h('i', { style: 'color: teal' }, '121331')
+                ]),
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '拒绝',
+                beforeClose: (action, instance, done) => {
+                    if (action === 'confirm') {
+                        instance.confirmButtonLoading = true;
+                        instance.confirmButtonText = '执行中...';
+                        setTimeout(() => {
+                            done();
+                            setTimeout(() => {
+                                instance.confirmButtonLoading = false;
+                            }, 300);
+                        }, 3000);
+                    } else {
+                        done();
+                    }
+                }
+            }).then(action => {
+                this.$message({
+                    type: 'info',
+                    message: 'action: ' + action
+                });
+            });
         },
         handleCurrentChange(val) {
-            this.page = val;
+            this.filters.page = val;
             this.getUsers();
+        },
+        handleSizeChange(val) {
+            console.log(`每页 ${val} 条`);
         },
         //获取用户列表
         getUsers() {
-            let para = {
-                page: this.page,
-                name: this.filters.name
-            };
+            let para = this.filters;
             this.listLoading = true;
             NProgress.start();
-            getUserListPage(para).then((res) => {
-                this.total = res.data.total;
-                this.users = res.data.users;
-                this.listLoading = false;
-                NProgress.done();
-            });
+
+            request.get(config.api.fund.shopapplylist, para)
+                .then((res) => {
+                    this.listLoading = false;
+                    NProgress.done();
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+                        this.total = data.cnt.total;
+                        this.users = data.cnt.data;
+                        this.pagesize = data.cnt.per_page || 10;
+                    }
+                })
         },
         //删除
         handleDel: function (row) {

@@ -105,7 +105,7 @@ export default [
         children: [
             //{ path: '/main', component: Main },
             { path: '/fund', component: Fund, name: '会员提现' },
-            { path: '/shop-fund', component: ShopFund},
+            { path: '/shopfund', component: ShopFund, name: '店铺提现' },
             { path: '/share-money', component: ShareMoney },
         ]
     },
