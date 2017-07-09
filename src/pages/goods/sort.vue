@@ -27,9 +27,9 @@
 							</el-table-column>
 							<el-table-column prop="status" :formatter="formatSex" width="120" sortable>
 							</el-table-column>
-							<el-table-column prop="name"  width="120" sortable>
+							<el-table-column prop="name" width="120" sortable>
 							</el-table-column>
-							<el-table-column inline-template :context="_self"  min-width="320">
+							<el-table-column inline-template :context="_self" min-width="320">
 								<span>
 									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 									<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
@@ -49,6 +49,7 @@
 				<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+						<el-button size="small" @click="handlesubAdd(row)">添加</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
 					</span>
 				</el-table-column>
@@ -57,14 +58,40 @@
 	
 		<!--分页-->
 		<!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-						<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-						</el-pagination>
-					</el-col>-->
+							<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+							</el-pagination>
+						</el-col>-->
 	
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
+			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+                <el-form-item label="名称" prop="name">
+                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="图片" prop="pic">
+                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <el-dialog v-model="dialogVisible" size="tiny">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </el-form-item>
+				<el-form-item label="排序" prop="sort">
+                    <el-input v-model="editForm.sort" auto-complete="off"></el-input>
+					<el-input type="hidden" v-model="editForm.pic" auto-complete="off"></el-input>
+                </el-form-item>
+				<el-form-item label="描述" prop="note">
+                    <el-input type="area" v-model="editForm.note" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click.native="editFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
+            </div>
+		</el-dialog>
 	
+		<el-dialog :title="editFormTtile" v-model="editFormVisibletest" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="类型">
 					<el-select v-model="editForm.sex" placeholder="请选择">
 						<el-option label="现金券" :value="1"></el-option>
@@ -128,19 +155,24 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-
+import client from 'common/sign'
 export default {
 	data() {
 		return {
 			filters: {
 				name: ''
 			},
+			//图片上传
+            dialogImageUrl: '',
+            dialogVisible: false,
+			filelist: [],
 			users: [],
 			total: 0,
 			page: 1,
 			pagesize: 10,
 			listLoading: false,
 			editFormVisible: false,//编辑界面显是否显示
+			editFormVisibletest:false,
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
@@ -178,6 +210,44 @@ export default {
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
 		},
+		 //图片上传
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
+        },
+        handlePictureCardPreview(file) {
+            console.log(file)
+            console.log('qianzhi')
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
+		 getUpstr() {
+            console.log('chenggongshi ')
+        },
+        handlechange() {
+            console.log('handlechange ')
+        },
+        handleBeforeup() {
+            console.log('handleBeforeup ')
+        },
+		 handleRequestOss(files) {
+
+
+            // client.list({
+            //     'max-keys': 10
+            // }).then(res => {
+            //     console.log(res)
+            // }).catch(err => {
+            //     console.log(err)
+            // })
+
+            let file = files.file
+            client.multipartUpload(file.name, file)
+                .then(res => {
+                    this.editForm.pic = res.url;
+                }).catch(err => {
+                    console.log(err)
+                })
+        },
 		//获取用户列表
 		getUsers() {
 
@@ -261,13 +331,8 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			this.editForm.id = row.id;
-			this.editForm.name = row.name;
-			this.editForm.sex = row.sex;
-			this.editForm.age = row.age;
-			this.editForm.birth = row.birth;
-			this.editForm.addr = row.addr;
-
+			this.editForm=row;
+			this.filelist=[{name:'',url:row.app_pic}]
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -283,47 +348,55 @@ export default {
 
 						if (_this.editForm.id == 0) {
 							//新增
-							let para = {
-								name: _this.editForm.name,
-								sex: _this.editForm.sex,
-								age: _this.editForm.age,
-								birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-								addr: _this.editForm.addr,
-							};
-							addUser(para).then((res) => {
-								_this.editLoading = false;
-								NProgress.done();
-								_this.btnEditText = '提 交';
-								_this.$notify({
-									title: '成功',
-									message: '提交成功',
-									type: 'success'
-								});
-								_this.editFormVisible = false;
-								_this.getUsers();
-							});
+							let para = _this.editForm;
+							delete para.id;
+							request.post(config.api.goods.addsort, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '提交成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
 						} else {
 							//编辑
-							let para = {
-								id: _this.editForm.id,
-								name: _this.editForm.name,
-								sex: _this.editForm.sex,
-								age: _this.editForm.age,
-								birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-								addr: _this.editForm.addr,
-							};
-							editUser(para).then((res) => {
-								_this.editLoading = false;
-								NProgress.done();
-								_this.btnEditText = '提 交';
-								_this.$notify({
-									title: '成功',
-									message: '提交成功',
-									type: 'success'
-								});
-								_this.editFormVisible = false;
-								_this.getUsers();
-							});
+                            let para = _this.editForm;
+                            request.post(config.api.goods.updatesort, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '更新成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
 
 						}
 
@@ -333,19 +406,36 @@ export default {
 			});
 
 		},
-		//显示新增界面
+		//显示新增顶级分类界面
 		handleAdd: function () {
 			var _this = this;
 
 			this.editFormVisible = true;
-			this.editFormTtile = '新增';
+			this.editFormTtile = '新增一级分类';
 
 			this.editForm.id = 0;
 			this.editForm.name = '';
-			this.editForm.sex = 1;
-			this.editForm.age = 0;
-			this.editForm.birth = '';
-			this.editForm.addr = '';
+			this.editForm.pic = 1;
+			this.editForm.pid = 0;
+			this.filelist=[];
+			this.editForm.sort = 0;
+			this.editForm.note = '';
+
+		},
+		//显示新增顶级分类界面
+		handlesubAdd: function (row) {
+			var _this = this;
+
+			this.editFormVisible = true;
+			this.editFormTtile = '新增'+row.name+'下的分类';
+
+			this.editForm.id = 0;
+			this.editForm.name = '';
+			this.editForm.pic = 1;
+			this.filelist=[];
+			this.editForm.pid = row.id;
+			this.editForm.sort = 0;
+			this.editForm.note = '';
 
 		}
 	},

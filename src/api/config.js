@@ -51,7 +51,11 @@ export default {
             //店铺提现
             shopapplylist:'/withdr/list',
             //更新审核状态
-            updateShopApplyStatus:'/withdr/status'
+            updateShopApplyStatus:'/withdr/status',
+            //获取单个申请提现数据
+            getOneShopApplyinfo:"/withdr/one",
+            //获取店铺流水
+            getShoprecord:'/report/list'
         },
         //订单
         order:{
@@ -76,6 +80,8 @@ export default {
             updateGoods:"/goods/edit",
             //添加商品前获取参数
             preparams:'/goods/showparam',
+            //商品上下架
+            goodstooglestatus:'/goods/shelves',
             //分类
             sortindex:"/type/show",
             //添加分类

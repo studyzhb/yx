@@ -7,10 +7,10 @@
 					<el-input v-model="filters.name" placeholder="商品名称"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="商品编码"></el-input>
+					<el-input v-model="filters.code" placeholder="商品编码"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="国际条形码"></el-input>
+					<el-input v-model="filters.code" placeholder="国际条形码"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">搜索</el-button>
@@ -31,7 +31,7 @@
 	
 		<!--列表-->
 		<template>
-			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
+			<el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="selection" width="55">
 				</el-table-column>
 				<el-table-column type="index" width="60">
@@ -61,6 +61,11 @@
 					</span>
 				</el-table-column>
 			</el-table>
+			<div v-show="activeName!='10'" style="margin: 20px">
+				<el-button @click="toggleSelection(users)">全选</el-button>
+				<el-button @click="toggleSelection()">取消选择</el-button>
+				<el-button @click="toggleGoodsStatus(activeName)">{{activeName=='0'?'上架':'下架'}}</el-button>
+			</div>
 		</template>
 	
 		<!--分页-->
@@ -161,6 +166,7 @@ export default {
 		return {
 			filters: {
 				name: '',
+				code: '',
 				page: "1",
 				status: '10'
 			},
@@ -195,11 +201,24 @@ export default {
 				name: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
 				]
-			}
-
+			},
+			multipleSelection: []
 		}
 	},
 	methods: {
+		//全选
+		toggleSelection(rows) {
+			if (rows) {
+				rows.forEach(row => {
+					this.$refs.multipleTable.toggleRowSelection(row, true);
+				});
+			} else {
+				this.$refs.multipleTable.clearSelection();
+			}
+		},
+		handleSelectionChange(val) {
+			this.multipleSelection = val;
+		},
 		//性别显示转换
 		formatSex: function (row, column) {
 			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
@@ -409,6 +428,42 @@ export default {
 			this.editForm.birth = '';
 			this.editForm.addr = '';
 			// this.$router.push('/addshop');
+		},
+		//更改上下架
+		toggleGoodsStatus(sta) {
+			sta = sta == '0' ? 1 : 0;
+			let arr=[];
+			this.multipleSelection.forEach(data=>{
+				arr.push(data.id);
+			})
+			let para={
+				sell:sta,
+				ids:arr.join(',')
+			}
+			this.toogleLoading = true;
+			NProgress.start();
+			request.post(config.api.goods.goodstooglestatus,para)
+				.then(res => {
+					this.toogleLoading = false;
+					NProgress.done();
+					let { message, code, data } = res;
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						console.log(res)
+						this.$notify({
+							title: '成功',
+							message: message,
+							type: 'success'
+						});
+						this.getUsers();
+					}
+				})
+
 		}
 	},
 	mounted() {

@@ -214,14 +214,16 @@ export default {
 		},
 		//显示编辑界面
 		handleEdit: function (row) {
-			this.editFormVisible = true;
-			this.editFormTtile = '编辑';
-			this.editForm.id = row.id;
-			this.editForm.name = row.name;
-			this.editForm.sex = row.sex;
-			this.editForm.age = row.age;
-			this.editForm.birth = row.birth;
-			this.editForm.addr = row.addr;
+			// this.editFormVisible = true;
+			// this.editFormTtile = '编辑';
+			// this.editForm.id = row.id;
+			// this.editForm.name = row.name;
+			// this.editForm.sex = row.sex;
+			// this.editForm.age = row.age;
+			// this.editForm.birth = row.birth;
+			// this.editForm.addr = row.addr;
+
+			this.$router.push('/addsupplier/'+row.id);
 
 		},
 		//编辑 or 新增
@@ -290,18 +292,18 @@ export default {
 		},
 		//显示新增界面
 		handleAdd: function () {
-			var _this = this;
+			// var _this = this;
 
-			this.editFormVisible = true;
-			this.editFormTtile = '新增';
+			// this.editFormVisible = true;
+			// this.editFormTtile = '新增';
 
-			this.editForm.id = 0;
-			this.editForm.name = '';
-			this.editForm.sex = 1;
-			this.editForm.age = 0;
-			this.editForm.birth = '';
-			this.editForm.addr = '';
-
+			// this.editForm.id = 0;
+			// this.editForm.name = '';
+			// this.editForm.sex = 1;
+			// this.editForm.age = 0;
+			// this.editForm.birth = '';
+			// this.editForm.addr = '';
+			this.$router.push('/addsupplier/0');
 		}
 	},
 	mounted() {

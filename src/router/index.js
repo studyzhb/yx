@@ -33,6 +33,7 @@ import GoodsDetailEdit from '../pages/goods/goods-detail-edit'
 import Sort from '../pages/goods/sort'
 import Brand from '../pages/goods/brand'
 import Supplier from '../pages/goods/supplier'
+import AddSupplier from '../pages/goods/addsupplier'
 
 //订单管理
 import Order from '../pages/order/index'
@@ -122,6 +123,7 @@ export default [
             { path: '/sort', component: Sort, name: '分类管理' },
             { path: '/brand', component: Brand, name: '品牌管理' },
             { path: '/supplier', component: Supplier, name: '供应商管理' },
+            { path: '/addsupplier/:id', component: AddSupplier },
         ]
     },
     {
