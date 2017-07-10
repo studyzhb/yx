@@ -11,7 +11,7 @@ import 'nprogress/nprogress.css'
 
 import routes from './router/index.js'
 // start mock
-import Mock from './mock';
+// import Mock from './mock';
 
 import './common/sign';
 
@@ -19,7 +19,7 @@ import AMap from 'vue-amap';
 Vue.use(AMap);
 
 
-Mock.bootstrap();
+// Mock.bootstrap();
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)

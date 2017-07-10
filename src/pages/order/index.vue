@@ -4,18 +4,18 @@
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filters">
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="手机号"></el-input>
+                    <el-input v-model="filters.tel" placeholder="手机号"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="订单号"></el-input>
+                    <el-input v-model="filters.order_sn" placeholder="订单号"></el-input>
                 </el-form-item>
                 <el-form-item label="范围选择">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.dates" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.start_time" style="width: 100%;"></el-date-picker>
                     </el-col>
                     <el-col class="line" :span="2"> - </el-col>
                     <el-col :span="11">
-                        <el-time-picker type="fixed-time" placeholder="选择时间" v-model="filters.datee" style="width: 100%;"></el-time-picker>
+                        <el-time-picker type="fixed-time" placeholder="选择时间" v-model="filters.end_time" style="width: 100%;"></el-time-picker>
                     </el-col>
                 </el-form-item>
                 <el-form-item>
@@ -26,11 +26,10 @@
     
         <el-col :span="24" class="toolbar">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                <el-tab-pane label="全部" name="first"></el-tab-pane>
-                <el-tab-pane label="未发货" name="second"></el-tab-pane>
-                <el-tab-pane label="已发货" name="third"></el-tab-pane>
-                <el-tab-pane label="未付款" name="fourth"></el-tab-pane>
-                <el-tab-pane label="已付款" name="five"></el-tab-pane>
+                <el-tab-pane label="全部" name="10"></el-tab-pane>
+                <el-tab-pane label="未发货" name="1"></el-tab-pane>
+                <el-tab-pane label="已发货" name="2"></el-tab-pane>
+                <el-tab-pane label="未付款" name="0"></el-tab-pane>
             </el-tabs>
         </el-col>
         <!--列表-->
@@ -50,7 +49,7 @@
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
-                        <el-button :loading="sendLoading" size="small" v-if='status==1' @click="audit(row)">发货</el-button>
+                        <el-button :loading="sendLoading" size="small" v-if='filters.status==1' @click="audit(row)">发货</el-button>
                     </span>
                 </el-table-column>
             </el-table>
@@ -116,11 +115,13 @@ import config from 'config';
 export default {
     data() {
         return {
-            activeName: 'first',
+            activeName: '10',
             filters: {
-                name: '',
-                dates: '',
-                datee: ''
+                tel: '',
+                status:'',
+                order_sn:'',
+                start_time: '',
+                end_time: ''
             },
             users: [],
             total: 0,
@@ -152,10 +153,16 @@ export default {
     methods: {
         //性别显示转换
         formatSex(row, column) {
-            return row.sex == 1 ? '未发货' : row.sex == 0 ? '未支付' : '已发货';
+            return row.status == 1 ? '未发货' : row.status == 0 ? '未支付' : '已发货';
         },
         handleClick(tab, event) {
+            if(tab.name==10){
+                this.filters.status='';
+            }else{
+                this.filters.status=tab.name
+            }
             console.log(tab, event)
+            this.getUsers();
         },
 
         handleCurrentChange(val) {
@@ -173,7 +180,7 @@ export default {
             };
             this.listLoading = true;
             NProgress.start();
-            request.get(config.api.order.index, para)
+            request.get(config.api.order.index, this.filters)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();

@@ -4,7 +4,7 @@
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filters">
                 <el-form-item>
-                    <el-input v-model="filters.name" placeholder="姓名"></el-input>
+                    <el-input v-model="filters.name" placeholder="银行名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
@@ -86,7 +86,8 @@ export default {
     data() {
         return {
             filters: {
-                name: ''
+                name: '',
+                page:1
             },
             //图片上传
             dialogImageUrl: '',
@@ -131,13 +132,14 @@ export default {
         },
         //图片上传
         handleRemove(file, fileList) {
+            this.editForm.logo="";
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
             console.log(file)
             console.log('qianzhi')
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
+            //this.dialogImageUrl = file.url;
+            //this.dialogVisible = true;
         },
         getUpstr() {
             console.log('chenggongshi ')
@@ -155,6 +157,7 @@ export default {
         },
         handleCurrentChange(val) {
             this.page = val;
+            this.filters.page = val;
             this.getUsers();
         },
         handleSizeChange(val) {
@@ -175,6 +178,8 @@ export default {
             client.multipartUpload(file.name, file)
                 .then(res => {
                     this.editForm.logo = res.url;
+                    //this.filelist.splice(0,1)
+                    this.filelist=[{name:'editpic',url:res.url}]
                 }).catch(err => {
                     console.log(err)
                 })
@@ -194,7 +199,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.bank)
+            request.get(config.api.help.bank,this.filters)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -357,7 +362,10 @@ export default {
             }
             
             this.editForm.id = 0;
-            this.editFormVisible = true;
+            setTimeout(()=>{
+                this.editFormVisible = true;
+            },100)
+            
         },
         //更新状态
         updatestatus(row) {
