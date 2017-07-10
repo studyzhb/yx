@@ -9,10 +9,10 @@
                     <el-dialog v-model="dialogVisible" size="tiny">
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
-                    <el-button @click="addtitle" style="margin:20px;">添加文字</el-button>
+                    <!--<el-button @click="addtitle" style="margin:20px;">添加文字</el-button>-->
                 </el-popover>
                 <el-popover ref="popover3" placement="right" width="400" trigger="click">
-                    <el-upload action="" :file-list="filelist1" :http-request="handleRequestOssBanner" list-type="picture-card" :on-remove="handleRemove" :on-success="getUpstr">
+                    <el-upload action="" :file-list="filelist1" :http-request="handleRequestOssBanner" list-type="picture-card" :on-remove="handleRemoveBanner" :on-success="getUpstr">
                         <i class="el-icon-plus"></i>
                     </el-upload>
                     <el-dialog v-model="dialogVisible" size="tiny">
@@ -106,17 +106,19 @@
     
                 </el-tab-pane>
                 <el-tab-pane label="商品详情" name="second">
-                    <div class="phoneBg" style="padding:18px;padding-top:32px;width:284px;height:600px;">
-                        <el-carousel indicator-position="outside" height="200px">
-                            <el-carousel-item v-for="item in 4" :key="item">
-                                <h3>{{ item }}</h3>
+                    <div class="phoneBg" style="padding:18px;padding-top:32px;width:284px;height:600px;position:relative;">
+                        <el-carousel indicator-position="outside" width="300px" height="200px">
+                            <el-carousel-item v-for="item in pic" :key="item">
+                                <img :src="item" width="100%">
                             </el-carousel-item>
                         </el-carousel>
-                        
-                        <el-button style="width:100%;height:300px;overflow:auto;" v-popover:popover4>
-                            <div class="img-single" style="width:100%;">
+                        <el-button style="width:284px;height:200px;overflow:hidden;position:absolute;border:none;top:32px;z-index:100;opacity:0" @click="test" v-popover:popover3>
+                        </el-button>
+                        <el-button id="imageContent" style="width:100%;height:300px;overflow:auto;margin-left:-1px" v-popover:popover4>
+    
+                            <div class="img-single" style="width:100%;" v-for="item in picContent" :key="item">
                                 <div class="deleteAvata" style="display: none;">删除</div>
-                                <img src="http://enclosure.wandlm.net/web_pic/2017/01/09/1483941258379.png" width="100%">
+                                <img src="http://enclosure.wandlm.net/web_pic/2017/01/09/1483941258379.png" :src="item" width="100%">
                             </div>
                             <p>ceshi</p>
                         </el-button>
@@ -126,7 +128,6 @@
                         <el-form-item label="是否上架" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
                             <el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
                             </el-switch>
-    
                         </el-form-item>
                         <el-form-item label="备注" style="width:300px">
                             <el-input type="area" v-model="editForm.note"></el-input>
@@ -157,7 +158,8 @@
 <script>
 import util from '../../common/util'
 import NProgress from 'nprogress'
-import { getUserListPage, removeUser, editUser, addUser } from '../../api/api';
+import request from 'api';
+import config from 'config';
 import client from 'common/sign'
 export default {
     data() {
@@ -173,6 +175,8 @@ export default {
             filelist1: [],
             visible2: false,
             users: [],
+            pic: [],
+            picContent: [],
             total: 0,
             page: 1,
             listLoading: false,
@@ -181,20 +185,14 @@ export default {
             //编辑界面数据
             editForm: {
                 id: 0,
-                name: '',
-                sex: -1,
-                age: 0,
-                birth: '',
+                pic: '',
+                content: '',
+                note: '',
                 status: ''
             },
             //编辑界面数据
             form: {
-                id: 0,
-                name: '',
-                sex: -1,
-                age: 0,
-                birth: '',
-                addr: ''
+                id: 0
             },
             editLoading: false,
             btnEditText: '提 交',
@@ -202,28 +200,14 @@ export default {
                 name: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
                 ]
-            },
-            gridData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }]
+            }
 
         }
     },
     methods: {
+        test() {
+            console.log('12144141 test')
+        },
         //性别显示转换
         formatSex: function (row, column) {
             return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
@@ -234,7 +218,19 @@ export default {
         },
         //添加标题
         addtitle() {
+            this.$prompt('请输入添加的文字', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: '邮箱格式不正确'
+            }).then(({ value }) => {
 
+            }).catch(() => {
+                // this.$message({
+                //     type: 'info',
+                //     message: '取消输入'
+                // });
+            });
         },
         handleClick() {
 
@@ -245,7 +241,22 @@ export default {
         },
         //图片上传
         handleRemove(file, fileList) {
-            console.log(file, fileList);
+
+            for (let i = 0, j = this.picContent.length; i < j; i++) {
+                if (this.picContent[i] == file.url) {
+                    this.picContent.splice(i, 1);
+                    i--;
+                }
+            }
+        },
+        handleRemoveBanner(file, fileList) {
+
+            for (let i = 0, j = this.pic.length; i < j; i++) {
+                if (this.pic[i] == file.url) {
+                    this.pic.splice(i, 1);
+                    i--;
+                }
+            }
         },
         handlePictureCardPreview(file) {
             console.log(file)
@@ -268,20 +279,27 @@ export default {
                 page: this.page,
                 name: this.filters.name
             };
+            let { params } = this.$route;
+            this.editForm.id = params.id
             this.listLoading = true;
             NProgress.start();
-            getUserListPage(para).then((res) => {
-                this.total = res.data.total;
-                this.users = res.data.users;
-                this.listLoading = false;
-                NProgress.done();
-            });
+            // getUserListPage(para).then((res) => {
+            //     this.total = res.data.total;
+            //     this.users = res.data.users;
+            //     this.listLoading = false;
+            //     NProgress.done();
+            // });
         },
-        handleRequestOssBanner() {
+        handleRequestOssBanner(files) {
             let file = files.file
             client.multipartUpload(file.name, file)
                 .then(res => {
-                    this.editForm.pic = this.editForm.pic.push(res.url);
+                    this.pic.push(res.url);
+                    this.filelist1 = [];
+                    this.pic.forEach((item, index) => {
+                        this.filelist1.push({ name: index, url: item })
+                    })
+                    // this.editForm.pic = this.editForm.pic.push(res.url);
                 }).catch(err => {
                     console.log(err)
                 })
@@ -298,7 +316,11 @@ export default {
             let file = files.file
             client.multipartUpload(file.name, file)
                 .then(res => {
-                    this.editForm.logo = res.url;
+                    this.picContent.push(res.url);
+                    this.filelist = [];
+                    this.picContent.forEach((item, index) => {
+                        this.filelist.push({ name: index, url: item })
+                    })
                 }).catch(err => {
                     console.log(err)
                 })
@@ -352,59 +374,64 @@ export default {
                         NProgress.start();
                         _this.btnEditText = '提交中';
 
-                        if (_this.editForm.id == 0) {
-                            //新增
-                            let para = _this.editForm;
-                            delete para.id;
-                            request.post(config.api.goods.goodsdetailadd, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '提交成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
-                        } else {
-                            //编辑
-                            let para = _this.editForm;
+                        //取消判断
+                        let para = _this.editForm;
+                        para.content = imageContent.innerHTML;
+                        para.pic = JSON.stringify(_this.pic);
+                        // delete para.id;
+                        request.post(config.api.goods.goodsdetailadd, para)
+                            .then(res => {
+                                let { message, code, data } = res;
+                                _this.editLoading = false;
+                                NProgress.done();
+                                _this.btnEditText = '提 交';
+                                if (code !== 200) {
+                                    this.$notify({
+                                        title: '错误',
+                                        message: message,
+                                        type: 'error'
+                                    });
+                                } else {
+                                    _this.$notify({
+                                        title: '成功',
+                                        message: '提交成功',
+                                        type: 'success'
+                                    });
+                                    _this.editFormVisible = false;
+                                    _this.getUsers();
+                                }
+                            })
 
-                            request.post(config.api.help.updatebank, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '更新成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
-                        }
+                        // if (_this.editForm.id == 0) {
+                        //     //新增
+
+                        // } else {
+                        //     //编辑
+                        //     let para = _this.editForm;
+
+                        //     request.post(config.api.help.updatebank, para)
+                        //         .then(res => {
+                        //             let { message, code, data } = res;
+                        //             _this.editLoading = false;
+                        //             NProgress.done();
+                        //             _this.btnEditText = '提 交';
+                        //             if (code !== 200) {
+                        //                 this.$notify({
+                        //                     title: '错误',
+                        //                     message: message,
+                        //                     type: 'error'
+                        //                 });
+                        //             } else {
+                        //                 _this.$notify({
+                        //                     title: '成功',
+                        //                     message: '更新成功',
+                        //                     type: 'success'
+                        //                 });
+                        //                 _this.editFormVisible = false;
+                        //                 _this.getUsers();
+                        //             }
+                        //         })
+                        // }
 
                     });
 

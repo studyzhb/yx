@@ -120,7 +120,7 @@ export default [
             //{ path: '/main', component: Main },
             { path: '/goods', component: Goods, name: '商品档案' },
             { path: '/goods-detail', component: GoodsDetail, name: '商品档案详情' },
-            { path: '/goods-detail-edit', component: GoodsDetailEdit },
+            { path: '/goods-detail-edit/:id', component: GoodsDetailEdit },
             { path: '/sort', component: Sort, name: '分类管理' },
             { path: '/brand', component: Brand, name: '品牌管理' },
             { path: '/supplier', component: Supplier, name: '供应商管理' },

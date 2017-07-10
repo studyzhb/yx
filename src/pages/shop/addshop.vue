@@ -50,7 +50,7 @@
 		</el-form-item>
 		<el-form-item label="状态">
 			<!--1启用 2停用-->
-			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="isstatus"></el-switch>
+			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="form.status"></el-switch>
 		</el-form-item>
 		<el-form-item label="地址">
 			<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleaddresschange">
@@ -188,6 +188,7 @@ export default {
 					} else {
 						
 						this.form = data.cnt;
+						this.form.status+='';
 						this.isstatus=this.form.status==1?true:false;
 					}
 				})
