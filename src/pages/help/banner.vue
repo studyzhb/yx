@@ -84,13 +84,13 @@ import util from 'common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-import client from 'common/sign'
+import Sign from 'common/sign'
 export default {
     data() {
         return {
             filters: {
                 title: '',
-                page:1
+                page: 1
             },
             //图片上传
             dialogImageUrl: '',
@@ -111,13 +111,13 @@ export default {
             //编辑界面数据
             editForm: {
                 id: 0,
-                title:'',
-                img_url:'',
-                url:'',
-                position:1
+                title: '',
+                img_url: '',
+                url: '',
+                position: 1
             },
             editLoading: false,
-            editstatusLoading:false,
+            editstatusLoading: false,
             btnEditText: '提 交',
             editFormRules: {
                 name: [
@@ -179,12 +179,15 @@ export default {
             // })
 
             let file = files.file
-            client.multipartUpload(file.name, file)
-                .then(res => {
-                    this.editForm.img_url = res.url;
-                }).catch(err => {
-                    console.log(err)
-                })
+            Sign.then((client) => {
+                client.multipartUpload('/pic/'+file.name, file)
+                    .then(res => {
+                        this.editForm.img_url = res.url;
+                    }).catch(err => {
+                        console.log(err)
+                    })
+            })
+
         },
         //获取用户列表
         getUsers() {
@@ -201,7 +204,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.bannerlist,this.filters)
+            request.get(config.api.help.bannerlist, this.filters)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -229,26 +232,26 @@ export default {
                 _this.listLoading = true;
                 NProgress.start();
                 let para = { id: row.id };
-                request.post(config.api.help.deletebanner,para)
-					.then((res) => {
-						_this.listLoading = false;
-						NProgress.done();
-						let { message, code, data } = res;
-						if (code !== 200) {
-							_this.$notify({
-								title: '错误',
-								message: message,
-								type: 'error'
-							});
-						} else {
-							_this.$notify({
-								title: '成功',
-								message: message,
-								type: 'sucess'
-							});
-							_this.getUsers();
-						}
-					})
+                request.post(config.api.help.deletebanner, para)
+                    .then((res) => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: message,
+                                type: 'sucess'
+                            });
+                            _this.getUsers();
+                        }
+                    })
 
             }).catch(() => {
 
@@ -279,7 +282,7 @@ export default {
             console.log(row)
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
-            this.editForm=row;
+            this.editForm = row;
             this.filelist = [{ name: 'editlogo', url: row.img_url }]
         },
         //编辑 or 新增
@@ -360,18 +363,18 @@ export default {
 
             this.editFormVisible = true;
             this.editFormTtile = '新增';
-            for (let key in this.editForm){
-                this.editForm[key]="";
+            for (let key in this.editForm) {
+                this.editForm[key] = "";
             }
             this.editForm.id = 0;
         },
         //更新状态
         updatestatus(row) {
-            let _this=this;
-            this.editstatusLoading=true;
+            let _this = this;
+            this.editstatusLoading = true;
             let para = {
-                id:row.id,
-                status:row.status==0?1:0
+                id: row.id,
+                status: row.status == 0 ? 1 : 0
             };
             request.post(config.api.help.updatebannerstatus, para)
                 .then(res => {

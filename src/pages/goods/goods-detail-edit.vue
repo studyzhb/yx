@@ -292,17 +292,20 @@ export default {
         },
         handleRequestOssBanner(files) {
             let file = files.file
-            client.multipartUpload(file.name, file)
-                .then(res => {
-                    this.pic.push(res.url);
-                    this.filelist1 = [];
-                    this.pic.forEach((item, index) => {
-                        this.filelist1.push({ name: index, url: item })
+            Sign.then((client) => {
+                client.multipartUpload(file.name, file)
+                    .then(res => {
+                        this.pic.push(res.url);
+                        this.filelist1 = [];
+                        this.pic.forEach((item, index) => {
+                            this.filelist1.push({ name: index, url: item })
+                        })
+                        // this.editForm.pic = this.editForm.pic.push(res.url);
+                    }).catch(err => {
+                        console.log(err)
                     })
-                    // this.editForm.pic = this.editForm.pic.push(res.url);
-                }).catch(err => {
-                    console.log(err)
-                })
+            })
+
         },
         handleRequestOss(files) {
             // client.list({
@@ -314,16 +317,19 @@ export default {
             // })
 
             let file = files.file
-            client.multipartUpload(file.name, file)
-                .then(res => {
-                    this.picContent.push(res.url);
-                    this.filelist = [];
-                    this.picContent.forEach((item, index) => {
-                        this.filelist.push({ name: index, url: item })
+            Sign.then((client) => {
+                client.multipartUpload(file.name, file)
+                    .then(res => {
+                        this.picContent.push(res.url);
+                        this.filelist = [];
+                        this.picContent.forEach((item, index) => {
+                            this.filelist.push({ name: index, url: item })
+                        })
+                    }).catch(err => {
+                        console.log(err)
                     })
-                }).catch(err => {
-                    console.log(err)
-                })
+            })
+
         },
         //删除
         handleDel: function (row) {

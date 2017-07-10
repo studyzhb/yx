@@ -84,13 +84,13 @@ export default {
 	data() {
 		return {
 			editLoading: false,
-			isstatus:true,
+			isstatus: true,
 			//图片上传
 			dialogImageUrl: '',
 			filelist: [],
 			dialogVisible: false,
 			zoom: 12,
-			btnEditText:'提交',
+			btnEditText: '提交',
 			marker: {
 				position: [30, 130]
 			},
@@ -143,7 +143,7 @@ export default {
 				password: '',
 				avatar: '',
 				phone: '',
-				tel:'',
+				tel: '',
 				card: '',
 				place: '',
 				province: '',
@@ -173,7 +173,7 @@ export default {
 	mounted() {
 
 		let { params } = this.$route;
-		console.log(params)
+
 		if (params.id != 0) {
 			this.form.id = params.id;
 			request.get(config.api.shop.getSingleShop, { id: this.form.id })
@@ -186,10 +186,9 @@ export default {
 							type: 'error'
 						});
 					} else {
-						
 						this.form = data.cnt;
-						this.form.status+='';
-						this.isstatus=this.form.status==1?true:false;
+						this.form.status += '';
+						this.isstatus = this.form.status == 1 ? true : false;
 					}
 				})
 				.catch(e => {
@@ -242,12 +241,15 @@ export default {
 			// })
 
 			let file = files.file
-			client.multipartUpload(file.name, file)
-				.then(res => {
-					this.form.avatar = res.url;
-				}).catch(err => {
-					console.log(err)
-				})
+			Sign.then((client) => {
+				client.multipartUpload(file.name, file)
+					.then(res => {
+						this.form.avatar = res.url;
+					}).catch(err => {
+						console.log(err)
+					})
+			})
+
 		},
 		saveShop() {
 			var _this = this;
@@ -292,7 +294,7 @@ export default {
 						} else {
 							//编辑
 							let para = {
-								
+
 							};
 							request.post(config.api.shop.updateshop, _this.form)
 								.then(res => {

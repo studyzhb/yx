@@ -10,6 +10,7 @@ import NProgress from 'nprogress'//页面顶部进度条
 import 'nprogress/nprogress.css'
 
 import routes from './router/index.js'
+import Sign from 'common/sign.js'
 // start mock
 // import Mock from './mock';
 

@@ -81,13 +81,13 @@ import util from 'common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-import client from 'common/sign'
+import Sign from 'common/sign'
 export default {
     data() {
         return {
             filters: {
                 name: '',
-                page:1
+                page: 1
             },
             //图片上传
             dialogImageUrl: '',
@@ -112,7 +112,7 @@ export default {
                 logo: ''
             },
             editLoading: false,
-            editstatusLoading:false,
+            editstatusLoading: false,
             btnEditText: '提 交',
             editFormRules: {
                 name: [
@@ -132,7 +132,7 @@ export default {
         },
         //图片上传
         handleRemove(file, fileList) {
-            this.editForm.logo="";
+            this.editForm.logo = "";
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
@@ -175,14 +175,18 @@ export default {
             // })
 
             let file = files.file
-            client.multipartUpload(file.name, file)
-                .then(res => {
-                    this.editForm.logo = res.url;
-                    //this.filelist.splice(0,1)
-                    this.filelist=[{name:'editpic',url:res.url}]
-                }).catch(err => {
-                    console.log(err)
-                })
+            Sign.then((client) => {
+                client.multipartUpload('/pic/'+file.name, file)
+                    .then(res => {
+                        this.editForm.logo = res.url;
+                        //this.filelist.splice(0,1)
+                        console.log(res.url)
+                        this.filelist = [{ name: 'editpic', url: res.url }]
+                    }).catch(err => {
+                        console.log(err)
+                    })
+            })
+
         },
         //获取用户列表
         getUsers() {
@@ -199,7 +203,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.bank,this.filters)
+            request.get(config.api.help.bank, this.filters)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -354,26 +358,26 @@ export default {
         //显示新增界面
         handleAdd: function () {
             var _this = this;
-            this.filelist=[];
-            
+            this.filelist = [];
+
             this.editFormTtile = '新增';
-            for(let key in this.editForm){
-                this.editForm[key]='';
+            for (let key in this.editForm) {
+                this.editForm[key] = '';
             }
-            
+
             this.editForm.id = 0;
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.editFormVisible = true;
-            },100)
-            
+            }, 100)
+
         },
         //更新状态
         updatestatus(row) {
-            let _this=this;
-            this.editstatusLoading=true;
+            let _this = this;
+            this.editstatusLoading = true;
             let para = {
-                id:row.id,
-                status:row.status==0?1:0
+                id: row.id,
+                status: row.status == 0 ? 1 : 0
             };
             request.post(config.api.help.updatestatus, para)
                 .then(res => {
