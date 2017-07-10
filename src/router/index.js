@@ -49,6 +49,7 @@ import Menu from '../pages/origination/menu'
 //帮助审核
 import Help from '../pages/help/index'
 import Bank from '../pages/help/bank'
+import Banner from '../pages/help/banner'
 
 
 //
@@ -158,6 +159,7 @@ export default [
             //{ path: '/main', component: Main },
             { path: '/help', component: Help, name: '帮助列表' },
             { path: '/bank', component: Bank, name: '银行类型' },
+            { path: '/banner', component: Banner, name: 'banner图管理' },
         ]
     }
 ]

@@ -50,7 +50,7 @@
 		</el-form-item>
 		<el-form-item label="状态">
 			<!--1启用 2停用-->
-			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="form.status"></el-switch>
+			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="isstatus"></el-switch>
 		</el-form-item>
 		<el-form-item label="地址">
 			<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleaddresschange">
@@ -84,6 +84,7 @@ export default {
 	data() {
 		return {
 			editLoading: false,
+			isstatus:true,
 			//图片上传
 			dialogImageUrl: '',
 			filelist: [],
@@ -153,7 +154,7 @@ export default {
 				longitude: '',
 				wx: '',
 				qq: '',
-				status: '',
+				status: '1',
 				displayorder: '1',
 				email: '',
 				bank: '',
@@ -185,8 +186,9 @@ export default {
 							type: 'error'
 						});
 					} else {
+						
 						this.form = data.cnt;
-
+						this.isstatus=this.form.status==1?true:false;
 					}
 				})
 				.catch(e => {

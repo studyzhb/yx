@@ -210,6 +210,11 @@ export default {
             })
         },
         confirmdone(row) {
+            const h = this.$createElement;
+            let _this=this;
+            let para={
+                id:row.id
+            }
             this.$msgbox({
                 title: '消息',
                 message: h('p', null, [
@@ -234,10 +239,81 @@ export default {
                     }
                 }
             }).then(action => {
-                this.$message({
-                    type: 'info',
-                    message: 'action: ' + action
-                });
+                if (action === 'confirm') {
+                    _this.$prompt('备注信息', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                        // inputErrorMessage: '邮箱格式不正确'
+                    }).then(({ value }) => {
+                        _this.listLoading = true;
+                        NProgress.start();
+                        para.status = 3;
+                        para.remark=value;
+                        request.post(config.api.fund.widthok, para)
+                            .then(res => {
+                                _this.listLoading = false;
+                                NProgress.done();
+                                let { message, code, data } = res;
+                                if (code !== 200) {
+                                    _this.$notify({
+                                        title: '错误',
+                                        message: message,
+                                        type: 'error'
+                                    });
+                                } else {
+                                    _this.$notify({
+                                        title: '成功',
+                                        message: '操作成功',
+                                        type: 'success'
+                                    });
+                                    _this.getUsers();
+                                }
+                            })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '取消输入'
+                        });
+                    });
+                } else {
+                    _this.$prompt('备注信息', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                        // inputErrorMessage: '邮箱格式不正确'
+                    }).then(({ value }) => {
+                        _this.listLoading = true;
+                        NProgress.start();
+                        para.status = 4;
+                        para.remark=value;
+                        request.post(config.api.fund.widthfalse, para)
+                            .then(res => {
+                                _this.listLoading = false;
+                                NProgress.done();
+                                let { message, code, data } = res;
+                                if (code !== 200) {
+                                    _this.$notify({
+                                        title: '错误',
+                                        message: message,
+                                        type: 'error'
+                                    });
+                                } else {
+                                    _this.$notify({
+                                        title: '成功',
+                                        message: '操作成功',
+                                        type: 'success'
+                                    });
+                                    _this.getUsers();
+                                }
+                            })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '取消输入'
+                        });
+                    });
+                }
             });
         },
         handleCurrentChange(val) {

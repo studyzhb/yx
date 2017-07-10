@@ -70,7 +70,21 @@ export default {
             //状态更改
             updatestatus:'/cardType/status',
             //更新银行卡信息
-            updatebank:'/cardType/update'
+            updatebank:'/cardType/update',
+            //banner图列表
+            bannerlist:'/banner/list',
+            //banner图添加
+            addbanner:'/banner/add',
+            //banner图删除
+            deletebanner:'/banner/delete',
+            updatebanner:'/banner/update',
+            //更新banner图状态
+            updatebannerstatus:'/banner/status',
+            //banner图详情
+            bannerdetail:'/banner/info',
+            //banner排序
+            bannersort:'/banner/order'
+
         },
         goods:{
             index:'/goods/show',
@@ -82,6 +96,8 @@ export default {
             preparams:'/goods/showparam',
             //商品上下架
             goodstooglestatus:'/goods/shelves',
+            //商品详情编辑
+            goodsdetailadd:'/goods/editgood',
             //分类
             sortindex:"/type/show",
             //添加分类

@@ -349,13 +349,15 @@ export default {
         //显示新增界面
         handleAdd: function () {
             var _this = this;
-
-            this.editFormVisible = true;
+            this.filelist=[];
+            
             this.editFormTtile = '新增';
-
+            for(let key in this.editForm){
+                this.editForm[key]='';
+            }
+            
             this.editForm.id = 0;
-            this.editForm.name = '';
-            this.editForm.logo = '';
+            this.editFormVisible = true;
         },
         //更新状态
         updatestatus(row) {

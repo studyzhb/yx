@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="filters.shopname" placeholder="店铺名称"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
@@ -119,7 +119,8 @@ export default {
 	data() {
 		return {
 			filters: {
-				name: ''
+				shopname: '',
+				page:1
 			},
 			users: [],
 			total: 0,
@@ -137,10 +138,7 @@ export default {
 			editForm: {
 				id: 0,
 				name: '',
-				sex: -1,
-				age: 0,
-				birth: '',
-				addr: ''
+				
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -159,6 +157,7 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
 		},
 		handleSizeChange(val) {
@@ -179,7 +178,7 @@ export default {
 			// 	NProgress.done();
 			// });
 			console.log(request);
-			request.get(config.api.shop.showlist)
+			request.get(config.api.shop.showlist,this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();

@@ -1,86 +1,149 @@
 <template>
     <section>
         <el-col :span="24" class="toolbar">
-            <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+            <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="padding-bottom:20px;">
+                <el-popover ref="popover4" placement="right" width="400" trigger="click">
+                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                    </el-upload>
+                    <el-dialog v-model="dialogVisible" size="tiny">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                    <el-button @click="addtitle" style="margin:20px;">添加文字</el-button>
+                </el-popover>
+                <el-popover ref="popover3" placement="right" width="400" trigger="click">
+                    <el-upload action="" :file-list="filelist1" :http-request="handleRequestOssBanner" list-type="picture-card" :on-remove="handleRemove" :on-success="getUpstr">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <el-dialog v-model="dialogVisible" size="tiny">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </el-popover>
                 <el-tab-pane label="基本信息" name="first">
-                    <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm1">
-                        <el-card class="box-card" style="margin-bottom:20px" v-show="activeName==='first'">
+                    <el-form :model="form" label-width="80px" :rules="editFormRules" ref="form">
+                        <el-card class="box-card" style="margin-bottom:20px">
                             <div slot="header" class="clearfix">
                                 <span style="line-height: 20px;">基本信息</span>
                             </div>
                             <el-form-item label="商品名称" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                                <el-input v-model="form.name" auto-complete="off"></el-input>
                             </el-form-item>
                             <el-form-item label="商品编码" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                                <el-input v-model="form.name" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="国际条形码" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                            <el-form-item label="国际条形码" prop="code" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.code" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="规格" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                            <el-form-item label="规格" prop="norm" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.norm" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="原产地" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                            <el-form-item label="原产地" prop="production_origin" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.production_origin" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="生产厂家" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                            <el-form-item label="生产厂家" prop="manufacturer" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.manufacturer" auto-complete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="数量" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.num" auto-complete="off"></el-input>
                             </el-form-item>
                             <el-form-item label="计价方式" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-select v-model="editForm.sex" placeholder="请选择性别">
+                                <el-select v-model="form.valuation_id" placeholder="请选择计价方式">
                                     <el-option label="称重" :value="1"></el-option>
                                     <el-option label="计价" :value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="零售单位" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-select v-model="editForm.sex" placeholder="请选择性别">
+                                <el-select v-model="form.retail_unit_id" placeholder="请选择零售单位">
                                     <el-option label="称重" :value="1"></el-option>
                                     <el-option label="计价" :value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="分类" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-select v-model="editForm.sex" placeholder="请选择性别">
+                                <el-select v-model="form.goods_type_id" placeholder="请选择分类">
                                     <el-option label="称重" :value="1"></el-option>
                                     <el-option label="计价" :value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="品牌" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-select v-model="editForm.sex" placeholder="请选择性别">
+                                <el-select v-model="form.goods_brand_id" placeholder="请选择品牌">
                                     <el-option label="称重" :value="1"></el-option>
                                     <el-option label="计价" :value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="供应商" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-select v-model="editForm.sex" placeholder="请选择性别">
+                                <el-select v-model="form.supplier_id" placeholder="请选择供应商">
                                     <el-option label="称重" :value="1"></el-option>
                                     <el-option label="计价" :value="0"></el-option>
                                 </el-select>
                             </el-form-item>
+                            <el-form-item label="是否分润" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-switch v-model="form.is_rebate" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+                                </el-switch>
+                            </el-form-item>
     
                         </el-card>
-                        <el-card class="box-card" v-show="activeName==='first'">
+                        <el-card class="box-card">
                             <div slot="header" class="clearfix">
                                 <span style="line-height: 20px;">价格信息</span>
                             </div>
-                            <el-form-item label="进货价" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                            <el-form-item label="进货价" prop="buying_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.buying_price" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="批发价" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                            <el-form-item label="批发价" prop="trade_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.trade_price" auto-complete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="零售价" prop="retail_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.retail_price" auto-complete="off"></el-input>
+                            </el-form-item>
+                            <el-form-item label="市场价" prop="market_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                                <el-input v-model="form.market_price" auto-complete="off"></el-input>
                             </el-form-item>
                             <el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="editForm.name" auto-complete="off"></el-input>
+                                <el-input v-model="form.name" auto-complete="off"></el-input>
                             </el-form-item>
                         </el-card>
                     </el-form>
     
                 </el-tab-pane>
                 <el-tab-pane label="商品详情" name="second">
-                     <el-form :model="editForm" label-width="80px" class="phoneBg" :rules="editFormRules" ref="editForm" style="width:800px;height:600px;">
-
-                     </el-form>
-                    
+                    <div class="phoneBg" style="padding:18px;padding-top:32px;width:284px;height:600px;">
+                        <el-carousel indicator-position="outside" height="200px">
+                            <el-carousel-item v-for="item in 4" :key="item">
+                                <h3>{{ item }}</h3>
+                            </el-carousel-item>
+                        </el-carousel>
+                        
+                        <el-button style="width:100%;height:300px;overflow:auto;" v-popover:popover4>
+                            <div class="img-single" style="width:100%;">
+                                <div class="deleteAvata" style="display: none;">删除</div>
+                                <img src="http://enclosure.wandlm.net/web_pic/2017/01/09/1483941258379.png" width="100%">
+                            </div>
+                            <p>ceshi</p>
+                        </el-button>
+    
+                    </div>
+                    <el-form ref="editForm" :model="editForm" label-width="80px" :rules="editFormRules">
+                        <el-form-item label="是否上架" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                            <el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+                            </el-switch>
+    
+                        </el-form-item>
+                        <el-form-item label="备注" style="width:300px">
+                            <el-input type="area" v-model="editForm.note"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input type="hidden" v-model="editForm.pic"></el-input>
+                            <el-input type="hidden" v-model="editForm.content"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button :loading="editLoading" type="primary" @click="editSubmit">{{btnEditText}}</el-button>
+                            <el-button @click.native.prevent="returnShop">取消</el-button>
+                        </el-form-item>
+                    </el-form>
+    
                 </el-tab-pane>
+    
+                <!--<el-button v-popover:popover4>click 激活</el-button>-->
             </el-tabs>
         </el-col>
         <!--列表-->
@@ -95,7 +158,7 @@
 import util from '../../common/util'
 import NProgress from 'nprogress'
 import { getUserListPage, removeUser, editUser, addUser } from '../../api/api';
-
+import client from 'common/sign'
 export default {
     data() {
         return {
@@ -103,6 +166,12 @@ export default {
             filters: {
                 name: ''
             },
+            //图片上传
+            dialogImageUrl: '',
+            dialogVisible: false,
+            filelist: [],
+            filelist1: [],
+            visible2: false,
             users: [],
             total: 0,
             page: 1,
@@ -116,6 +185,15 @@ export default {
                 sex: -1,
                 age: 0,
                 birth: '',
+                status: ''
+            },
+            //编辑界面数据
+            form: {
+                id: 0,
+                name: '',
+                sex: -1,
+                age: 0,
+                birth: '',
                 addr: ''
             },
             editLoading: false,
@@ -124,7 +202,24 @@ export default {
                 name: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
                 ]
-            }
+            },
+            gridData: [{
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            }, {
+                date: '2016-05-04',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            }, {
+                date: '2016-05-01',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            }, {
+                date: '2016-05-03',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            }]
 
         }
     },
@@ -133,12 +228,39 @@ export default {
         formatSex: function (row, column) {
             return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
         },
+        //添加详情
+        adddetail() {
+            console.log('1213133')
+        },
+        //添加标题
+        addtitle() {
+
+        },
         handleClick() {
 
         },
         handleCurrentChange(val) {
             this.page = val;
             this.getUsers();
+        },
+        //图片上传
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
+        },
+        handlePictureCardPreview(file) {
+            console.log(file)
+            console.log('qianzhi')
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
+        getUpstr() {
+            console.log('chenggongshi ')
+        },
+        handlechange() {
+            console.log('handlechange ')
+        },
+        handleBeforeup() {
+            console.log('handleBeforeup ')
         },
         //获取用户列表
         getUsers() {
@@ -154,6 +276,32 @@ export default {
                 this.listLoading = false;
                 NProgress.done();
             });
+        },
+        handleRequestOssBanner() {
+            let file = files.file
+            client.multipartUpload(file.name, file)
+                .then(res => {
+                    this.editForm.pic = this.editForm.pic.push(res.url);
+                }).catch(err => {
+                    console.log(err)
+                })
+        },
+        handleRequestOss(files) {
+            // client.list({
+            //     'max-keys': 10
+            // }).then(res => {
+            //     console.log(res)
+            // }).catch(err => {
+            //     console.log(err)
+            // })
+
+            let file = files.file
+            client.multipartUpload(file.name, file)
+                .then(res => {
+                    this.editForm.logo = res.url;
+                }).catch(err => {
+                    console.log(err)
+                })
         },
         //删除
         handleDel: function (row) {
@@ -206,48 +354,56 @@ export default {
 
                         if (_this.editForm.id == 0) {
                             //新增
-                            let para = {
-                                name: _this.editForm.name,
-                                sex: _this.editForm.sex,
-                                age: _this.editForm.age,
-                                birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-                                addr: _this.editForm.addr,
-                            };
-                            addUser(para).then((res) => {
-                                _this.editLoading = false;
-                                NProgress.done();
-                                _this.btnEditText = '提 交';
-                                _this.$notify({
-                                    title: '成功',
-                                    message: '提交成功',
-                                    type: 'success'
-                                });
-                                _this.editFormVisible = false;
-                                _this.getUsers();
-                            });
+                            let para = _this.editForm;
+                            delete para.id;
+                            request.post(config.api.goods.goodsdetailadd, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '提交成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
                         } else {
                             //编辑
-                            let para = {
-                                id: _this.editForm.id,
-                                name: _this.editForm.name,
-                                sex: _this.editForm.sex,
-                                age: _this.editForm.age,
-                                birth: _this.editForm.birth == '' ? '' : util.formatDate.format(new Date(_this.editForm.birth), 'yyyy-MM-dd'),
-                                addr: _this.editForm.addr,
-                            };
-                            editUser(para).then((res) => {
-                                _this.editLoading = false;
-                                NProgress.done();
-                                _this.btnEditText = '提 交';
-                                _this.$notify({
-                                    title: '成功',
-                                    message: '提交成功',
-                                    type: 'success'
-                                });
-                                _this.editFormVisible = false;
-                                _this.getUsers();
-                            });
+                            let para = _this.editForm;
 
+                            request.post(config.api.help.updatebank, para)
+                                .then(res => {
+                                    let { message, code, data } = res;
+                                    _this.editLoading = false;
+                                    NProgress.done();
+                                    _this.btnEditText = '提 交';
+                                    if (code !== 200) {
+                                        this.$notify({
+                                            title: '错误',
+                                            message: message,
+                                            type: 'error'
+                                        });
+                                    } else {
+                                        _this.$notify({
+                                            title: '成功',
+                                            message: '更新成功',
+                                            type: 'success'
+                                        });
+                                        _this.editFormVisible = false;
+                                        _this.getUsers();
+                                    }
+                                })
                         }
 
                     });
@@ -296,5 +452,21 @@ export default {
     background: url('../../assets/iphone.png') no-repeat 0 0;
 
     background-size: contain;
+}
+
+.el-carousel__item h3 {
+    color: #475669;
+    font-size: 18px;
+    opacity: 0.75;
+    line-height: 300px;
+    margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+    background-color: #d3dce6;
 }
 </style>
