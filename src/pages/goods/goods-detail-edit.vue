@@ -160,7 +160,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request from 'api';
 import config from 'config';
-import client from 'common/sign'
+import Sign from 'common/sign'
 export default {
     data() {
         return {
@@ -404,7 +404,7 @@ export default {
                                         type: 'success'
                                     });
                                     _this.editFormVisible = false;
-                                    _this.getUsers();
+                                    _this.$router.replace('/goods-detail');
                                 }
                             })
 

@@ -75,16 +75,16 @@
                     <span v-text="form.money"></span>
                 </p>
                 <p class="rechargeItem">提现后:
-                    <span v-text="form.outMoney"></span>
+                    <span v-text="form.user?form.user.balance:0"></span>
                 </p>
                 <p class="rechargeItem">手机号:
                     <span v-text="form.user_mobile"></span>
                 </p>
                 <p class="rechargeItem">姓名:
-                    <span v-text="form.user_name"></span>
+                    <span v-text="form.user?form.user.real_name:''"></span>
                 </p>
                 <p class="rechargeItem">身份证号:
-                    <span v-text="form.card_id"></span>
+                    <span v-text="form.user?form.user.id_card:''"></span>
                 </p>
                 <p class="rechargeItem">银行:
                     <span v-text="form.card_name"></span>
@@ -160,6 +160,7 @@ import config from 'config';
 export default {
     data() {
         return {
+            confirmid:'',
             excelout:config.api.fund.outputexcel,
             pickerOptions1: {
                 shortcuts: [{
@@ -254,6 +255,9 @@ export default {
             let para = {
                 id: row.id
             }
+            
+            this.confirmid=row.id;
+            
             this.$confirm('确认?', '提示', {
                 //type: 'warning'
             }).then(() => {
@@ -283,117 +287,122 @@ export default {
         },
         confirmdone(row) {
             this.form = row;
+            this.confirmid=row.id;
             this.dialogFormVisible = true;
 
             return;
-            const h = this.$createElement;
-            let _this = this;
-            let para = {
-                id: row.id
-            }
-            this.$msgbox({
-                title: '消息',
-                message: h('p', null, [
-                    h('span', null, '请选择 '),
-                    h('i', { style: 'color: teal' }, '121331')
-                ]),
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '拒绝',
-                beforeClose: (action, instance, done) => {
-                    if (action === 'confirm') {
-                        instance.confirmButtonLoading = true;
-                        instance.confirmButtonText = '执行中...';
-                        setTimeout(() => {
-                            done();
-                            setTimeout(() => {
-                                instance.confirmButtonLoading = false;
-                            }, 300);
-                        }, 3000);
-                    } else {
-                        done();
-                    }
-                }
-            }).then(action => {
-                if (action === 'confirm') {
-                    _this.$prompt('备注信息', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-                        // inputErrorMessage: '邮箱格式不正确'
-                    }).then(({ value }) => {
-                        _this.listLoading = true;
-                        NProgress.start();
-                        para.status = 3;
-                        para.remark = value;
-                        request.post(config.api.fund.widthok, para)
-                            .then(res => {
-                                _this.listLoading = false;
-                                NProgress.done();
-                                let { message, code, data } = res;
-                                if (code !== 200) {
-                                    _this.$notify({
-                                        title: '错误',
-                                        message: message,
-                                        type: 'error'
-                                    });
-                                } else {
-                                    _this.$notify({
-                                        title: '成功',
-                                        message: '操作成功',
-                                        type: 'success'
-                                    });
-                                    _this.getUsers();
-                                }
-                            })
-                    }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '取消输入'
-                        });
-                    });
-                } else {
-                    _this.$prompt('备注信息', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-                        // inputErrorMessage: '邮箱格式不正确'
-                    }).then(({ value }) => {
-                        _this.listLoading = true;
-                        NProgress.start();
-                        para.status = 4;
-                        para.remark = value;
-                        request.post(config.api.fund.widthfalse, para)
-                            .then(res => {
-                                _this.listLoading = false;
-                                NProgress.done();
-                                let { message, code, data } = res;
-                                if (code !== 200) {
-                                    _this.$notify({
-                                        title: '错误',
-                                        message: message,
-                                        type: 'error'
-                                    });
-                                } else {
-                                    _this.$notify({
-                                        title: '成功',
-                                        message: '操作成功',
-                                        type: 'success'
-                                    });
-                                    _this.getUsers();
-                                }
-                            })
-                    }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '取消输入'
-                        });
-                    });
-                }
-            });
+            // const h = this.$createElement;
+            // let _this = this;
+            // let para = {
+            //     id: row.id
+            // }
+            // this.$msgbox({
+            //     title: '消息',
+            //     message: h('p', null, [
+            //         h('span', null, '请选择 '),
+            //         h('i', { style: 'color: teal' }, '121331')
+            //     ]),
+            //     showCancelButton: true,
+            //     confirmButtonText: '确定',
+            //     cancelButtonText: '拒绝',
+            //     beforeClose: (action, instance, done) => {
+            //         if (action === 'confirm') {
+            //             instance.confirmButtonLoading = true;
+            //             instance.confirmButtonText = '执行中...';
+            //             setTimeout(() => {
+            //                 done();
+            //                 setTimeout(() => {
+            //                     instance.confirmButtonLoading = false;
+            //                 }, 300);
+            //             }, 3000);
+            //         } else {
+            //             done();
+            //         }
+            //     }
+            // }).then(action => {
+            //     if (action === 'confirm') {
+            //         _this.$prompt('备注信息', '提示', {
+            //             confirmButtonText: '确定',
+            //             cancelButtonText: '取消',
+            //             // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+            //             // inputErrorMessage: '邮箱格式不正确'
+            //         }).then(({ value }) => {
+            //             _this.listLoading = true;
+            //             NProgress.start();
+            //             para.status = 3;
+            //             para.remark = value;
+            //             request.post(config.api.fund.widthok, para)
+            //                 .then(res => {
+            //                     _this.listLoading = false;
+            //                     NProgress.done();
+            //                     let { message, code, data } = res;
+            //                     if (code !== 200) {
+            //                         _this.$notify({
+            //                             title: '错误',
+            //                             message: message,
+            //                             type: 'error'
+            //                         });
+            //                     } else {
+            //                         _this.$notify({
+            //                             title: '成功',
+            //                             message: '操作成功',
+            //                             type: 'success'
+            //                         });
+            //                         _this.getUsers();
+            //                     }
+            //                 })
+            //         }).catch(() => {
+            //             this.$message({
+            //                 type: 'info',
+            //                 message: '取消输入'
+            //             });
+            //         });
+            //     } else {
+            //         _this.$prompt('备注信息', '提示', {
+            //             confirmButtonText: '确定',
+            //             cancelButtonText: '取消',
+            //             // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+            //             // inputErrorMessage: '邮箱格式不正确'
+            //         }).then(({ value }) => {
+            //             _this.listLoading = true;
+            //             NProgress.start();
+            //             para.status = 4;
+            //             para.remark = value;
+            //             request.post(config.api.fund.widthfalse, para)
+            //                 .then(res => {
+            //                     _this.listLoading = false;
+            //                     NProgress.done();
+            //                     let { message, code, data } = res;
+            //                     if (code !== 200) {
+            //                         _this.$notify({
+            //                             title: '错误',
+            //                             message: message,
+            //                             type: 'error'
+            //                         });
+            //                     } else {
+            //                         _this.$notify({
+            //                             title: '成功',
+            //                             message: '操作成功',
+            //                             type: 'success'
+            //                         });
+            //                         _this.getUsers();
+            //                     }
+            //                 })
+            //         }).catch(() => {
+            //             this.$message({
+            //                 type: 'info',
+            //                 message: '取消输入'
+            //             });
+            //         });
+            //     }
+            // });
         },
         //确认打款 确认或拒绝
         confirmToExamine() {
+            let para = {
+                id: this.confirmid
+            }
+            
             this.dialogFormVisible = false;
             let _this = this;
             _this.$prompt('备注信息', '提示', {
@@ -405,7 +414,7 @@ export default {
                 _this.listLoading = true;
                 NProgress.start();
                 para.status = 3;
-                para.remark = value;
+                para.note = value;
                 request.post(config.api.fund.widthok, para)
                     .then(res => {
                         _this.listLoading = false;
@@ -426,7 +435,8 @@ export default {
                             _this.getUsers();
                         }
                     })
-            }).catch(() => {
+            }).catch((e) => {
+                console.log(e)
                 this.$message({
                     type: 'info',
                     message: '取消输入'
@@ -434,6 +444,9 @@ export default {
             });
         },
         cancelToExamine() {
+            let para = {
+                id: this.confirmid
+            }
             this.dialogFormVisible = false;
             let _this = this;
             _this.$prompt('备注信息', '提示', {
@@ -445,7 +458,7 @@ export default {
                 _this.listLoading = true;
                 NProgress.start();
                 para.status = 4;
-                para.remark = value;
+                para.note = value;
                 request.post(config.api.fund.widthfalse, para)
                     .then(res => {
                         _this.listLoading = false;

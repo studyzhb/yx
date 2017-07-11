@@ -4,8 +4,23 @@
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="filters.user_mobile" placeholder="手机号"></el-input>
 				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.card_name" placeholder="用户名"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.order_sn" placeholder="订单号"></el-input>
+				</el-form-item>
+				<el-form-item>
+                    <el-col :span="11">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.s_time" style="width: 100%;"></el-date-picker>
+                    </el-col>
+                    <el-col class="line" :span="2"> - </el-col>
+                    <el-col :span="11">
+                        <el-time-picker type="date" placeholder="选择时间" v-model="filters.e_time" style="width: 100%;"></el-time-picker>
+                    </el-col>
+                </el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
@@ -51,7 +66,13 @@ export default {
 	data() {
 		return {
 			filters: {
-				name: ''
+				card_name: '',
+				user_mobile:'',
+				s_time:'',
+				e_time:'',
+				order_sn:'',
+				shop_id:this.$route.params.id,
+				page:1
 			},
 			users: [],
 			total: 0,
@@ -91,6 +112,7 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
 		},
 		handleSizeChange(val) {
@@ -102,7 +124,7 @@ export default {
 			let para = {
 				page: this.page,
 				name: this.filters.name,
-                delivery_point:this.$route.params.id
+                shop_id:this.$route.params.id
 			};
 			this.listLoading = true;
 			NProgress.start();
@@ -112,7 +134,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.shop.shopqueueLog,para)
+			request.get(config.api.shop.shopqueueLog,this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();

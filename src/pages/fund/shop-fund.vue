@@ -38,7 +38,7 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="shopname" label="商户号" width="180" sortable>
+                <el-table-column prop="login" label="商户号" width="180" sortable>
                 </el-table-column>
                 <el-table-column prop="shopname" label="商户名" width="100" sortable>
                 </el-table-column>
@@ -253,7 +253,7 @@ export default {
             })
         },
         getShopBalance(id) {
-            request.get(config.api.fund.getOneShopApplyinfo)
+            request.get(config.api.fund.getOneShopApplyinfo,{id:id})
                 .then((res) => {
                     console.log(res)
                     let { message, code, data } = res;

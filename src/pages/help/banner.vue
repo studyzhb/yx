@@ -297,7 +297,7 @@ export default {
                         NProgress.start();
                         _this.btnEditText = '提交中';
 
-                        if (_this.editForm.id == 0) {
+                        if (!_this.editForm.id) {
                             //新增
                             let para = _this.editForm;
                             delete para.id;

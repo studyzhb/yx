@@ -82,9 +82,6 @@
 					<el-form-item label="国际条形码" prop="code" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.code" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="规格" prop="norm" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-						<el-input v-model="editForm.norm" auto-complete="off"></el-input>
-					</el-form-item>
 					<el-form-item label="原产地" prop="production_origin" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.production_origin" auto-complete="off"></el-input>
 					</el-form-item>
@@ -103,9 +100,9 @@
 					</el-form-item>
 					<el-form-item label="分类" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-								
-								
-							</el-select>-->
+															
+															
+														</el-select>-->
 						<el-cascader @change="changegoodstype" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
 					<el-form-item label="品牌" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -122,10 +119,23 @@
 						<el-switch v-model="editForm.is_rebate" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
 						</el-switch>
 					</el-form-item>
+	
 					<el-form-item label="数量" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.num" auto-complete="off"></el-input>
 					</el-form-item>
+					<el-form-item label="规格" >
+						<el-tag :key="tag" v-for="tag in dynamicTags" :closable="true" :close-transition="false" @close="handleClose(tag)">
+							{{tag}}
+						</el-tag>
+						<el-input style="width:100px;" class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+						</el-input>
+						<el-button v-else class="button-new-tag" size="small" @click="showInput">+ 添加新规格</el-button>
+					</el-form-item>
 	
+					<!--<el-form-item v-for="(domain, index) in editForm.norm" :label="'规格' + index" :key="domain.key" :prop="'domains.' + index + '.value'">
+							<el-input v-model="domain.name"></el-input>
+							<el-button @click.prevent="removeDomain(domain)">删除</el-button>
+						</el-form-item>-->
 				</el-card>
 				<el-card class="box-card">
 					<div slot="header" class="clearfix">
@@ -144,8 +154,8 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-							<el-input v-model="editForm.name" auto-complete="off"></el-input>
-						</el-form-item>-->
+														<el-input v-model="editForm.name" auto-complete="off"></el-input>
+													</el-form-item>-->
 				</el-card>
 	
 			</el-form>
@@ -166,6 +176,10 @@ import config from 'config';
 export default {
 	data() {
 		return {
+			//标签
+			dynamicTags: [],
+			inputVisible: false,
+			inputValue: '',
 			filters: {
 				name: '',
 				code: '',
@@ -231,6 +245,39 @@ export default {
 		}
 	},
 	methods: {
+		//标签
+		handleClose(tag) {
+			this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+		},
+
+		showInput() {
+			this.inputVisible = true;
+			this.$nextTick(_ => {
+				this.$refs.saveTagInput.$refs.input.focus();
+			});
+		},
+
+		handleInputConfirm() {
+			let inputValue = this.inputValue;
+			if (inputValue) {
+				this.dynamicTags.push(inputValue);
+			}
+			this.inputVisible = false;
+			this.inputValue = '';
+		},
+		//
+		addDomain() {
+			this.editForm.norm.push({
+				name: '',
+				key: Date.now()
+			});
+		},
+		removeDomain(item) {
+			var index = this.editForm.norm.indexOf(item)
+			if (index !== -1) {
+				this.editForm.norm.splice(index, 1)
+			}
+		},
 		//分类
 		changegoodstype(value) {
 			this.editForm.goods_type_id = value[value.length - 1]
@@ -272,7 +319,7 @@ export default {
 		getPreAdd() {
 			request.get(config.api.goods.preparams)
 				.then(res => {
-					console.log(res)
+					
 					let { message, code, data } = res;
 					if (code !== 200) {
 						this.$notify({
@@ -403,6 +450,11 @@ export default {
 						if (_this.editForm.id == 0) {
 							//新增
 							let para = _this.editForm;
+							let arr=[];
+							this.dynamicTags.forEach(item=>{
+								arr.push({name:item});
+							})
+							para.norm=JSON.stringify(arr);
 							delete para.id;
 							request.post(config.api.goods.addGoods, para)
 								.then(res => {

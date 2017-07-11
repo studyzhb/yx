@@ -3,15 +3,21 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
-				<el-form-item label="活动时间">
-					<el-col :span="11">
-						<el-date-picker type="date" placeholder="选择日期" v-model="slectedForm.dates" style="width: 100%;"></el-date-picker>
-					</el-col>
-					<el-col class="line" :span="2"> - </el-col>
-					<el-col :span="11">
-						<el-time-picker type="fixed-time" placeholder="选择时间" v-model="slectedForm.datee" style="width: 100%;"></el-time-picker>
-					</el-col>
+				<el-form-item>
+					<el-input v-model="filters.user_mobile" placeholder="手机号"></el-input>
 				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.card_name" placeholder="用户名"></el-input>
+				</el-form-item>
+				<el-form-item label="范围选择">
+                    <el-col :span="11">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.s_time" style="width: 100%;"></el-date-picker>
+                    </el-col>
+                    <el-col class="line" :span="2"> - </el-col>
+                    <el-col :span="11">
+                        <el-time-picker type="date" placeholder="选择时间" v-model="filters.e_time" style="width: 100%;"></el-time-picker>
+                    </el-col>
+                </el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
@@ -23,85 +29,58 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="name" label="订单号" width="120" sortable>
+				<el-table-column prop="order_sn" label="订单号" width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="手机号" width="120" sortable>
+				<el-table-column prop="card_name" label="姓名" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="时间" width="120" sortable>
+				<el-table-column prop="user_mobile" label="手机号" width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="addr" label="金额" width="180" sortable>
+				<el-table-column prop="money" label="价格" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="sex" label="商品状态" width="180" :formatter="formatSex" sortable>
-				</el-table-column>
-				<el-table-column prop="sex" label="订单状态" width="180" :formatter="formatSex" sortable>
-				</el-table-column>
-				<el-table-column prop="sex" label="操作" width="180" :formatter="formatSex" sortable>
-				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="320">
-					<span>
-						<el-button size="small" @click="handleEdit(row)">更多</el-button>
-					</span>
+				<el-table-column prop="created_at" label="支付时间" min-width="180"  sortable>
 				</el-table-column>
 			</el-table>
 		</template>
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
-		<!--编辑界面-->
-		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<!--<el-select v-model="editForm.sex" placeholder="请选择性别">
-							<el-option label="男" :value="1"></el-option>
-							<el-option label="女" :value="0"></el-option>
-						</el-select>-->
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="editFormVisible = false">取 消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
-			</div>
-		</el-dialog>
+
+
 	</section>
 </template>
 
 <script>
 import util from '../../common/util'
 import NProgress from 'nprogress'
-import { getUserListPage, removeUser, editUser, addUser } from '../../api/api';
+import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
+import config from 'config';
 
 export default {
 	data() {
 		return {
 			filters: {
-				name: ''
+				user_mobile: '',
+				card_name:'',
+				s_time:'',
+				e_time:'',
+				page:1
 			},
 			users: [],
 			total: 0,
 			page: 1,
+			pagesize: 10,
 			listLoading: false,
 			editFormVisible: false,//编辑界面显是否显示
 			editFormTtile: '编辑',//编辑界面标题
+			shopdetailVisible: false,
+			shopdetailtitle: '店铺详情',
+			shopdetailobj:{
+
+			},
 			//编辑界面数据
 			editForm: {
 				id: 0,
@@ -117,10 +96,6 @@ export default {
 				name: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
 				]
-			},
-			slectedForm: {
-				dates: '',
-				datee: ''
 			}
 
 		}
@@ -132,22 +107,41 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
+		},
+		handleSizeChange(val) {
+			console.log(`每页 ${val} 条`);
 		},
 		//获取用户列表
 		getUsers() {
-			let para = {
-				page: this.page,
-				name: this.filters.name
-			};
+
+			let para = this.filters;
 			this.listLoading = true;
 			NProgress.start();
-			getUserListPage(para).then((res) => {
-				this.total = res.data.total;
-				this.users = res.data.users;
-				this.listLoading = false;
-				NProgress.done();
-			});
+			// getUserListPage(para).then((res) => {
+			// 	this.total = res.data.total;
+			// 	this.users = res.data.users;
+			// 	this.listLoading = false;
+			// 	NProgress.done();
+			// });
+			request.get(config.api.vip.platformlog,para)
+				.then((res) => {
+					this.listLoading = false;
+					NProgress.done();
+					let { message, code, data } = res;
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						this.total = data.cnt.total;
+						this.users = data.cnt.data;
+						this.pagesize = data.cnt.per_page || 10;
+					}
+				})
 		},
 		//删除
 		handleDel: function (row) {
@@ -174,6 +168,26 @@ export default {
 
 			});
 		},
+		showshopdetail(row) {
+			this.shopdetailVisible = true;
+			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+				.then((res) => {
+					let { message, code, data } = res;
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						this.shopdetailobj=data.cnt;
+					}
+				})
+		},
+		//显示店铺订单
+		showorder(row){
+			this.$router.push('/shoporder');
+		},
 		//显示编辑界面
 		handleEdit: function (row) {
 			// this.editFormVisible = true;
@@ -184,7 +198,7 @@ export default {
 			// this.editForm.age = row.age;
 			// this.editForm.birth = row.birth;
 			// this.editForm.addr = row.addr;
-			
+			this.$router.push('/addshop');
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -252,17 +266,18 @@ export default {
 		},
 		//显示新增界面
 		handleAdd: function () {
-			var _this = this;
+			// var _this = this;
 
-			this.editFormVisible = true;
-			this.editFormTtile = '新增';
+			// this.editFormVisible = true;
+			// this.editFormTtile = '新增';
 
-			this.editForm.id = 0;
-			this.editForm.name = '';
-			this.editForm.sex = 1;
-			this.editForm.age = 0;
-			this.editForm.birth = '';
-			this.editForm.addr = '';
+			// this.editForm.id = 0;
+			// this.editForm.name = '';
+			// this.editForm.sex = 1;
+			// this.editForm.age = 0;
+			// this.editForm.birth = '';
+			// this.editForm.addr = '';
+			this.$router.push('/addshop');
 		}
 	},
 	mounted() {

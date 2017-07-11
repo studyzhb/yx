@@ -24,7 +24,8 @@ export default {
             //队列订单列表
             shopqueuelist:"/lines/linesLists",
             //队列流水
-            shopqueueLog:'/bfLines/list'
+            // shopqueueLog:'/bfLines/list'
+            shopqueueLog:'/shop/balanceLog'
         },
         vip:{
             //会员列表
@@ -34,7 +35,8 @@ export default {
             //会员详细信息
             detailinfo:'/user/userInfo',
             //用户流水
-            banlancelog:"/user/balanceLog"
+            banlancelog:"/user/balanceLog",
+            platformlog:'/user/serverList'
         },
         //会员提现
         fund:{
