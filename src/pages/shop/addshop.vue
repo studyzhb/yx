@@ -7,7 +7,7 @@
 			<el-input v-model="form.shopuser"></el-input>
 		</el-form-item>
 		<el-form-item label="所有人电话" prop="tel">
-			<el-input v-model.number="form.tel"></el-input>
+			<el-input v-model="form.tel"></el-input>
 		</el-form-item>
 		<el-form-item label="密码" prop="password">
 			<el-input v-model="form.password"></el-input>
@@ -28,7 +28,7 @@
 			<el-input v-model="form.email"></el-input>
 		</el-form-item>
 		<el-form-item label="QQ" prop="qq">
-			<el-input v-model.number="form.qq"></el-input>
+			<el-input v-model="form.qq"></el-input>
 		</el-form-item>
 		<el-form-item label="银行" prop="bank">
 			<el-input v-model="form.bank"></el-input>
@@ -37,10 +37,10 @@
 			<el-input v-model="form.branch"></el-input>
 		</el-form-item>
 		<el-form-item label="银行卡" prop="bankCard">
-			<el-input v-model.number="form.bankCard"></el-input>
+			<el-input v-model="form.bankCard"></el-input>
 		</el-form-item>
 		<el-form-item label="店铺电话" prop="phone">
-			<el-input v-model.number="form.phone"></el-input>
+			<el-input v-model="form.phone"></el-input>
 		</el-form-item>
 		<el-form-item label="身份证" prop="card">
 			<el-input v-model="form.card"></el-input>
@@ -59,11 +59,16 @@
 		<el-form-item label="详细地址" prop="address">
 			<el-input v-model="form.address"></el-input>
 		</el-form-item>
-		<el-form-item prop="latitude">
+		<el-form-item >
 			<el-amap vid="amapDemo" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
 				<el-amap-marker :position="marker.position">
 				</el-amap-marker>
 			</el-amap>
+			<el-input type="hidden" v-model="form.latitude"></el-input>
+		</el-form-item>
+		<el-form-item prop="latitude">
+			
+			<el-input type="hidden" v-model="form.latitude"></el-input>
 		</el-form-item>
 		<el-form-item>
 			<el-button :loading="editLoading" type="primary" @click="saveShop">{{btnEditText}}</el-button>
@@ -189,8 +194,8 @@ export default {
 
 					this.marker.position = [e.lnglat.lng, e.lnglat.lat]
 
-					this.form.longitude = e.lnglat.lng;
-					this.form.latitude = e.lnglat.lat;
+					this.form.longitude = e.lnglat.lng+'';
+					this.form.latitude = e.lnglat.lat+"";
 				}
 			},
 			form: {
@@ -230,7 +235,7 @@ export default {
 	mounted() {
 
 		let { params } = this.$route;
-
+		console.log(params)
 		if (params.id != 0) {
 			this.form.id = params.id;
 			request.get(config.api.shop.getSingleShop, { id: this.form.id })
@@ -311,7 +316,7 @@ export default {
 		},
 		saveShop() {
 			var _this = this;
-
+			let {params}=this.$route;
 			_this.$refs.form.validate((valid) => {
 				if (valid) {
 
@@ -319,8 +324,8 @@ export default {
 						_this.editLoading = true;
 						NProgress.start();
 						_this.btnEditText = '提交中';
-
-						if (_this.form.id == 0) {
+						console.log(_this.form)
+						if (params.id == 0) {
 
 							//新增
 							let para = _this.form;

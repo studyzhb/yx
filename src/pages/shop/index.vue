@@ -20,7 +20,7 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="name" label="编号" width="120" sortable>
+				<el-table-column prop="login" label="编号" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="shopname" label="名称" width="120" sortable>
 				</el-table-column>

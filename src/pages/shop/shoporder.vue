@@ -19,13 +19,13 @@
 				</el-table-column>
 				<el-table-column prop="order_id" label="订单号" width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="username" label="姓名" width="120" sortable>
+				<el-table-column prop="username" label="姓名" width="180" sortable>
 				</el-table-column>
 				<el-table-column prop="phone" label="手机号" width="150" sortable>
 				</el-table-column>
 				<el-table-column prop="money" label="价格" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="created_at" label="支付时间" min-width="180" :formatter="formatSex" sortable>
+				<el-table-column prop="created_at" label="支付时间" min-width="180" sortable>
 				</el-table-column>
 			</el-table>
 		</template>
