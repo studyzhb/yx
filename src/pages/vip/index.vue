@@ -4,8 +4,12 @@
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="filters.real_name" placeholder="姓名"></el-input>
 				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.user_mobile" placeholder="手机号"></el-input>
+				</el-form-item>
+
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
@@ -27,9 +31,9 @@
 				</el-table-column>
 				<el-table-column prop="created_at" label="注册时间" width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="sex" label="绑定店铺" width="150" sortable>
+				<el-table-column prop="shop_name" label="绑定店铺" width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="金额（平台）" width="150" sortable>
+				<el-table-column prop="balance" label="金额（平台）" width="150" sortable>
 				</el-table-column>
 				<el-table-column inline-template :context="_self" label="操作" min-width="200">
 					<span>
@@ -51,19 +55,19 @@
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="手机号" prop="user_mobile">
-					<el-input v-model="editForm.user_mobile" auto-complete="off"></el-input>
+					<el-input v-model="editForm.user_mobile" :disabled="true" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="昵称" prop="nickname">
-					<el-input v-model="editForm.nickname" auto-complete="off"></el-input>
+				<el-form-item label="昵称" prop="user_nickname">
+					<el-input v-model="editForm.user_nickname" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="会员状态">
-					<el-switch on-text="" off-text="" v-model="editForm.delivery"></el-switch>
+					<el-switch on-text="启用" off-text="停用" on-value='1' off-value='0' v-model="editForm.status"></el-switch>
 				</el-form-item>
 				<el-form-item label="队列资格">
-					<el-switch on-text="" off-text="" v-model="editForm.delivery"></el-switch>
+					<el-switch on-text="允许" off-text="禁止" on-value='1' off-value='0' v-model="editForm.into_queque"></el-switch>
 				</el-form-item>
-				<el-form-item label="密码" prop="ceshi">
-					<el-input v-model="editForm.password" auto-complete="off"></el-input>
+				<el-form-item label="密码" prop="user_pwd">
+					<el-input v-model="editForm.user_pwd" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="姓名" prop="real_name">
 					<el-input v-model="editForm.real_name" auto-complete="off"></el-input>
@@ -71,10 +75,7 @@
 				<el-form-item label="身份证" prop="id_card">
 					<el-input v-model="editForm.id_card" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="籍贯" prop="">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="开户行" prop="">
+				<!--<el-form-item label="开户行" prop="">
 					<el-input v-model="editForm.bank" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="银行卡" prop="">
@@ -82,7 +83,7 @@
 				</el-form-item>
 				<el-form-item label="备注">
 					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>
+				</el-form-item>-->
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -102,7 +103,9 @@ export default {
 	data() {
 		return {
 			filters: {
-				name: ''
+				real_name: '',
+				user_mobile:'',
+				page:1
 			},
 			users: [],
 			total: 0,
@@ -113,7 +116,9 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			//编辑界面数据
 			editForm: {
-				id: 0
+				id: 0,
+				status:'1',
+				into_queque:'1'
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -132,6 +137,7 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
 		},
 		handleSizeChange(val) {
@@ -145,7 +151,7 @@ export default {
 			};
 			this.listLoading = true;
 			NProgress.start();
-			request.get(config.api.vip.index)
+			request.get(config.api.vip.index,this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -194,6 +200,9 @@ export default {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
 			this.editForm=row;
+			this.editForm.status+='';
+			this.editForm.into_queque+='';
+			this.editForm.user_pwd='';
 		},
 		//会员流水
 		getUserLog(row){

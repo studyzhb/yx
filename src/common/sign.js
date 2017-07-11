@@ -6,6 +6,7 @@ let url = "/oss/key";
 
 export default request.get(url)
     .then(res => {
+        console.log(res)
         let { code, data } = res;
         if (code == 200) {
             return new OSS.Wrapper({

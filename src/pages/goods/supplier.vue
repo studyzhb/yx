@@ -7,7 +7,7 @@
                     <el-input v-model="filters.name" placeholder="供应商"></el-input>
                 </el-form-item>
                 <el-form-item label="编码">
-                    <el-input v-model="filters.name" placeholder="编码"></el-input>
+                    <el-input v-model="filters.code" placeholder="编码"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" v-on:click="getUsers">搜索</el-button>
@@ -23,17 +23,17 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="name" label="编号" width="120" sortable>
+                <el-table-column prop="code" label="编号" width="120" sortable>
                 </el-table-column>
                 <el-table-column prop="name" label="供应商" width="120" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="地址" width="120" sortable>
+                <el-table-column prop="address" label="地址" width="120" sortable>
                 </el-table-column>
-                <el-table-column prop="addr" label="电话" width="180" sortable>
+                <el-table-column prop="phone" label="电话" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="联系人" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="link_name" label="联系人" width="180"  sortable>
                 </el-table-column>
-                <el-table-column prop="sex" label="联系人电话" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="link_tel" label="联系人电话" width="180"  sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="320">
                     <span>
@@ -89,7 +89,9 @@ export default {
 	data() {
 		return {
 			filters: {
-				name: ''
+				name: '',
+				code:'',
+				page:1
 			},
 			users: [],
 			total: 0,
@@ -129,6 +131,7 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
 		},
 		handleSizeChange(val) {
@@ -149,7 +152,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.goods.supplierindex,para)
+			request.get(config.api.goods.supplierindex,this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();

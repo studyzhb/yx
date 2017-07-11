@@ -3,10 +3,12 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
-				<el-form-item label="活动时间">
-					<el-col :span="11">
+				<el-form-item>
+					<!--<el-col :span="11">
 						<el-date-picker type="date" placeholder="选择日期" v-model="filters.time" style="width: 100%;"></el-date-picker>
-					</el-col>
+					</el-col>-->
+                    <el-date-picker v-model="filters.time" type="datetime" placeholder="选择日期时间" align="right" :picker-options="pickerOptions1">
+				</el-date-picker>
 					<!--<el-col class="line" :span="2"> - </el-col>
 					<el-col :span="11">
 						<el-time-picker type="fixed-time" placeholder="选择时间" v-model="filters.datee" style="width: 100%;"></el-time-picker>
@@ -23,25 +25,27 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="name" label="订单号" width="120" sortable>
+				<el-table-column prop="order_num" label="订单个数" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="手机号" width="120" sortable>
+				<el-table-column prop="money_all" label="总金额" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="时间" width="120" sortable>
+				<el-table-column prop="money" label="总分润" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="addr" label="金额" width="180" sortable>
+                <el-table-column prop="money_company" label="公司分润" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="sex" label="商品状态" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="money_shop" label="店铺分润" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="sex" label="订单状态" width="180" :formatter="formatSex" sortable>
+                <el-table-column prop="money_queue" label="队列分润" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="sex" label="操作" width="180" :formatter="formatSex" sortable>
+				<el-table-column prop="money_product" label="产品分润" width="180" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+				<el-table-column prop="audit_date" label="时间" min-width="180" sortable>
+				</el-table-column>
+				<!--<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">更多</el-button>
 					</span>
-				</el-table-column>
+				</el-table-column>-->
 			</el-table>
 		</template>
 	
@@ -95,8 +99,31 @@ import client from 'common/sign'
 export default {
     data() {
         return {
+            pickerOptions1: {
+				shortcuts: [{
+					text: '今天',
+					onClick(picker) {
+						picker.$emit('pick', new Date());
+					}
+				}, {
+					text: '昨天',
+					onClick(picker) {
+						const date = new Date();
+						date.setTime(date.getTime() - 3600 * 1000 * 24);
+						picker.$emit('pick', date);
+					}
+				}, {
+					text: '一周前',
+					onClick(picker) {
+						const date = new Date();
+						date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+						picker.$emit('pick', date);
+					}
+				}]
+			},
             filters: {
-                time: ''
+                time: '',
+                page:1,
             },
             //图片上传
             dialogImageUrl: '',
@@ -165,6 +192,7 @@ export default {
         },
         handleCurrentChange(val) {
             this.page = val;
+            this.filters.page = val;
             this.getUsers();
         },
         handleSizeChange(val) {

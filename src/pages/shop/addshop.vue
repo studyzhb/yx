@@ -3,16 +3,16 @@
 		<el-form-item label="店铺名字" prop="shopname">
 			<el-input v-model="form.shopname"></el-input>
 		</el-form-item>
-		<el-form-item label="店铺所有人">
+		<el-form-item label="店铺所有人" prop="shopuser">
 			<el-input v-model="form.shopuser"></el-input>
 		</el-form-item>
-		<el-form-item label="所有人电话">
-			<el-input v-model="form.tel"></el-input>
+		<el-form-item label="所有人电话" prop="tel">
+			<el-input v-model.number="form.tel"></el-input>
 		</el-form-item>
-		<el-form-item label="密码">
+		<el-form-item label="密码" prop="password">
 			<el-input v-model="form.password"></el-input>
 		</el-form-item>
-		<el-form-item label="头像" prop="logo">
+		<el-form-item label="头像" prop="avatar">
 			<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
 				<i class="el-icon-plus"></i>
 			</el-upload>
@@ -20,46 +20,46 @@
 				<img width="100%" :src="dialogImageUrl" alt="">
 			</el-dialog>
 		</el-form-item>
-		<el-form-item label="微信">
+		<el-form-item label="微信" prop="wx">
 			<el-input v-model="form.wx"></el-input>
 			<el-input type="hidden" v-model="form.avatar"></el-input>
 		</el-form-item>
-		<el-form-item label="邮箱">
+		<el-form-item label="邮箱" prop="email">
 			<el-input v-model="form.email"></el-input>
 		</el-form-item>
-		<el-form-item label="QQ">
-			<el-input v-model="form.qq"></el-input>
+		<el-form-item label="QQ" prop="qq">
+			<el-input v-model.number="form.qq"></el-input>
 		</el-form-item>
-		<el-form-item label="银行">
+		<el-form-item label="银行" prop="bank">
 			<el-input v-model="form.bank"></el-input>
 		</el-form-item>
-		<el-form-item label="支行">
+		<el-form-item label="支行" prop="branch">
 			<el-input v-model="form.branch"></el-input>
 		</el-form-item>
-		<el-form-item label="银行卡">
-			<el-input v-model="form.bankCard"></el-input>
+		<el-form-item label="银行卡" prop="bankCard">
+			<el-input v-model.number="form.bankCard"></el-input>
 		</el-form-item>
-		<el-form-item label="店铺电话">
-			<el-input v-model="form.phone"></el-input>
+		<el-form-item label="店铺电话" prop="phone">
+			<el-input v-model.number="form.phone"></el-input>
 		</el-form-item>
-		<el-form-item label="身份证">
+		<el-form-item label="身份证" prop="card">
 			<el-input v-model="form.card"></el-input>
 		</el-form-item>
-		<el-form-item label="籍贯">
+		<el-form-item label="籍贯" prop="place">
 			<el-input v-model="form.place"></el-input>
 		</el-form-item>
-		<el-form-item label="状态">
+		<el-form-item label="状态" prop="status">
 			<!--1启用 2停用-->
 			<el-switch on-value="1" off-value="2" on-text="启用" off-text="停用" v-model="form.status"></el-switch>
 		</el-form-item>
-		<el-form-item label="地址">
+		<el-form-item label="地址" prop="province">
 			<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleaddresschange">
 			</el-cascader>
 		</el-form-item>
-		<el-form-item label="详细地址">
+		<el-form-item label="详细地址" prop="address">
 			<el-input v-model="form.address"></el-input>
 		</el-form-item>
-		<el-form-item>
+		<el-form-item prop="latitude">
 			<el-amap vid="amapDemo" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
 				<el-amap-marker :position="marker.position">
 				</el-amap-marker>
@@ -79,7 +79,7 @@ import request from 'api';
 import NProgress from 'nprogress'
 import util from 'util'
 import AMap from 'vue-amap';
-import client from 'common/sign'
+import Sign from 'common/sign'
 export default {
 	data() {
 		return {
@@ -97,6 +97,63 @@ export default {
 			editFormRules: {
 				shopname: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
+				],
+				shopuser: [
+					{ required: true, message: '请输入店铺名字', trigger: 'blur' }
+				],
+				// password: [
+				// 	{ required: true, message: '请输入密码', trigger: 'blur' }
+				// ],
+				avatar: [
+					{ required: true, message: '请输入店铺头像', trigger: 'blur' }
+				],
+				phone: [
+					{ required: true, message: '请输入电话', trigger: 'blur' }
+				],
+				tel: [
+					{ required: true, message: '请输入手机号', trigger: 'blur' }
+				],
+				card: [
+					{ required: true, message: '请输入身份证号', trigger: 'blur' }
+				],
+				place: [
+					{ required: true, message: '请输入籍贯', trigger: 'blur' }
+				],
+				province: [
+					{ required: true, message: '请输入省份', trigger: 'blur' }
+				],
+				city: [
+					{ required: true, message: '请输入城市', trigger: 'blur' }
+				],
+				area: [
+					{ required: true, message: '请输入区域', trigger: 'blur' }
+				],
+				address: [
+					{ required: true, message: '请输入详细地址', trigger: 'blur' }
+				],
+				latitude: [
+					{ required: true, message: '请在地图中点击选择位置', trigger: 'blur' }
+				],
+				longitude: [
+					{ required: true, message: '请在地图中点击选择位置', trigger: 'blur' }
+				],
+				wx: [
+					{ required: true, message: '请输入微信', trigger: 'blur' }
+				],
+				qq: [
+					{ required: true, message: '请输入qq', trigger: 'blur' }
+				],
+				bank: [
+					{ required: true, message: '请输入银行', trigger: 'blur' }
+				],
+				branch: [
+					{ required: true, message: '请输入支行', trigger: 'blur' }
+				],
+				bankCard: [
+					{ required: true, message: '请输入银行卡号', trigger: 'blur' }
+				],
+				email:[
+					{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
 				]
 			},
 			plugins: [
@@ -188,6 +245,7 @@ export default {
 					} else {
 						this.form = data.cnt;
 						this.form.status += '';
+						this.form.password='';
 						this.isstatus = this.form.status == 1 ? true : false;
 					}
 				})
@@ -267,7 +325,6 @@ export default {
 							//新增
 							let para = _this.form;
 							delete para.id;
-
 
 							request.post(config.api.shop.addshop, para)
 								.then(res => {

@@ -4,8 +4,12 @@
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="filters.order_sn" placeholder="订单号"></el-input>
 				</el-form-item>
+				<el-date-picker v-model="filters.s_time" type="datetime" placeholder="选择起始日期时间" align="right" :picker-options="pickerOptions1">
+				</el-date-picker>
+				<el-date-picker v-model="filters.e_time" type="datetime" placeholder="选择结束日期时间" align="right" :picker-options="pickerOptions1">
+				</el-date-picker>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
@@ -36,8 +40,6 @@
 			</el-pagination>
 		</el-col>
 	
-
-
 	</section>
 </template>
 
@@ -50,8 +52,35 @@ import config from 'config';
 export default {
 	data() {
 		return {
+			pickerOptions1: {
+				shortcuts: [{
+					text: '今天',
+					onClick(picker) {
+						picker.$emit('pick', new Date());
+					}
+				}, {
+					text: '昨天',
+					onClick(picker) {
+						const date = new Date();
+						date.setTime(date.getTime() - 3600 * 1000 * 24);
+						picker.$emit('pick', date);
+					}
+				}, {
+					text: '一周前',
+					onClick(picker) {
+						const date = new Date();
+						date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+						picker.$emit('pick', date);
+					}
+				}]
+			},
 			filters: {
-				name: ''
+				name: '',
+				order_sn: '',
+				page: 1,
+				s_time:"",
+				e_time:"",
+				user_id: this.$route.params.id
 			},
 			users: [],
 			total: 0,
@@ -62,7 +91,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
-			shopdetailobj:{
+			shopdetailobj: {
 
 			},
 			//编辑界面数据
@@ -91,6 +120,7 @@ export default {
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
 		},
 		handleSizeChange(val) {
@@ -102,7 +132,7 @@ export default {
 			let para = {
 				page: this.page,
 				name: this.filters.name,
-                user_id:this.$route.params.id
+				user_id: this.$route.params.id
 			};
 			this.listLoading = true;
 			NProgress.start();
@@ -112,7 +142,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.vip.banlancelog,para)
+			request.get(config.api.vip.banlancelog, this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -157,7 +187,7 @@ export default {
 		},
 		showshopdetail(row) {
 			this.shopdetailVisible = true;
-			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+			request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
 				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
@@ -167,12 +197,12 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.shopdetailobj=data.cnt;
+						this.shopdetailobj = data.cnt;
 					}
 				})
 		},
 		//显示店铺订单
-		showorder(row){
+		showorder(row) {
 			this.$router.push('/shoporder');
 		},
 		//显示编辑界面

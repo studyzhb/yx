@@ -8,11 +8,13 @@
                 </el-form-item>
                 <el-form-item label="范围选择">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="filters.s_time" style="width: 100%;"></el-date-picker>
+                        <el-date-picker v-model="filters.s_time" type="datetime" placeholder="选择起始日期时间" align="right" :picker-options="pickerOptions1">
+                        </el-date-picker>
                     </el-col>
                     <el-col class="line" :span="2"> - </el-col>
                     <el-col :span="11">
-                        <el-time-picker type="date" placeholder="选择时间" v-model="filters.e_time" style="width: 100%;"></el-time-picker>
+                        <el-date-picker v-model="filters.e_time" type="datetime" placeholder="选择起始日期时间" align="right" :picker-options="pickerOptions1">
+                        </el-date-picker>
                     </el-col>
                 </el-form-item>
                 <el-form-item>
@@ -65,6 +67,44 @@
             <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
+    
+        <!-- 弹窗1 -->
+        <el-dialog title="提现审核" :visible.sync="dialogFormVisible">
+            <el-form :model="form" class="formBox">
+                <p class="rechargeItem">提现:
+                    <span v-text="form.money"></span>
+                </p>
+                <p class="rechargeItem">提现后:
+                    <span v-text="form.outMoney"></span>
+                </p>
+                <p class="rechargeItem">手机号:
+                    <span v-text="form.user_mobile"></span>
+                </p>
+                <p class="rechargeItem">姓名:
+                    <span v-text="form.user_name"></span>
+                </p>
+                <p class="rechargeItem">身份证号:
+                    <span v-text="form.card_id"></span>
+                </p>
+                <p class="rechargeItem">银行:
+                    <span v-text="form.card_name"></span>
+                </p>
+                <p class="rechargeItem">银行卡号:
+                    <span v-text="form.card_num"></span>
+                </p>
+            </el-form>
+            <div class="tipsWrap">
+                <ul class="tips">
+                    <li>1.请仔细核对提现金额</li>
+                    <li>2.确认审核时，请尽量查看用户交易流水是否正常</li>
+                    <li>3.此操作是不可以逆转的，请谨慎操作</li>
+                </ul>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="confirmToExamine">确认审核</el-button>
+                <el-button @click="cancelToExamine">拒绝</el-button>
+            </div>
+        </el-dialog>
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -120,14 +160,42 @@ import config from 'config';
 export default {
     data() {
         return {
+            excelout:config.api.fund.outputexcel,
+            pickerOptions1: {
+                shortcuts: [{
+                    text: '今天',
+                    onClick(picker) {
+                        picker.$emit('pick', new Date());
+                    }
+                }, {
+                    text: '昨天',
+                    onClick(picker) {
+                        const date = new Date();
+                        date.setTime(date.getTime() - 3600 * 1000 * 24);
+                        picker.$emit('pick', date);
+                    }
+                }, {
+                    text: '一周前',
+                    onClick(picker) {
+                        const date = new Date();
+                        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', date);
+                    }
+                }]
+            },
             activeName: '10',
             filters: {
                 name: '',
                 dates: '',
                 page: 1,
                 datee: '',
-                status: '10'
+                user_mobile: '',
+                status: '10',
+                s_time: '',
+                e_time: '',
+                card_name: ''
             },
+            dialogFormVisible: false,
             users: [],
             total: 0,
             page: 1,
@@ -143,6 +211,9 @@ export default {
                 age: 0,
                 birth: '',
                 addr: ''
+            },
+            form: {
+
             },
             editLoading: false,
             btnEditText: '提 交',
@@ -171,14 +242,15 @@ export default {
 
         },
         //导出
-        outputexcel(){
-            open(config.api.fund.outputexcel,'_blank')
+        outputexcel() {
+            open(config.api.fund.outputexcel, '_self')
         },
         handleClick(tab, event) {
             this.filters.status = tab.name;
             this.getUsers();
         },
         audit(row) {
+            let _this=this;
             let para = {
                 id: row.id
             }
@@ -189,11 +261,11 @@ export default {
                 NProgress.start();
                 request.post(config.api.fund.checking, para)
                     .then(res => {
-                        this.listLoading = false;
+                        _this.listLoading = false;
                         NProgress.done();
                         let { message, code, data } = res;
                         if (code !== 200) {
-                            this.$notify({
+                            _this.$notify({
                                 title: '错误',
                                 message: message,
                                 type: 'error'
@@ -210,10 +282,14 @@ export default {
             })
         },
         confirmdone(row) {
+            this.form = row;
+            this.dialogFormVisible = true;
+
+            return;
             const h = this.$createElement;
-            let _this=this;
-            let para={
-                id:row.id
+            let _this = this;
+            let para = {
+                id: row.id
             }
             this.$msgbox({
                 title: '消息',
@@ -249,7 +325,7 @@ export default {
                         _this.listLoading = true;
                         NProgress.start();
                         para.status = 3;
-                        para.remark=value;
+                        para.remark = value;
                         request.post(config.api.fund.widthok, para)
                             .then(res => {
                                 _this.listLoading = false;
@@ -286,7 +362,7 @@ export default {
                         _this.listLoading = true;
                         NProgress.start();
                         para.status = 4;
-                        para.remark=value;
+                        para.remark = value;
                         request.post(config.api.fund.widthfalse, para)
                             .then(res => {
                                 _this.listLoading = false;
@@ -314,6 +390,87 @@ export default {
                         });
                     });
                 }
+            });
+        },
+        //确认打款 确认或拒绝
+        confirmToExamine() {
+            this.dialogFormVisible = false;
+            let _this = this;
+            _this.$prompt('备注信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: '邮箱格式不正确'
+            }).then(({ value }) => {
+                _this.listLoading = true;
+                NProgress.start();
+                para.status = 3;
+                para.remark = value;
+                request.post(config.api.fund.widthok, para)
+                    .then(res => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消输入'
+                });
+            });
+        },
+        cancelToExamine() {
+            this.dialogFormVisible = false;
+            let _this = this;
+            _this.$prompt('备注信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: '邮箱格式不正确'
+            }).then(({ value }) => {
+                _this.listLoading = true;
+                NProgress.start();
+                para.status = 4;
+                para.remark = value;
+                request.post(config.api.fund.widthfalse, para)
+                    .then(res => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消输入'
+                });
             });
         },
         handleCurrentChange(val) {
@@ -468,6 +625,33 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scope lang="stylus" rel="stylesheet/stylus">
+  .deliveryInput
+  	width: 300px
+  	margin: 0 auto
+  .rechargeItem
+  	margin: 12px 0
+  	font-size: 16px
+  &.add
+  	color: red
+  	.label
+  		width: 100px
+  		text-align: right
+	.formBox
+		width: 260px
+		text-align: left
+		margin: 0 auto
+	.tipsWrap
+		display: block
+		text-align: center
+		margin-top: 15px
+  .tips
+  	display: inline-block
+  	margin: 0 auto
+  	text-align: left
+  	li
+			margin-bottom: 8px
+			font-size: 14px
+			color: #848282
+  	
 </style>

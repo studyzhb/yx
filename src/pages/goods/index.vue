@@ -21,8 +21,8 @@
 		<el-col :span="24" class="toolbar">
 			<el-tabs v-model="activeName" type="card" @tab-click="handleClick">
 				<el-tab-pane label="全部" name="10"></el-tab-pane>
-				<el-tab-pane :label="pick" name="0"></el-tab-pane>
-				<el-tab-pane :label="notpick" name="1"></el-tab-pane>
+				<el-tab-pane :label="pick" name="1"></el-tab-pane>
+				<el-tab-pane :label="notpick" name="0"></el-tab-pane>
 			</el-tabs>
 		</el-col>
 	
@@ -103,9 +103,9 @@
 					</el-form-item>
 					<el-form-item label="分类" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-							
-							
-						</el-select>-->
+								
+								
+							</el-select>-->
 						<el-cascader @change="changegoodstype" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
 					<el-form-item label="品牌" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -144,8 +144,8 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-						<el-input v-model="editForm.name" auto-complete="off"></el-input>
-					</el-form-item>-->
+							<el-input v-model="editForm.name" auto-complete="off"></el-input>
+						</el-form-item>-->
 				</el-card>
 	
 			</el-form>
@@ -170,19 +170,21 @@ export default {
 				name: '',
 				code: '',
 				page: "1",
-				status: ''
+				status: '',
+				is_sell: ''
+
 			},
 			preData: {
-				brand:[],
-				retail_nuit:{},
-				supplier:[],
-				valuation:{},
-				type:[]
+				brand: [],
+				retail_nuit: {},
+				supplier: [],
+				valuation: {},
+				type: []
 			},
 			activeName: '10',
-			options:[{
-				value:"1",
-				label:'ceshi'
+			options: [{
+				value: "1",
+				label: 'ceshi'
 			}],
 			users: [],
 			total: 0,
@@ -230,8 +232,8 @@ export default {
 	},
 	methods: {
 		//分类
-		changegoodstype(value){
-			this.editForm.goods_type_id=value[value.length-1]
+		changegoodstype(value) {
+			this.editForm.goods_type_id = value[value.length - 1]
 		},
 		//全选
 		toggleSelection(rows) {
@@ -248,14 +250,14 @@ export default {
 		},
 		//性别显示转换
 		formatSex: function (row, column) {
-			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			return row.is_sell == 1 ? '已上架' : row.is_sell == 0 ? '未上架' : '未知';
 		},
 		handleClick(tab, event) {
-			
+
 			if (tab.name == 10) {
-				this.filters.status = '';
+				this.filters.is_sell = '';
 			} else {
-				this.filters.status = tab.name;
+				this.filters.is_sell = tab.name;
 			}
 
 			this.getUsers();
@@ -280,14 +282,14 @@ export default {
 						});
 					} else {
 						this.preData = data.cnt;
-						this.preData.type.forEach(item=>{
-							let obj={value:item.id,label:item.name,children:[]};
+						this.preData.type.forEach(item => {
+							let obj = { value: item.id, label: item.name, children: [] };
 							this.options.push(obj);
-							item.sub_type.forEach(its=>{
-								obj.children.push({value:its.id,label:its.name})
+							item.sub_type.forEach(its => {
+								obj.children.push({ value: its.id, label: its.name })
 							})
 						})
-						
+
 					}
 				})
 		},
@@ -320,7 +322,7 @@ export default {
 							type: 'error'
 						});
 					} else {
-						
+
 						this.total = data.cnt.good.total;
 						this.users = data.cnt.good.data;
 						data.cnt.num.forEach((item) => {
@@ -464,11 +466,11 @@ export default {
 
 			this.editFormVisible = true;
 			this.editFormTtile = '新增';
-			for(let key in this.editForm){
-				this.editForm[key]='';
+			for (let key in this.editForm) {
+				this.editForm[key] = '';
 			}
 			this.editForm.id = 0;
-			
+
 			// this.$router.push('/addshop');
 		},
 		//更改上下架

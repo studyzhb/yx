@@ -1,75 +1,75 @@
 <template>
-    <section>
-        <!--工具条-->
-        <el-col :span="24" class="toolbar">
-            <el-form :inline="true" :model="filters">
-                <el-form-item label="品牌">
-                    <el-input v-model="filters.name" placeholder="品牌"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">搜索</el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
-    
-        <!--列表-->
-        <template>
-            <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
-                <el-table-column type="index" width="60">
-                </el-table-column>
-                <el-table-column prop="name" label="名称" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="name" label="状态" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="name" label="排序" width="120" sortable>
-                </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="320">
-                    <span>
-                        <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-                        <!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
-                    </span>
-                </el-table-column>
-            </el-table>
-        </template>
-    
-        <!--分页-->
+	<section>
+		<!--工具条-->
+		<el-col :span="24" class="toolbar">
+			<el-form :inline="true" :model="filters">
+				<el-form-item label="品牌">
+					<el-input v-model="filters.name" placeholder="品牌"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getUsers">搜索</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="handleAdd">新增</el-button>
+				</el-form-item>
+			</el-form>
+		</el-col>
+	
+		<!--列表-->
+		<template>
+			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
+				<el-table-column type="index" width="60">
+				</el-table-column>
+				<el-table-column prop="name" label="名称" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="name" label="状态" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="name" label="排序" width="120" sortable>
+				</el-table-column>
+				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+					<span>
+						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
+					</span>
+				</el-table-column>
+			</el-table>
+		</template>
+	
+		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
 			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
-    
-        <!--编辑界面-->
-        <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-            <el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
-    
-                <el-form-item label="品牌名称" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="排序" prop="sort">
-                    <el-input v-model="editForm.sort" auto-complete="off"></el-input>
-                    <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
-                </el-form-item>
+	
+		<!--编辑界面-->
+		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
+	
+				<el-form-item label="品牌名称" prop="name">
+					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="排序" prop="sort">
+					<el-input v-model="editForm.sort" auto-complete="off"></el-input>
+					<el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
+				</el-form-item>
 				<el-form-item label="logo" prop="logo">
-                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                    <el-dialog v-model="dialogVisible" size="tiny">
-                        <img width="100%" :src="dialogImageUrl" alt="">
-                    </el-dialog>
-                </el-form-item>
-                <el-form-item label="描述">
-                    <el-input type="textarea" v-model="editForm.note"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click.native="editFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
-            </div>
-        </el-dialog>
-    </section>
+					<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+						<i class="el-icon-plus"></i>
+					</el-upload>
+					<el-dialog v-model="dialogVisible" size="tiny">
+						<img width="100%" :src="dialogImageUrl" alt="">
+					</el-dialog>
+				</el-form-item>
+				<el-form-item label="描述">
+					<el-input type="textarea" v-model="editForm.note"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="editFormVisible = false">取 消</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
+			</div>
+		</el-dialog>
+	</section>
 </template>
 
 <script>
@@ -77,7 +77,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-import client from 'common/sign'
+import Sign from 'common/sign'
 export default {
 	data() {
 		return {
@@ -85,8 +85,8 @@ export default {
 				name: ''
 			},
 			//图片上传
-            dialogImageUrl: '',
-            dialogVisible: false,
+			dialogImageUrl: '',
+			dialogVisible: false,
 			filelist: [],
 			users: [],
 			total: 0,
@@ -97,7 +97,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
-			shopdetailobj:{
+			shopdetailobj: {
 
 			},
 			//编辑界面数据
@@ -115,8 +115,8 @@ export default {
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
 				],
 				logo: [
-                    { required: true, message: '请添加图片', trigger: 'blur' }
-                ]
+					{ required: true, message: '请添加图片', trigger: 'blur' }
+				]
 			}
 
 		}
@@ -127,9 +127,10 @@ export default {
 			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 		},
 		//图片上传
-        handleRemove(file, fileList) {
-            console.log(file, fileList);
-        },
+		handleRemove(file, fileList) {
+			this.editForm.logo='';
+			console.log(file, fileList);
+		},
 		handleCurrentChange(val) {
 			this.page = val;
 			this.getUsers();
@@ -138,39 +139,42 @@ export default {
 			console.log(`每页 ${val} 条`);
 		},
 		handlePictureCardPreview(file) {
-            console.log(file)
-            console.log('qianzhi')
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
-        },
+			console.log(file)
+			console.log('qianzhi')
+			this.dialogImageUrl = file.url;
+			this.dialogVisible = true;
+		},
 		getUpstr() {
-            console.log('chenggongshi ')
-        },
+			console.log('chenggongshi ')
+		},
 		handlechange() {
-            console.log('handlechange ')
-        },
-        handleBeforeup() {
-            console.log('handleBeforeup ')
-        },
+			console.log('handlechange ')
+		},
+		handleBeforeup() {
+			console.log('handleBeforeup ')
+		},
 		handleRequestOss(files) {
 
 
-            // client.list({
-            //     'max-keys': 10
-            // }).then(res => {
-            //     console.log(res)
-            // }).catch(err => {
-            //     console.log(err)
-            // })
+			// client.list({
+			//     'max-keys': 10
+			// }).then(res => {
+			//     console.log(res)
+			// }).catch(err => {
+			//     console.log(err)
+			// })
 
-            let file = files.file
-            client.multipartUpload(file.name, file)
-                .then(res => {
-                    this.editForm.logo = res.url;
-                }).catch(err => {
-                    console.log(err)
-                })
-        },
+			let file = files.file
+			Sign.then((client) => {
+				client.multipartUpload('/pic/'+file.name, file)
+					.then(res => {
+						this.editForm.logo = res.url;
+					}).catch(err => {
+						console.log(err)
+					})
+			})
+
+		},
 		//获取用户列表
 		getUsers() {
 
@@ -181,7 +185,7 @@ export default {
 			this.listLoading = true;
 			NProgress.start();
 
-			request.get(config.api.goods.brandindex,para)
+			request.get(config.api.goods.brandindex, para)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -226,7 +230,7 @@ export default {
 		},
 		showshopdetail(row) {
 			this.shopdetailVisible = true;
-			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+			request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
 				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
@@ -236,20 +240,20 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.shopdetailobj=data.cnt;
+						this.shopdetailobj = data.cnt;
 					}
 				})
 		},
 		//显示店铺订单
-		showorder(row){
+		showorder(row) {
 			this.$router.push('/shoporder');
 		},
 		//显示编辑界面
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			this.editForm=row;
-			this.filelist=[{name:"",url:row.logo}]
+			this.editForm = row;
+			this.filelist = [{ name: "", url: row.logo }]
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -268,52 +272,52 @@ export default {
 							let para = _this.editForm;
 							delete para.id;
 							request.post(config.api.goods.addbrand, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '提交成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
+								.then(res => {
+									let { message, code, data } = res;
+									_this.editLoading = false;
+									NProgress.done();
+									_this.btnEditText = '提 交';
+									if (code !== 200) {
+										this.$notify({
+											title: '错误',
+											message: message,
+											type: 'error'
+										});
+									} else {
+										_this.$notify({
+											title: '成功',
+											message: '提交成功',
+											type: 'success'
+										});
+										_this.editFormVisible = false;
+										_this.getUsers();
+									}
+								})
 						} else {
 							//编辑
 							let para = _this.editForm;
 							request.post(config.api.goods.updatebrand, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '更新成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
+								.then(res => {
+									let { message, code, data } = res;
+									_this.editLoading = false;
+									NProgress.done();
+									_this.btnEditText = '提 交';
+									if (code !== 200) {
+										this.$notify({
+											title: '错误',
+											message: message,
+											type: 'error'
+										});
+									} else {
+										_this.$notify({
+											title: '成功',
+											message: '更新成功',
+											type: 'success'
+										});
+										_this.editFormVisible = false;
+										_this.getUsers();
+									}
+								})
 
 						}
 
@@ -346,16 +350,16 @@ export default {
 
 <style scoped>
 .el-card__header {
-    background-color: #E4E4E4
+	background-color: #E4E4E4
 }
 
 .clearfix:before,
 .clearfix:after {
-    display: table;
-    content: "";
+	display: table;
+	content: "";
 }
 
 .clearfix:after {
-    clear: both
+	clear: both
 }
 </style>

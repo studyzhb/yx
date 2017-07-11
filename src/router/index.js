@@ -94,7 +94,7 @@ export default [
         children: [
             //{ path: '/main', component: Main },
             { path: '/vip', component: Vip, name: '会员资料' },
-            { path: '/shop-record', component: ShopRecord, name: '店铺队列流水' },
+            { path: '/shop-record', component: ShopRecord, name: '店铺报表' },
             { path: '/platform-record', component: PlatFormRecord, name: '平台购物流水' },
             { path: '/viplog/:id', component: Viplog }
         ]

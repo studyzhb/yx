@@ -70,6 +70,43 @@
             </el-pagination>
         </el-col>
     
+        <!-- 弹窗1 -->
+        <el-dialog title="提现审核" :visible.sync="dialogFormVisible">
+            <el-form :model="form" class="formBox">
+                <p class="rechargeItem">提现:
+                    <span v-text="form.money"></span>
+                </p>
+                <p class="rechargeItem">提现后:
+                    <span v-text="form.outMoney"></span>
+                </p>
+                <p class="rechargeItem">手机号:
+                    <span v-text="form.user_mobile"></span>
+                </p>
+                <p class="rechargeItem">姓名:
+                    <span v-text="form.user_name"></span>
+                </p>
+                <p class="rechargeItem">身份证号:
+                    <span v-text="form.card_id"></span>
+                </p>
+                <p class="rechargeItem">银行:
+                    <span v-text="form.card_name"></span>
+                </p>
+                <p class="rechargeItem">银行卡号:
+                    <span v-text="form.card_num"></span>
+                </p>
+            </el-form>
+            <div class="tipsWrap">
+                <ul class="tips">
+                    <li>1.请仔细核对提现金额</li>
+                    <li>2.确认审核时，请尽量查看用户交易流水是否正常</li>
+                    <li>3.此操作是不可以逆转的，请谨慎操作</li>
+                </ul>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="confirmToExamine">确认审核</el-button>
+                <el-button @click="cancelToExamine">拒绝</el-button>
+            </div>
+        </el-dialog>
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
@@ -137,6 +174,7 @@ export default {
             page: 1,
             pagesize: 10,
             listLoading: false,
+            dialogFormVisible: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
             //编辑界面数据
@@ -147,6 +185,9 @@ export default {
                 age: 0,
                 birth: '',
                 addr: ''
+            },
+            form: {
+
             },
             editLoading: false,
             btnEditText: '提 交',
@@ -211,7 +252,24 @@ export default {
                     })
             })
         },
+        getShopBalance(id) {
+            request.get(config.api.fund.getOneShopApplyinfo)
+                .then((res) => {
+                    console.log(res)
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        return data
+                    } else {
+                        return {}
+                    }
+                })
+        },
         confirmdone(row) {
+            this.getShopBalance(row.id)
+            this.form = row;
+            this.dialogFormVisible = true;
+            return;
+
             let para = {
                 id: row.id
             }
@@ -252,7 +310,7 @@ export default {
                         _this.listLoading = true;
                         NProgress.start();
                         para.status = 3;
-                        para.remark=value;
+                        para.remark = value;
                         request.post(config.api.fund.updateShopApplyStatus, para)
                             .then(res => {
                                 _this.listLoading = false;
@@ -289,7 +347,7 @@ export default {
                         _this.listLoading = true;
                         NProgress.start();
                         para.status = 4;
-                        para.remark=value;
+                        para.remark = value;
                         request.post(config.api.fund.updateShopApplyStatus, para)
                             .then(res => {
                                 _this.listLoading = false;
@@ -320,6 +378,87 @@ export default {
 
 
 
+            });
+        },
+        //确认打款 确认或拒绝
+        confirmToExamine() {
+            this.dialogFormVisible = false;
+            let _this = this;
+            _this.$prompt('备注信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: '邮箱格式不正确'
+            }).then(({ value }) => {
+                _this.listLoading = true;
+                NProgress.start();
+                para.status = 3;
+                para.remark = value;
+                request.post(config.api.fund.updateShopApplyStatus, para)
+                    .then(res => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消输入'
+                });
+            });
+        },
+        cancelToExamine() {
+            this.dialogFormVisible = false;
+            let _this = this;
+            _this.$prompt('备注信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: '邮箱格式不正确'
+            }).then(({ value }) => {
+                _this.listLoading = true;
+                NProgress.start();
+                para.status = 4;
+                para.remark = value;
+                request.post(config.api.fund.updateShopApplyStatus, para)
+                    .then(res => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消输入'
+                });
             });
         },
         handleCurrentChange(val) {
@@ -474,6 +613,33 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scope lang="stylus" rel="stylesheet/stylus">
+  .deliveryInput
+  	width: 300px
+  	margin: 0 auto
+  .rechargeItem
+  	margin: 12px 0
+  	font-size: 16px
+  &.add
+  	color: red
+  	.label
+  		width: 100px
+  		text-align: right
+	.formBox
+		width: 260px
+		text-align: left
+		margin: 0 auto
+	.tipsWrap
+		display: block
+		text-align: center
+		margin-top: 15px
+  .tips
+  	display: inline-block
+  	margin: 0 auto
+  	text-align: left
+  	li
+        margin-bottom: 8px
+        font-size: 14px
+        color: #848282
+  	
 </style>
