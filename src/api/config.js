@@ -85,7 +85,9 @@ export default {
             //banner图详情
             bannerdetail:'/banner/info',
             //banner排序
-            bannersort:'/banner/order'
+            bannersort:'/banner/order',
+            //添加支付
+            addpay:'/pay/save'
 
         },
         goods:{

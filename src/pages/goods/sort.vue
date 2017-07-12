@@ -196,11 +196,11 @@ export default {
 			//编辑界面数据
 			editForm: {
 				id: 0,
-				name: '',
-				sex: -1,
-				age: 0,
-				birth: '',
-				addr: ''
+				name:'',
+				pic:'',
+				sort:'',
+				pid:'',
+				note:""
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -378,7 +378,10 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			this.editForm = row;
+			for (let key in this.editForm){
+				this.editForm[key]=row[key];
+			}
+			this.editForm.pic=row.app_pic;
 			this.filelist = [{ name: '', url: row.app_pic }]
 		},
 		//编辑 or 新增

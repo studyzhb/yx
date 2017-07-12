@@ -57,7 +57,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -118,8 +118,8 @@ export default {
             activeName: '10',
             filters: {
                 tel: '',
-                status:'',
-                order_sn:'',
+                status: '',
+                order_sn: '',
                 start_time: '',
                 end_time: ''
             },
@@ -156,18 +156,22 @@ export default {
             return row.status == 1 ? '未发货' : row.status == 0 ? '未支付' : '已发货';
         },
         handleClick(tab, event) {
-            if(tab.name==10){
-                this.filters.status='';
-            }else{
-                this.filters.status=tab.name
+            this.filters.page = 1;
+            if (tab.name == 10) {
+                this.filters.status = '';
+            } else {
+                this.filters.status = tab.name
             }
             console.log(tab, event)
             this.getUsers();
         },
 
         handleCurrentChange(val) {
-            this.page = val;
-            this.getUsers();
+            if (this.filters.page != val) {
+                this.page = val;
+                this.getUsers();
+            }
+
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);

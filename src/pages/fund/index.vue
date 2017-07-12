@@ -64,7 +64,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="filters.page" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -247,6 +247,7 @@ export default {
             open(config.api.fund.outputexcel, '_self')
         },
         handleClick(tab, event) {
+            this.filters.page=1;
             this.filters.status = tab.name;
             this.getUsers();
         },
@@ -487,8 +488,12 @@ export default {
             });
         },
         handleCurrentChange(val) {
-            this.filters.page = val;
-            this.getUsers();
+            
+            if(this.filters.page!=val){
+                this.filters.page = val;
+                this.getUsers();
+            }
+            
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);

@@ -1,73 +1,69 @@
 <template>
     <section>
-        <!--工具条-->
-        <el-col :span="24" class="toolbar">
-            <el-form :inline="true" :model="filters">
-                <el-form-item>
-                    <el-input v-model="filters.title" placeholder="标题"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
     
         <!--列表-->
         <template>
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="title" label="标题" width="180" sortable>
+                <el-table-column prop="name" label="名称" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="img_url" label="图标" width="120" sortable>
-                    <template scope="scope">
-                        <img width="24" :src="scope.row.img_url" alt="">
-                    </template>
-                </el-table-column>
+                <!--<el-table-column prop="logo" label="图标" width="120" sortable>
+                                <template scope="scope">
+                                    <img width="24" :src="scope.row.logo" alt="">
+                                </template>
+                            </el-table-column>-->
                 <el-table-column prop="status" label="状态" width="150" sortable>
                     <template scope="scope">
                         <el-button size="small" @click="updatestatus(scope.row)" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="created_at" label="创建时间" min-width="180" sortable>
-                </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-                        <el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
                     </span>
                 </el-table-column>
             </el-table>
         </template>
     
         <!--分页-->
-        <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-            </el-pagination>
-        </el-col>
+        <!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
+                        <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+                        </el-pagination>
+                    </el-col>-->
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-                <el-form-item label="标题" prop="title">
-                    <el-input v-model="editForm.title" auto-complete="off"></el-input>
+                <el-form-item label="名称" prop="class" style="width:50%">
+                    <el-input v-model="editForm.class" :disabled="true" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="图片" prop="img_url">
-                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                    <el-dialog v-model="dialogVisible" size="tiny">
-                        <img width="100%" :src="dialogImageUrl" alt="">
-                    </el-dialog>
+                <el-form-item label="appid" prop="appid" style="width:50%">
+                    <el-input v-model="editForm.appid" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="跳转地址" prop="url">
-                    <el-input v-model="editForm.url" auto-complete="off"></el-input>
+                <el-form-item label="mchid" prop="mchid" style="width:50%">
+                    <el-input v-model="editForm.mchid" auto-complete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="公钥" prop="public_key" style="width:50%">
+                    <el-input v-model="editForm.public_key" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="类型" prop="platform" style="width:50%">
+                    <el-select v-model="editForm.platform" placeholder="请选择">
+                        <el-option label="队列" :value="0"></el-option>
+                        <el-option label="债券" :value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+                <!--<el-form-item label="logo" prop="logo">
+                            <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                                <i class="el-icon-plus"></i>
+                            </el-upload>
+                            <el-dialog v-model="dialogVisible" size="tiny">
+                                <img width="100%" :src="dialogImageUrl" alt="">
+                            </el-dialog>
+                        </el-form-item>-->
+    
                 <el-form-item>
-                    <el-input type="hidden" v-model="editForm.img_url" auto-complete="off"></el-input>
+                    <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -88,14 +84,22 @@ import Sign from 'common/sign'
 export default {
     data() {
         return {
-            filters: {
-                title: '',
-                page: 1
-            },
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
-            users: [],
+            users: [
+                {
+                    name: "支付宝",
+                    class: "alipay",
+                    status: ''
+                },
+                {
+                    name: "微信",
+                    class: 'wxpay',
+                    status:""
+                }
+
+            ],
             total: 0,
             page: 1,
             pagesize: 10,
@@ -110,11 +114,11 @@ export default {
             filelist: [],
             //编辑界面数据
             editForm: {
-                id: 0,
-                title: '',
-                img_url: '',
-                url: '',
-                position: 1
+                class: '',
+                appid: '',
+                mchid:'',
+                public_key:'',
+                platform:''
             },
             editLoading: false,
             editstatusLoading: false,
@@ -137,13 +141,14 @@ export default {
         },
         //图片上传
         handleRemove(file, fileList) {
+            this.editForm.logo = "";
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
             console.log(file)
             console.log('qianzhi')
-            this.dialogImageUrl = file.url;
-            this.dialogVisible = true;
+            //this.dialogImageUrl = file.url;
+            //this.dialogVisible = true;
         },
         getUpstr() {
             console.log('chenggongshi ')
@@ -180,9 +185,12 @@ export default {
 
             let file = files.file
             Sign.then((client) => {
-                client.multipartUpload('/pic/'+file.name, file)
+                client.multipartUpload('/pic/' + file.name, file)
                     .then(res => {
-                        this.editForm.img_url = res.url;
+                        this.editForm.logo = res.url;
+                        //this.filelist.splice(0,1)
+                        console.log(res.url)
+                        this.filelist = [{ name: 'editpic', url: res.url }]
                     }).catch(err => {
                         console.log(err)
                     })
@@ -204,7 +212,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.bannerlist, this.filters)
+            request.get(config.api.help.bank, this.filters)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -232,26 +240,16 @@ export default {
                 _this.listLoading = true;
                 NProgress.start();
                 let para = { id: row.id };
-                request.post(config.api.help.deletebanner, para)
-                    .then((res) => {
-                        _this.listLoading = false;
-                        NProgress.done();
-                        let { message, code, data } = res;
-                        if (code !== 200) {
-                            _this.$notify({
-                                title: '错误',
-                                message: message,
-                                type: 'error'
-                            });
-                        } else {
-                            _this.$notify({
-                                title: '成功',
-                                message: message,
-                                type: 'sucess'
-                            });
-                            _this.getUsers();
-                        }
-                    })
+                removeUser(para).then((res) => {
+                    _this.listLoading = false;
+                    NProgress.done();
+                    _this.$notify({
+                        title: '成功',
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                    _this.getUsers();
+                });
 
             }).catch(() => {
 
@@ -282,10 +280,8 @@ export default {
             console.log(row)
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
-            for(let key in this.editForm){
-                this.editForm[key]=row[key];
-            }
-            this.filelist = [{ name: 'editlogo', url: row.img_url }]
+            this.editForm.class = row.class;
+            this.filelist = [{ name: 'editlogo', url: row.logo }]
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -299,59 +295,35 @@ export default {
                         NProgress.start();
                         _this.btnEditText = '提交中';
 
-                        if (!_this.editForm.id) {
-                            //新增
-                            let para = _this.editForm;
-                            delete para.id;
-                            request.post(config.api.help.addbanner, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '提交成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
-                        } else {
-                            //编辑
-                            let para = _this.editForm;
-                            request.post(config.api.help.updatebanner, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '更新成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
-
-                        }
+                        let para = {
+                            class: _this.editForm.class,
+                            appid: _this.editForm.appid,
+                            mchid: _this.editForm.mchid,
+                            public_key: _this.editForm.public_key,
+                            platform: _this.editForm.platform,
+                        };
+                        request.post(config.api.help.addpay, para)
+                            .then(res => {
+                                let { message, code, data } = res;
+                                _this.editLoading = false;
+                                NProgress.done();
+                                _this.btnEditText = '提 交';
+                                if (code !== 200) {
+                                    this.$notify({
+                                        title: '错误',
+                                        message: message,
+                                        type: 'error'
+                                    });
+                                } else {
+                                    _this.$notify({
+                                        title: '成功',
+                                        message: '提交成功',
+                                        type: 'success'
+                                    });
+                                    _this.editFormVisible = false;
+                                    _this.getUsers();
+                                }
+                            })
 
                     });
 
@@ -362,15 +334,18 @@ export default {
         //显示新增界面
         handleAdd: function () {
             var _this = this;
+            this.filelist = [];
 
-            this.editFormVisible = true;
             this.editFormTtile = '新增';
             for (let key in this.editForm) {
-                this.editForm[key] = "";
+                this.editForm[key] = '';
             }
+            this.editLoading=false;
             this.editForm.id = 0;
-            this.editForm.position = 1;
-            this.filelist=[];
+            setTimeout(() => {
+                this.editFormVisible = true;
+            }, 100)
+
         },
         //更新状态
         updatestatus(row) {
@@ -380,7 +355,7 @@ export default {
                 id: row.id,
                 status: row.status == 0 ? 1 : 0
             };
-            request.post(config.api.help.updatebannerstatus, para)
+            request.post(config.api.help.updatestatus, para)
                 .then(res => {
                     let { message, code, data } = res;
                     _this.editstatusLoading = false;
@@ -404,7 +379,6 @@ export default {
         }
     },
     mounted() {
-        this.getUsers();
     }
 }
 </script>

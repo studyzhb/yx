@@ -65,7 +65,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -88,42 +88,42 @@
 					<el-form-item label="生产厂家" prop="manufacturer" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="计价方式" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="计价方式" prop="valuation_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.valuation_id" placeholder="请选择计价方式">
-							<el-option v-for="(item,index) in preData.valuation" :key="index" :label="item" :value="index"></el-option>
+							<el-option v-for="(item,index) in preData.valuation" :key="index" :label="item.name" :value="item.id"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="零售单位" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="零售单位" prop="retail_unit_id"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.retail_unit_id" placeholder="请选择零售单位">
-							<el-option v-for="(item,index) in preData.retail_nuit" :key="index" :label="item" :value="index"></el-option>
+							<el-option v-for="(item,index) in preData.retail_nuit" :key="index" :label="item.name" :value="item.id"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="分类" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="分类" prop="goods_type_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-															
-															
-														</el-select>-->
-						<el-cascader @change="changegoodstype" :options="options" :show-all-levels="false"></el-cascader>
+																		
+																		
+																	</el-select>-->
+						<el-cascader @change="changegoodstype" v-model="option" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
-					<el-form-item label="品牌" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="品牌" prop="goods_brand_id"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.goods_brand_id" placeholder="请选择品牌">
 							<el-option v-for="(item,index) in preData.brand" :key="index" :label="item.name" :value="item.id"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="供应商" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="供应商" prop="supplier_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.supplier_id" placeholder="请选择供应商">
 							<el-option v-for="(item,index) in preData.supplier" :key="index" :label="item.name" :value="item.id"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="是否分润" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="是否分润" prop="is_rebate" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-switch v-model="editForm.is_rebate" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
 						</el-switch>
 					</el-form-item>
 	
-					<el-form-item label="数量" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="数量" prop="num" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.num" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="规格" >
+					<el-form-item label="规格">
 						<el-tag :key="tag" v-for="tag in dynamicTags" :closable="true" :close-transition="false" @close="handleClose(tag)">
 							{{tag}}
 						</el-tag>
@@ -133,9 +133,9 @@
 					</el-form-item>
 	
 					<!--<el-form-item v-for="(domain, index) in editForm.norm" :label="'规格' + index" :key="domain.key" :prop="'domains.' + index + '.value'">
-							<el-input v-model="domain.name"></el-input>
-							<el-button @click.prevent="removeDomain(domain)">删除</el-button>
-						</el-form-item>-->
+										<el-input v-model="domain.name"></el-input>
+										<el-button @click.prevent="removeDomain(domain)">删除</el-button>
+									</el-form-item>-->
 				</el-card>
 				<el-card class="box-card">
 					<div slot="header" class="clearfix">
@@ -154,8 +154,8 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-														<el-input v-model="editForm.name" auto-complete="off"></el-input>
-													</el-form-item>-->
+																	<el-input v-model="editForm.name" auto-complete="off"></el-input>
+																</el-form-item>-->
 				</el-card>
 	
 			</el-form>
@@ -183,23 +183,21 @@ export default {
 			filters: {
 				name: '',
 				code: '',
-				page: "1",
+				page: 1,
 				status: '',
 				is_sell: ''
 
 			},
 			preData: {
 				brand: [],
-				retail_nuit: {},
+				retail_nuit: [],
 				supplier: [],
-				valuation: {},
+				valuation: [],
 				type: []
 			},
 			activeName: '10',
-			options: [{
-				value: "1",
-				label: 'ceshi'
-			}],
+			options: [],
+			option: [],
 			users: [],
 			total: 0,
 			page: 1,
@@ -239,6 +237,48 @@ export default {
 			editFormRules: {
 				name: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
+				],
+				code: [
+					{ required: true, message: '请输入国际条形码', trigger: 'blur' }
+				],
+				production_origin: [
+					{ required: true, message: '请输入生成产地', trigger: 'blur' }
+				],
+				manufacturer: [
+					{ required: true, message: '请输入生成厂家', trigger: 'blur' }
+				],
+				valuation_id: [
+					{ required: true, message: '请输入计价方式', trigger: 'blur' }
+				],
+				retail_unit_id: [
+					{ required: true, message: '请输入零售单位', trigger: 'blur' }
+				],
+				goods_type_id: [
+					{ required: true, message: '请输入分类', trigger: 'blur' }
+				],
+				goods_brand_id: [
+					{ required: true, message: '请输入商品品牌', trigger: 'blur' }
+				],
+				supplier_id: [
+					{ required: true, message: '请输入供货商', trigger: 'blur' }
+				],
+				buying_price: [
+					{ required: true, message: '请输入进货价', trigger: 'blur' }
+				],
+				trade_price: [
+					{ required: true, message: '请输入批发价', trigger: 'blur' }
+				],
+				retail_price: [
+					{ required: true, message: '请输入零售价', trigger: 'blur' }
+				],
+				num: [
+					{ required: true, message: '请输入num', trigger: 'blur' }
+				],
+				is_rebate: [
+					{ required: true, message: '请选择是否分润', trigger: 'blur' }
+				],
+				market_price: [
+					{ required: true, message: '请输入市场价', trigger: 'blur' }
 				]
 			},
 			multipleSelection: []
@@ -300,7 +340,7 @@ export default {
 			return row.is_sell == 1 ? '已上架' : row.is_sell == 0 ? '未上架' : '未知';
 		},
 		handleClick(tab, event) {
-
+			this.filters.page = 1;
 			if (tab.name == 10) {
 				this.filters.is_sell = '';
 			} else {
@@ -310,8 +350,11 @@ export default {
 			this.getUsers();
 		},
 		handleCurrentChange(val) {
-			this.filters.page = val;
-			this.getUsers();
+			if (this.filters.page != val) {
+				this.filters.page = val;
+				this.getUsers();
+			}
+
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
@@ -319,7 +362,7 @@ export default {
 		getPreAdd() {
 			request.get(config.api.goods.preparams)
 				.then(res => {
-					
+					console.log(res)
 					let { message, code, data } = res;
 					if (code !== 200) {
 						this.$notify({
@@ -328,7 +371,7 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.preData = data.cnt;
+						this.preData = JSON.parse(JSON.stringify(data.cnt));
 						this.preData.type.forEach(item => {
 							let obj = { value: item.id, label: item.name, children: [] };
 							this.options.push(obj);
@@ -336,6 +379,16 @@ export default {
 								obj.children.push({ value: its.id, label: its.name })
 							})
 						})
+						this.preData.retail_nuit = [];
+						this.preData.valuation = [];
+
+						for (let key in data.cnt.retail_nuit) {
+							this.preData.retail_nuit.push({ id: key - 0, name: data.cnt.retail_nuit[key] })
+						}
+						for (let key in data.cnt.valuation) {
+							this.preData.valuation.push({ id: key - 0, name: data.cnt.valuation[key] })
+						}
+						console.log(this.preData)
 
 					}
 				})
@@ -432,7 +485,26 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			this.editForm = row;
+			for (let key in this.editForm) {
+				this.editForm[key] = row[key];
+			}
+			this.dynamicTags = [];
+			if (row.norm instanceof Array) {
+				row.norm.forEach(item => {
+					this.dynamicTags.push(item.name)
+				})
+			}
+			this.options.forEach(item => {
+
+				if (item.children) {
+					item.children.forEach(its => {
+						if (its.value == row.goods_type_id) {
+							this.option = [item.value, its.value]
+						}
+					})
+				}
+			})
+			// this.option = [row.goods_type_id];
 			// this.$router.push('/addshop');
 		},
 		//编辑 or 新增
@@ -441,7 +513,10 @@ export default {
 
 			_this.$refs.editForm.validate((valid) => {
 				if (valid) {
-
+					let arr = [];
+					this.dynamicTags.forEach(item => {
+						arr.push({ name: item });
+					})
 					_this.$confirm('确认提交吗？', '提示', {}).then(() => {
 						_this.editLoading = true;
 						NProgress.start();
@@ -450,11 +525,8 @@ export default {
 						if (_this.editForm.id == 0) {
 							//新增
 							let para = _this.editForm;
-							let arr=[];
-							this.dynamicTags.forEach(item=>{
-								arr.push({name:item});
-							})
-							para.norm=JSON.stringify(arr);
+
+							para.norm = JSON.stringify(arr);
 							delete para.id;
 							request.post(config.api.goods.addGoods, para)
 								.then(res => {
@@ -481,6 +553,7 @@ export default {
 						} else {
 							//编辑
 							let para = _this.editForm;
+							para.norm = JSON.stringify(arr);
 							request.post(config.api.goods.updateGoods, para)
 								.then(res => {
 									let { message, code, data } = res;

@@ -252,7 +252,10 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			this.editForm = row;
+			for(let key in this.editForm){
+				this.editForm[key] = row[key];
+			}
+			
 			this.filelist = [{ name: "", url: row.logo }]
 		},
 		//编辑 or 新增

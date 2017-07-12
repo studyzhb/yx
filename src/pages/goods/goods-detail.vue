@@ -55,7 +55,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -93,9 +93,9 @@
 					</el-form-item>
 					<el-form-item label="分类" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-							
-							
-						</el-select>-->
+								
+								
+							</el-select>-->
 						<el-cascader @change="changegoodstype" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
 					<el-form-item label="品牌" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -134,8 +134,8 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-						<el-input v-model="editForm.name" auto-complete="off"></el-input>
-					</el-form-item>-->
+							<el-input v-model="editForm.name" auto-complete="off"></el-input>
+						</el-form-item>-->
 				</el-card>
 	
 			</el-form>
@@ -159,20 +159,20 @@ export default {
 			filters: {
 				name: '',
 				code: '',
-				page: "1",
+				page: 1,
 				is_edit: ''
 			},
 			preData: {
-				brand:[],
-				retail_nuit:{},
-				supplier:[],
-				valuation:{},
-				type:[]
+				brand: [],
+				retail_nuit: {},
+				supplier: [],
+				valuation: {},
+				type: []
 			},
 			activeName: '10',
-			options:[{
-				value:"1",
-				label:'ceshi'
+			options: [{
+				value: "1",
+				label: 'ceshi'
 			}],
 			users: [],
 			total: 0,
@@ -220,8 +220,8 @@ export default {
 	},
 	methods: {
 		//分类
-		changegoodstype(value){
-			this.editForm.goods_type_id=value[value.length-1]
+		changegoodstype(value) {
+			this.editForm.goods_type_id = value[value.length - 1]
 		},
 		//全选
 		toggleSelection(rows) {
@@ -241,7 +241,7 @@ export default {
 			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 		},
 		handleClick(tab, event) {
-            console.log(tab)
+			this.filters.page = 1;
 			if (tab.name == 10) {
 				this.filters.is_edit = '';
 			} else {
@@ -251,8 +251,10 @@ export default {
 			this.getUsers();
 		},
 		handleCurrentChange(val) {
-			this.filters.page = val;
-			this.getUsers();
+			if (this.filters.page != val) {
+				this.filters.page = val;
+				this.getUsers();
+			}
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
@@ -270,14 +272,14 @@ export default {
 						});
 					} else {
 						this.preData = data.cnt;
-						this.preData.type.forEach(item=>{
-							let obj={value:item.id,label:item.name,children:[]};
+						this.preData.type.forEach(item => {
+							let obj = { value: item.id, label: item.name, children: [] };
 							this.options.push(obj);
-							item.sub_type.forEach(its=>{
-								obj.children.push({value:its.id,label:its.name})
+							item.sub_type.forEach(its => {
+								obj.children.push({ value: its.id, label: its.name })
 							})
 						})
-						
+
 					}
 				})
 		},
@@ -310,7 +312,7 @@ export default {
 							type: 'error'
 						});
 					} else {
-						
+
 						this.total = data.cnt.good.total;
 						this.users = data.cnt.good.data;
 						data.cnt.num.forEach((item) => {
@@ -374,7 +376,7 @@ export default {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
 			this.editForm = row;
-			this.$router.push('/goods-detail-edit/'+row.id);
+			this.$router.push('/goods-detail-edit/' + row.id);
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -454,11 +456,11 @@ export default {
 
 			this.editFormVisible = true;
 			this.editFormTtile = '新增';
-			for(let key in this.editForm){
-				this.editForm[key]='';
+			for (let key in this.editForm) {
+				this.editForm[key] = '';
 			}
 			this.editForm.id = 0;
-			
+
 			// this.$router.push('/addshop');
 		},
 		//更改上下架
