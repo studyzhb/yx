@@ -7,6 +7,7 @@ export default {
         withCredentials:true
     },
     baseUrl:'/api',
+    outputexcel:'http://a.ejiabl.com/api',
     api:{
         //店铺
         shop:{
@@ -87,8 +88,10 @@ export default {
             //banner排序
             bannersort:'/banner/order',
             //添加支付
-            addpay:'/pay/save'
-
+            addpay:'/pay/save',
+            //展示支付信息
+            shopayinfo:'/pay/list',
+            updatepaystatus:"/pay/status"
         },
         goods:{
             index:'/goods/show',

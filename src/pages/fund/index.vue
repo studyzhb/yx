@@ -50,7 +50,7 @@
                 </el-table-column>
                 <el-table-column prop="money" label="金额" width="150" sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间" width="150" sortable>
+                <el-table-column prop="created_at" label="时间" width="180" sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
@@ -244,7 +244,7 @@ export default {
         },
         //导出
         outputexcel() {
-            open(config.api.fund.outputexcel, '_self')
+            open(config.outputexcel+config.api.fund.outputexcel, '_self')
         },
         handleClick(tab, event) {
             this.filters.page=1;

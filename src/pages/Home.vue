@@ -119,6 +119,7 @@
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
+					localStorage.clear();
 					_this.$router.replace('/login');
 				}).catch(() => {
 

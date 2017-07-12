@@ -13,7 +13,18 @@
 		components: {
 		},
 		created: function () {
-			this.$router.replace('/login')
+			if(localStorage.getItem('user')=='true'){
+				if (this.$route.query.redirect) {
+					console.log('redirect')
+                  this.$router.push({ path: this.$route.query.redirect });
+                } else {
+					console.log('update in')
+                  this.$router.push({ path: '/shop' });
+                }
+			}else{
+				this.$router.replace('/login')
+			}
+			
 		}
 	}
 </script>

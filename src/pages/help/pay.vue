@@ -8,29 +8,29 @@
                 </el-table-column>
                 <el-table-column prop="name" label="名称" width="180" sortable>
                 </el-table-column>
-                <!--<el-table-column prop="logo" label="图标" width="120" sortable>
-                                <template scope="scope">
-                                    <img width="24" :src="scope.row.logo" alt="">
-                                </template>
-                            </el-table-column>-->
-                <el-table-column prop="status" label="状态" width="150" sortable>
+                <el-table-column prop="icon" label="图标" width="120" sortable>
                     <template scope="scope">
-                        <el-button size="small" @click="updatestatus(scope.row)" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
+                        <img width="24" :src="scope.row.icon" alt="">
                     </template>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="200">
-                    <span>
-                        <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-                    </span>
+                <el-table-column prop="status" label="状态" width="150" sortable>
+                    <template scope="scope">
+                        <el-button size="small" @click="updatestatus(scope.row)" :type="scope.row.status == '2' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 2 ? '已停用' : '未知'}}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column  :context="_self" label="操作" min-width="200">
+                    <template scope="scope">
+                        <el-button v-if="scope.row.class=='alipayapp'||scope.row.class=='wxpayapp'" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </template>
     
         <!--分页-->
         <!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-                        <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-                        </el-pagination>
-                    </el-col>-->
+                                <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+                                </el-pagination>
+                            </el-col>-->
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -53,17 +53,17 @@
                         <el-option label="债券" :value="1"></el-option>
                     </el-select>
                 </el-form-item>
-                <!--<el-form-item label="logo" prop="logo">
-                            <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                                <i class="el-icon-plus"></i>
-                            </el-upload>
-                            <el-dialog v-model="dialogVisible" size="tiny">
-                                <img width="100%" :src="dialogImageUrl" alt="">
-                            </el-dialog>
-                        </el-form-item>-->
+                <el-form-item label="logo" prop="icon">
+                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <el-dialog v-model="dialogVisible" size="tiny">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </el-form-item>
     
                 <el-form-item>
-                    <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
+                    <el-input type="hidden" v-model="editForm.icon" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -96,7 +96,7 @@ export default {
                 {
                     name: "微信",
                     class: 'wxpay',
-                    status:""
+                    status: ""
                 }
 
             ],
@@ -116,9 +116,9 @@ export default {
             editForm: {
                 class: '',
                 appid: '',
-                mchid:'',
-                public_key:'',
-                platform:''
+                mchid: '',
+                public_key: '',
+                platform: ''
             },
             editLoading: false,
             editstatusLoading: false,
@@ -127,7 +127,7 @@ export default {
                 name: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
                 ],
-                logo: [
+                icon: [
                     { required: true, message: '请添加图片', trigger: 'blur' }
                 ]
             }
@@ -141,7 +141,7 @@ export default {
         },
         //图片上传
         handleRemove(file, fileList) {
-            this.editForm.logo = "";
+            this.editForm.icon = "";
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
@@ -166,7 +166,7 @@ export default {
         },
         handleCurrentChange(val) {
             this.page = val;
-            this.filters.page = val;
+            // this.filters.page = val;
             this.getUsers();
         },
         handleSizeChange(val) {
@@ -187,7 +187,7 @@ export default {
             Sign.then((client) => {
                 client.multipartUpload('/pic/' + file.name, file)
                     .then(res => {
-                        this.editForm.logo = res.url;
+                        this.editForm.icon = res.url;
                         //this.filelist.splice(0,1)
                         console.log(res.url)
                         this.filelist = [{ name: 'editpic', url: res.url }]
@@ -200,10 +200,6 @@ export default {
         //获取用户列表
         getUsers() {
 
-            let para = {
-                page: this.page,
-                name: this.filters.name
-            };
             this.listLoading = true;
             NProgress.start();
             // getUserListPage(para).then((res) => {
@@ -212,7 +208,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.bank, this.filters)
+            request.get(config.api.help.shopayinfo)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -224,9 +220,7 @@ export default {
                             type: 'error'
                         });
                     } else {
-                        this.total = data.cnt.total;
-                        this.users = data.cnt.data;
-                        this.pagesize = data.cnt.per_page || 10;
+                        this.users = data.cnt;
                     }
                 })
         },
@@ -277,11 +271,26 @@ export default {
         },
         //显示编辑界面
         handleEdit: function (row) {
-            console.log(row)
+
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             this.editForm.class = row.class;
-            this.filelist = [{ name: 'editlogo', url: row.logo }]
+            this.editForm.platform = row.platform;
+            if (row.params) {
+                this.editForm.appid = row.params.appid;
+                if (row.class == 'alipayapp') {
+                    this.editForm.public_key = row.params.public_key;
+                    this.editForm.mchid = row.params.private_key;
+                } else if (row.class == 'wxpayapp') {
+                    this.editForm.public_key = row.params.key;
+                    this.editForm.mchid = row.params.mchid;
+                } else {
+
+                }
+                // this.editForm.public_key = row.params.public_key;
+                // this.editForm.mchid = row.params.mchid;
+            }
+            this.filelist = row.icon ? [{ name: 'editlogo', url: row.icon }] : [];
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -299,9 +308,19 @@ export default {
                             class: _this.editForm.class,
                             appid: _this.editForm.appid,
                             mchid: _this.editForm.mchid,
-                            public_key: _this.editForm.public_key,
+                            // public_key: _this.editForm.public_key,
                             platform: _this.editForm.platform,
+                            icon: _this.editForm.icon
                         };
+
+                        if (para.class == 'wxpay') {
+                            para.key = _this.editForm.public_key
+                            // para.mchid = _this.editForm.mchid
+                        } else {
+                            para.public_key = _this.editForm.public_key
+                            // para.private_key = _this.editForm.mchid
+                        }
+
                         request.post(config.api.help.addpay, para)
                             .then(res => {
                                 let { message, code, data } = res;
@@ -340,7 +359,7 @@ export default {
             for (let key in this.editForm) {
                 this.editForm[key] = '';
             }
-            this.editLoading=false;
+            this.editLoading = false;
             this.editForm.id = 0;
             setTimeout(() => {
                 this.editFormVisible = true;
@@ -352,10 +371,11 @@ export default {
             let _this = this;
             this.editstatusLoading = true;
             let para = {
-                id: row.id,
-                status: row.status == 0 ? 1 : 0
+                class: row.class,
+                status: row.status == 1 ? 2 : 1,
+                platform: row.platform
             };
-            request.post(config.api.help.updatestatus, para)
+            request.post(config.api.help.updatepaystatus, para)
                 .then(res => {
                     let { message, code, data } = res;
                     _this.editstatusLoading = false;
@@ -379,6 +399,7 @@ export default {
         }
     },
     mounted() {
+        this.getUsers();
     }
 }
 </script>

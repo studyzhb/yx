@@ -47,10 +47,10 @@
                 </el-table-column>
                 <el-table-column prop="status" label="订单状态" width="150" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="200">
-                    <span>
-                        <el-button :loading="sendLoading" size="small" v-if='filters.status==1' @click="audit(row)">发货</el-button>
-                    </span>
+                <el-table-column :context="_self" label="操作" min-width="200">
+                    <template scope="scope">
+                        <el-button  size="small" v-if='scope.row.status==1' @click="audit(scope.row)">发货</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </template>
@@ -242,11 +242,11 @@ export default {
         audit(row) {
             this.$confirm('确认发货吗？', '提示', {})
                 .then(() => {
-                    this.sendLoading = true;
+                    this.listLoading = true;
                     NProgress.start();
                     request.post(config.api.order.send, { id: row.id })
                         .then((res) => {
-                            this.sendLoading = false;
+                            this.listLoading = false;
                             NProgress.done();
                             let { message, code, data } = res;
                             if (code !== 200) {

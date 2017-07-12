@@ -18,9 +18,9 @@
                 <el-form-item>
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
                 </el-form-item>
-                <el-form-item>
+                <!--<el-form-item>
                     <el-button type="primary">导出</el-button>
-                </el-form-item>
+                </el-form-item>-->
             </el-form>
         </el-col>
     
@@ -52,7 +52,7 @@
                 </el-table-column>
                 <el-table-column prop="money" label="金额" width="150" sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间" width="150" sortable>
+                <el-table-column prop="created_at" label="时间" width="180" sortable>
                 </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
