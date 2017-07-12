@@ -258,7 +258,7 @@ export default {
                             },
                             {
                                 name: "杉德支付",
-                                class: "",
+                                class: "sdpay",
                                 status: "2",
                                 icon: ''
                             }

@@ -16,8 +16,8 @@ import Sign from 'common/sign.js'
 
 import './common/sign';
 
-import AMap from 'vue-amap';
-Vue.use(AMap);
+import VueAMap  from 'vue-amap';
+Vue.use(VueAMap);
 
 
 // Mock.bootstrap();
@@ -27,7 +27,7 @@ Vue.use(VueRouter)
 Vue.use(Vuex)
 
 // 初始化vue-amap
-AMap.initAMapApiLoader({
+VueAMap .initAMapApiLoader({
   // 申请的高德key
   key: '3ee94aaafab3217e125bbebc24942494',
   // 插件集合

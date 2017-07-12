@@ -65,8 +65,8 @@
 				<el-form-item label="微信" prop="wechat">
 					<el-input v-model="form.wechat"></el-input>
 				</el-form-item>
-				<el-form-item label="邮箱" prop="email">
-					<el-input v-model="form.email"></el-input>
+				<el-form-item label="邮箱" prop="emali">
+					<el-input v-model="form.emali"></el-input>
 				</el-form-item>
 				<el-form-item label="QQ" prop="qq">
 					<el-input v-model="form.qq"></el-input>
@@ -143,7 +143,7 @@ export default {
 				address: '',
 				wechat: '',
 				qq: '',
-				email: '',
+				emali: '',
 				note:""
 			},
 			editLoading: false,
@@ -181,9 +181,9 @@ export default {
 				qq: [
 					{ required: true, message: '请输入QQ', trigger: 'blur' }
 				],
-				email: [
+				emali: [
 					{ required: true, message: '请输入邮箱', trigger: 'blur' },
-					{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
+					{ type: 'emali', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
 				],
 				note: [
 					{ required: true, message: '请填写备注', trigger: 'blur' }
@@ -206,6 +206,7 @@ export default {
 			console.log(`每页 ${val} 条`);
 		},
 		handleaddresschange(value) {
+
 			this.form.province = CodeToText[value[0]]
 			this.form.city = CodeToText[value[1]]
 			this.form.area = CodeToText[value[value.length - 1]]
@@ -295,7 +296,10 @@ export default {
 			for(let key in this.form){
 				this.form[key]=row[key]
 			}
-			this.selectedOptions=[row.province,row.city,row.area];
+			this.selectedOptions=[];
+
+			this.selectedOptions=[TextToCode[row.province].code,TextToCode[row.province][row.city].code,TextToCode[row.province][row.city][row.area].code];
+			
 			// this.editForm.id = row.id;
 			// this.editForm.name = row.name;
 			// this.editForm.sex = row.sex;

@@ -36,8 +36,8 @@
 		<el-form-item label="支行" prop="branch">
 			<el-input v-model="form.branch"></el-input>
 		</el-form-item>
-		<el-form-item label="银行卡" prop="bankCard">
-			<el-input v-model="form.bankCard"></el-input>
+		<el-form-item label="银行卡" prop="bank_card">
+			<el-input v-model="form.bank_card"></el-input>
 		</el-form-item>
 		<el-form-item label="店铺电话" prop="phone">
 			<el-input v-model="form.phone"></el-input>
@@ -57,9 +57,10 @@
 			</el-cascader>
 		</el-form-item>
 		<el-form-item label="详细地址" prop="address">
-			<el-input v-model="form.address"></el-input>
+			<el-input :disabled="true" v-model="form.address"></el-input>
 		</el-form-item>
-		<el-form-item >
+		<el-form-item>
+			<!--<el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>-->
 			<el-amap vid="amapDemo" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
 				<el-amap-marker :position="marker.position">
 				</el-amap-marker>
@@ -67,7 +68,7 @@
 			<el-input type="hidden" v-model="form.latitude"></el-input>
 		</el-form-item>
 		<el-form-item prop="latitude">
-			
+	
 			<el-input type="hidden" v-model="form.latitude"></el-input>
 		</el-form-item>
 		<el-form-item>
@@ -83,7 +84,7 @@ import config from 'config';
 import request from 'api';
 import NProgress from 'nprogress'
 import util from 'util'
-import AMap from 'vue-amap';
+import VueAMap from 'vue-amap';
 import Sign from 'common/sign'
 export default {
 	data() {
@@ -99,6 +100,10 @@ export default {
 			marker: {
 				position: [30, 130]
 			},
+			searchOption: {
+				city: '上海',
+				citylimit: true
+			}, mapCenter: [121.59996, 31.197646],
 			editFormRules: {
 				shopname: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
@@ -154,33 +159,15 @@ export default {
 				branch: [
 					{ required: true, message: '请输入支行', trigger: 'blur' }
 				],
-				bankCard: [
+				bank_card: [
 					{ required: true, message: '请输入银行卡号', trigger: 'blur' }
 				],
-				email:[
+				email: [
 					{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
 				]
 			},
 			plugins: [
-				{
-					pName: 'Geocoder',
-					events: {
-						init(instance) {
-							console.log(instance)
-							this.amap = instance.CLASS_NAME;
-							console.log(typeof instance.CLASS_NAME)
-						}
-					}
-				},
-				{
-					pName: 'MapType',
-					defaultType: 0,
-					events: {
-						init(instance) {
-							console.log(instance);
-						}
-					}
-				}
+
 			],
 			events: {
 				'moveend': () => {
@@ -190,12 +177,24 @@ export default {
 				'click': (e) => {
 					console.log(e);
 					// console.log(Geocoder)
-					console.log(AMap)
 
 					this.marker.position = [e.lnglat.lng, e.lnglat.lat]
 
-					this.form.longitude = e.lnglat.lng+'';
-					this.form.latitude = e.lnglat.lat+"";
+					this.form.longitude = e.lnglat.lng + '';
+					this.form.latitude = e.lnglat.lat + "";
+
+					let geocoder = new AMap.Geocoder({
+						radius: 1000,
+						extensions: "all"
+					});
+					geocoder.getAddress([e.lnglat.lng, e.lnglat.lat], (status, result) => {
+						if (status === 'complete' && result.info === 'OK') {
+							if (result && result.regeocode) {
+								this.form.address = result.regeocode.formattedAddress;
+								this.$nextTick();
+							}
+						}
+					})
 				}
 			},
 			form: {
@@ -235,7 +234,7 @@ export default {
 	mounted() {
 
 		let { params } = this.$route;
-		console.log(params)
+
 		if (params.id != 0) {
 			this.form.id = params.id;
 			request.get(config.api.shop.getSingleShop, { id: this.form.id })
@@ -249,8 +248,12 @@ export default {
 						});
 					} else {
 						this.form = data.cnt;
+						this.selectedOptions = [];
+
+						this.selectedOptions = [TextToCode[this.form.province].code, TextToCode[this.form.province][this.form.city].code, TextToCode[this.form.province][this.form.city][this.form.area].code];
+
 						this.form.status += '';
-						this.form.password='';
+						this.form.password = '';
 						this.isstatus = this.form.status == 1 ? true : false;
 					}
 				})
@@ -262,6 +265,24 @@ export default {
 		}
 	},
 	methods: {
+		onSearchResult(pois) {
+			let latSum = 0;
+			let lngSum = 0;
+			if (pois.length > 0) {
+				pois.forEach(poi => {
+					let { lng, lat } = poi;
+					lngSum += lng;
+					latSum += lat;
+
+					this.marker.position = [poi.lng, poi.lat];
+				});
+				let center = {
+					lng: lngSum / pois.length,
+					lat: latSum / pois.length
+				};
+				this.mapCenter = [center.lng, center.lat];
+			}
+		},
 		//图片上传
 		handleRemove(file, fileList) {
 			console.log(file, fileList);
@@ -316,7 +337,7 @@ export default {
 		},
 		saveShop() {
 			var _this = this;
-			let {params}=this.$route;
+			let { params } = this.$route;
 			_this.$refs.form.validate((valid) => {
 				if (valid) {
 
