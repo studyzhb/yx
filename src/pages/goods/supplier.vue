@@ -1,82 +1,97 @@
 <template>
-    <section>
-        <!--工具条-->
-        <el-col :span="24" class="toolbar">
-            <el-form :inline="true" :model="filters">
-                <el-form-item label="供应商">
-                    <el-input v-model="filters.name" placeholder="供应商"></el-input>
-                </el-form-item>
-                <el-form-item label="编码">
-                    <el-input v-model="filters.code" placeholder="编码"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">搜索</el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
-    
-        <!--列表-->
-        <template>
-            <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
-                <el-table-column type="index" width="60">
-                </el-table-column>
-                <el-table-column prop="code" label="编号" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="name" label="供应商" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="address" label="地址" width="120" sortable>
-                </el-table-column>
-                <el-table-column prop="phone" label="电话" width="180" sortable>
-                </el-table-column>
-                <el-table-column prop="link_name" label="联系人" width="180"  sortable>
-                </el-table-column>
-                <el-table-column prop="link_tel" label="联系人电话" width="180"  sortable>
-                </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="320">
-                    <span>
-                        <el-button size="small" @click="handleEdit(row)">编辑</el-button>
-                        <!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
-                    </span>
-                </el-table-column>
-            </el-table>
-        </template>
-    
-        <!--分页-->
+	<section>
+		<!--工具条-->
+		<el-col :span="24" class="toolbar">
+			<el-form :inline="true" :model="filters">
+				<el-form-item label="供应商">
+					<el-input v-model="filters.name" placeholder="供应商"></el-input>
+				</el-form-item>
+				<el-form-item label="编码">
+					<el-input v-model="filters.code" placeholder="编码"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getUsers">搜索</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="handleAdd">新增</el-button>
+				</el-form-item>
+			</el-form>
+		</el-col>
+	
+		<!--列表-->
+		<template>
+			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
+				<el-table-column type="index" width="60">
+				</el-table-column>
+				<el-table-column prop="code" label="编号" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="name" label="供应商" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="address" label="地址" width="120" sortable>
+				</el-table-column>
+				<el-table-column prop="phone" label="电话" width="180" sortable>
+				</el-table-column>
+				<el-table-column prop="link_name" label="联系人" width="180" sortable>
+				</el-table-column>
+				<el-table-column prop="link_tel" label="联系人电话" width="180" sortable>
+				</el-table-column>
+				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+					<span>
+						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
+					</span>
+				</el-table-column>
+			</el-table>
+		</template>
+	
+		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
 			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
-    
-        <!--编辑界面-->
-        <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-            <el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
-    
-                <el-form-item label="品牌名称" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="排序" prop="name">
-                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-upload class="upload-demo" drag action="" multiple>
-                    <i class="el-icon-upload"></i>
-                    <div class="el-upload__text">将文件拖到此处，或
-                        <em>点击上传</em>
-                    </div>
-                    <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-                </el-upload>
-                <el-form-item label="描述">
-                    <el-input type="textarea" v-model="editForm.desc"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click.native="editFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click.native="editSubmit" :loading="editLoading">{{btnEditText}}</el-button>
-            </div>
-        </el-dialog>
-    </section>
+	
+		<!--编辑界面-->
+		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit" >
+				<el-form-item label="名称" prop="name">
+					<el-input v-model="form.name"></el-input>
+				</el-form-item>
+				<el-form-item label="联系人姓名" prop="link_name">
+					<el-input v-model="form.link_name"></el-input>
+				</el-form-item>
+				<el-form-item label="联系人电话" prop="link_tel">
+					<el-input v-model="form.link_tel"></el-input>
+				</el-form-item>
+				<el-form-item label="微信" prop="wechat">
+					<el-input v-model="form.wechat"></el-input>
+				</el-form-item>
+				<el-form-item label="邮箱" prop="email">
+					<el-input v-model="form.email"></el-input>
+				</el-form-item>
+				<el-form-item label="QQ" prop="qq">
+					<el-input v-model="form.qq"></el-input>
+				</el-form-item>
+				<el-form-item label="电话" prop="phone">
+					<el-input v-model="form.phone"></el-input>
+				</el-form-item>
+	
+				<el-form-item label="地址" prop="province">
+					<el-cascader size="large" :options="options" v-model="selectedOptions" @change="handleaddresschange">
+					</el-cascader>
+				</el-form-item>
+				<el-form-item label="详细地址" prop="address">
+					<el-input v-model="form.address"></el-input>
+				</el-form-item>
+				<el-form-item label="描述" prop="note">
+					<el-input type="textarea" v-model="form.note"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button :loading="editLoading" type="primary" @click="saveShop">{{btnEditText}}</el-button>
+					<el-button @click.native.prevent="returnShop">取消</el-button>
+				</el-form-item>
+			</el-form>
+		</el-dialog>
+	</section>
 </template>
 
 <script>
@@ -84,15 +99,17 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-
+import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data';
 export default {
 	data() {
 		return {
 			filters: {
 				name: '',
-				code:'',
-				page:1
+				code: '',
+				page: 1
 			},
+			options: regionData,
+			selectedOptions: [],
 			users: [],
 			total: 0,
 			page: 1,
@@ -102,7 +119,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
-			shopdetailobj:{
+			shopdetailobj: {
 
 			},
 			//编辑界面数据
@@ -114,11 +131,62 @@ export default {
 				birth: '',
 				addr: ''
 			},
+			form: {
+				id: 0,
+				name: '',
+				link_name: '',
+				phone: '',
+				link_tel: '',
+				province: '',
+				city: '',
+				area: '',
+				address: '',
+				wechat: '',
+				qq: '',
+				email: '',
+				note:""
+			},
 			editLoading: false,
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
+					{ required: true, message: '请输入供应商名称', trigger: 'blur' }
+				],
+				link_name: [
+					{ required: true, message: '请输入联系人名称', trigger: 'blur' }
+				],
+				phone: [
+					{ required: true, message: '请输入固定电话', trigger: 'blur' },
+					{ type: 'number', message: '请输入数字',trigger: 'blur' }
+				],
+				link_tel: [
+					{ required: true, message: '请输入联系人电话', trigger: 'blur' },
+					{ type: 'number', message: '请输入数字',trigger: 'blur' }
+				],
+				province: [
+					{ required: true, message: '请选择地区', trigger: 'blur' }
+				],
+				city: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' }
+				],
+				area: [
+					{ required: true, message: '请输入姓名', trigger: 'blur' }
+				],
+				address: [
+					{ required: true, message: '请输入详细地址', trigger: 'blur' }
+				],
+				wechat: [
+					{ required: true, message: '请输入微信号', trigger: 'blur' }
+				],
+				qq: [
+					{ required: true, message: '请输入QQ', trigger: 'blur' }
+				],
+				email: [
+					{ required: true, message: '请输入邮箱', trigger: 'blur' },
+					{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
+				],
+				note: [
+					{ required: true, message: '请填写备注', trigger: 'blur' }
 				]
 			}
 
@@ -137,6 +205,11 @@ export default {
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
 		},
+		handleaddresschange(value) {
+			this.form.province = CodeToText[value[0]]
+			this.form.city = CodeToText[value[1]]
+			this.form.area = CodeToText[value[value.length - 1]]
+		},
 		//获取用户列表
 		getUsers() {
 
@@ -152,7 +225,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.goods.supplierindex,this.filters)
+			request.get(config.api.goods.supplierindex, this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -197,7 +270,7 @@ export default {
 		},
 		showshopdetail(row) {
 			this.shopdetailVisible = true;
-			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+			request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
 				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
@@ -207,18 +280,22 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.shopdetailobj=data.cnt;
+						this.shopdetailobj = data.cnt;
 					}
 				})
 		},
 		//显示店铺订单
-		showorder(row){
+		showorder(row) {
 			this.$router.push('/shoporder');
 		},
 		//显示编辑界面
 		handleEdit: function (row) {
-			// this.editFormVisible = true;
-			// this.editFormTtile = '编辑';
+			this.editFormVisible = true;
+			this.editFormTtile = '编辑';
+			for(let key in this.form){
+				this.form[key]=row[key]
+			}
+			this.selectedOptions=[row.province,row.city,row.area];
 			// this.editForm.id = row.id;
 			// this.editForm.name = row.name;
 			// this.editForm.sex = row.sex;
@@ -226,8 +303,81 @@ export default {
 			// this.editForm.birth = row.birth;
 			// this.editForm.addr = row.addr;
 
-			this.$router.push('/addsupplier/'+row.id);
+			// this.$router.push('/addsupplier/' + row.id);
 
+		},
+		saveShop() {
+			var _this = this;
+
+			_this.$refs.form.validate((valid) => {
+				if (valid) {
+
+					_this.$confirm('确认提交吗？', '提示', {}).then(() => {
+						_this.editLoading = true;
+						NProgress.start();
+						_this.btnEditText = '提交中';
+
+						if (_this.form.id == 0) {
+
+							//新增
+							let para = _this.form;
+							delete para.id;
+
+							request.post(config.api.goods.addsupplier, para)
+								.then(res => {
+									let { message, code, data } = res;
+									_this.editLoading = false;
+									NProgress.done();
+									_this.btnEditText = '提 交';
+									if (code !== 200) {
+										this.$notify({
+											title: '错误',
+											message: message,
+											type: 'error'
+										});
+									} else {
+										_this.$notify({
+											title: '成功',
+											message: '提交成功',
+											type: 'success'
+										});
+										_this.editFormVisible = false;
+										_this.getUsers();
+									}
+								})
+						} else {
+							//编辑
+							
+							request.post(config.api.supplier.updatesupplier, _this.form)
+								.then(res => {
+									let { message, code, data } = res;
+									_this.editLoading = false;
+									NProgress.done();
+									_this.btnEditText = '提 交';
+									if (code !== 200) {
+										this.$notify({
+											title: '错误',
+											message: message,
+											type: 'error'
+										});
+									} else {
+										_this.$notify({
+											title: '成功',
+											message: '提交成功',
+											type: 'success'
+										});
+										_this.editFormVisible = false;
+										_this.getUsers();
+									}
+								})
+
+						}
+
+					});
+
+				}
+			});
+			// this.$router.replace('/shop')
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -295,18 +445,15 @@ export default {
 		},
 		//显示新增界面
 		handleAdd: function () {
-			// var _this = this;
+			var _this = this;
 
-			// this.editFormVisible = true;
-			// this.editFormTtile = '新增';
-
-			// this.editForm.id = 0;
-			// this.editForm.name = '';
-			// this.editForm.sex = 1;
-			// this.editForm.age = 0;
-			// this.editForm.birth = '';
-			// this.editForm.addr = '';
-			this.$router.push('/addsupplier/0');
+			this.editFormVisible = true;
+			this.editFormTtile = '新增';
+			for(let key in this.form){
+				this.form[key]='';
+			}
+			this.form.id = 0;
+			// this.$router.push('/addsupplier/0');
 		}
 	},
 	mounted() {
@@ -317,16 +464,16 @@ export default {
 
 <style scoped>
 .el-card__header {
-    background-color: #E4E4E4
+	background-color: #E4E4E4
 }
 
 .clearfix:before,
 .clearfix:after {
-    display: table;
-    content: "";
+	display: table;
+	content: "";
 }
 
 .clearfix:after {
-    clear: both
+	clear: both
 }
 </style>

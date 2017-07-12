@@ -339,9 +339,10 @@ export default {
 
 			this.editForm.id = 0;
 			this.editForm.name = '';
-			this.editForm.logo = 1;
+			this.editForm.logo = '';
 			this.editForm.sort = '';
 			this.editForm.note = '';
+			this.filelist=[];
 
 		}
 	},

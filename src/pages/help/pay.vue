@@ -3,7 +3,7 @@
     
         <!--列表-->
         <template>
-            <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
+            <el-table :data="paydata" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
                 <el-table-column prop="name" label="名称" width="180" sortable>
@@ -18,9 +18,9 @@
                         <el-button size="small" @click="updatestatus(scope.row)" :type="scope.row.status == '2' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 2 ? '已停用' : '未知'}}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column  :context="_self" label="操作" min-width="200">
+                <el-table-column :context="_self" label="操作" min-width="200">
                     <template scope="scope">
-                        <el-button v-if="scope.row.class=='alipayapp'||scope.row.class=='wxpayapp'" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+                        <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -28,9 +28,9 @@
     
         <!--分页-->
         <!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-                                <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-                                </el-pagination>
-                            </el-col>-->
+                                        <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+                                        </el-pagination>
+                                    </el-col>-->
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -38,13 +38,13 @@
                 <el-form-item label="名称" prop="class" style="width:50%">
                     <el-input v-model="editForm.class" :disabled="true" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="appid" prop="appid" style="width:50%">
+                <el-form-item v-if="isshow" label="appid" prop="appid" style="width:50%">
                     <el-input v-model="editForm.appid" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="mchid" prop="mchid" style="width:50%">
+                <el-form-item v-if="isshow" label="mchid" prop="mchid" style="width:50%">
                     <el-input v-model="editForm.mchid" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="公钥" prop="public_key" style="width:50%">
+                <el-form-item v-if="isshow" label="公钥" prop="public_key" style="width:50%">
                     <el-input v-model="editForm.public_key" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="类型" prop="platform" style="width:50%">
@@ -87,19 +87,36 @@ export default {
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
-            users: [
+            //
+            isshow:true,
+            paydata: [
                 {
                     name: "支付宝",
-                    class: "alipay",
-                    status: ''
+                    class: "alipayapp",
+                    icon: '',
+                    status: '2'
                 },
                 {
                     name: "微信",
-                    class: 'wxpay',
-                    status: ""
+                    class: 'wxpayapp',
+                    status: "2",
+                    icon: ''
+                },
+                {
+                    name: "余额支付",
+                    class: 'balance',
+                    icon: '',
+                    status: "2"
+                },
+                {
+                    name: "杉德支付",
+                    class: "",
+                    status: "2",
+                    icon: ''
                 }
 
             ],
+            users: null,
             total: 0,
             page: 1,
             pagesize: 10,
@@ -220,7 +237,43 @@ export default {
                             type: 'error'
                         });
                     } else {
+                        this.paydata = [
+                            {
+                                name: "支付宝",
+                                class: "alipayapp",
+                                icon: '',
+                                status: '2'
+                            },
+                            {
+                                name: "微信",
+                                class: 'wxpayapp',
+                                status: "2",
+                                icon: ''
+                            },
+                            {
+                                name: "余额支付",
+                                class: 'balance',
+                                icon: '',
+                                status: "2"
+                            },
+                            {
+                                name: "杉德支付",
+                                class: "",
+                                status: "2",
+                                icon: ''
+                            }
+
+                        ]
                         this.users = data.cnt;
+                        this.paydata.forEach((item, index) => {
+                            this.users.forEach(its => {
+
+                                if (its.class == item.class) {
+                                    this.paydata[index] = its;
+                                }
+                            })
+                        })
+                        this.paydata = this.paydata.slice(0);
                     }
                 })
         },
@@ -271,25 +324,32 @@ export default {
         },
         //显示编辑界面
         handleEdit: function (row) {
-
+            console.log(this.users)
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             this.editForm.class = row.class;
             this.editForm.platform = row.platform;
             if (row.params) {
-                this.editForm.appid = row.params.appid;
+                
                 if (row.class == 'alipayapp') {
+                    this.isshow=true;
+                    this.editForm.appid = row.params.appid;
                     this.editForm.public_key = row.params.public_key;
                     this.editForm.mchid = row.params.private_key;
                 } else if (row.class == 'wxpayapp') {
+                    this.isshow=true;
+                    this.editForm.appid = row.params.appid;
                     this.editForm.public_key = row.params.key;
                     this.editForm.mchid = row.params.mchid;
                 } else {
-
+                    this.isshow=false;
                 }
                 // this.editForm.public_key = row.params.public_key;
                 // this.editForm.mchid = row.params.mchid;
+            }else{
+                 this.isshow=false;
             }
+
             this.filelist = row.icon ? [{ name: 'editlogo', url: row.icon }] : [];
         },
         //编辑 or 新增
@@ -313,12 +373,14 @@ export default {
                             icon: _this.editForm.icon
                         };
 
-                        if (para.class == 'wxpay') {
+                        if (para.class == 'wxpayapp') {
                             para.key = _this.editForm.public_key
                             // para.mchid = _this.editForm.mchid
-                        } else {
+                        }else if(para.class == 'alipayapp'){
                             para.public_key = _this.editForm.public_key
-                            // para.private_key = _this.editForm.mchid
+                        } 
+                        else {
+                           
                         }
 
                         request.post(config.api.help.addpay, para)
