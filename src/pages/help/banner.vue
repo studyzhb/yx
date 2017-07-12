@@ -120,11 +120,14 @@ export default {
             editstatusLoading: false,
             btnEditText: '提 交',
             editFormRules: {
-                name: [
-                    { required: true, message: '请输入姓名', trigger: 'blur' }
+                title: [
+                    { required: true, message: '请输入名称', trigger: 'blur' }
                 ],
-                logo: [
+                img_url: [
                     { required: true, message: '请添加图片', trigger: 'blur' }
+                ],
+                url: [
+                    { required: true, message: '请添加链接', trigger: 'blur' }
                 ]
             }
 
@@ -180,8 +183,13 @@ export default {
 
             let file = files.file
             Sign.then((client) => {
-                client.multipartUpload('/pic/'+file.name, file)
+                client.multipartUpload('/pic/'+file.name, file,{
+                    progress:function *(p){
+                        console.log('Progress: ' + p)
+                    }
+                })
                     .then(res => {
+                        console.log(res)
                         this.editForm.img_url = res.url;
                     }).catch(err => {
                         console.log(err)

@@ -251,7 +251,7 @@ export default {
 						this.selectedOptions = [];
 
 						this.selectedOptions = [TextToCode[this.form.province].code, TextToCode[this.form.province][this.form.city].code, TextToCode[this.form.province][this.form.city][this.form.area].code];
-
+						this.filelist=[{name:"",url:this.form.avatar}]
 						this.form.status += '';
 						this.form.password = '';
 						this.isstatus = this.form.status == 1 ? true : false;
@@ -286,6 +286,7 @@ export default {
 		//图片上传
 		handleRemove(file, fileList) {
 			console.log(file, fileList);
+			this.form.avatar='';
 		},
 		handlePictureCardPreview(file) {
 			console.log(file)
