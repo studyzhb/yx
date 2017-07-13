@@ -119,7 +119,10 @@
 						<el-switch v-model="editForm.is_rebate" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
 						</el-switch>
 					</el-form-item>
-	
+					<el-form-item label="状态" prop="status" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+						<el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+						</el-switch>
+					</el-form-item>
 					<el-form-item label="数量" prop="num" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.num" auto-complete="off"></el-input>
 					</el-form-item>
@@ -230,7 +233,8 @@ export default {
 				num: '',
 				is_rebate: '1',
 				norm: '',
-				market_price: ''
+				market_price: '',
+				status:'1'
 			},
 			editLoading: false,
 			btnEditText: '提 交',

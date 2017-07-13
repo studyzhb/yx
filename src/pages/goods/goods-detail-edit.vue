@@ -292,7 +292,19 @@ export default {
 					} else {
 
 						this.form = data.cnt;
-						
+                        this.filelist=[]
+                        //商品图片
+                        if(this.form.pic){
+                            this.pic=this.form.pic=this.form.pic instanceof Array?this.form.pic:JSON.parse(this.form.pic);
+                            this.form.pic.forEach(item=>{
+                                this.filelist.push({name:'img',url:item})
+                            })
+                            
+                        }
+                        
+
+                        //详情图片
+                        // this.filelist1
 					}
 				})
         },
