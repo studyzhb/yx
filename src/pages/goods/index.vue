@@ -65,7 +65,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -90,12 +90,12 @@
 					</el-form-item>
 					<el-form-item label="计价方式" prop="valuation_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.valuation_id" placeholder="请选择计价方式">
-							<el-option v-for="(item,index) in preData.valuation" :key="index" :label="item.name" :value="item.id"></el-option>
+							<el-option v-for="(item,index) in preData.valuation" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="零售单位" prop="retail_unit_id"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.retail_unit_id" placeholder="请选择零售单位">
-							<el-option v-for="(item,index) in preData.retail_nuit" :key="index" :label="item.name" :value="item.id"></el-option>
+							<el-option v-for="(item,index) in preData.retail_nuit" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="分类" prop="goods_type_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -107,12 +107,12 @@
 					</el-form-item>
 					<el-form-item label="品牌" prop="goods_brand_id"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.goods_brand_id" placeholder="请选择品牌">
-							<el-option v-for="(item,index) in preData.brand" :key="index" :label="item.name" :value="item.id"></el-option>
+							<el-option v-for="(item,index) in preData.brand" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="供应商" prop="supplier_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.supplier_id" placeholder="请选择供应商">
-							<el-option v-for="(item,index) in preData.supplier" :key="index" :label="item.name" :value="item.id"></el-option>
+							<el-option v-for="(item,index) in preData.supplier" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="是否分润" prop="is_rebate" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -201,7 +201,7 @@ export default {
 			users: [],
 			total: 0,
 			page: 1,
-			pagesize: 10,
+			pagesize: 1,
 			listLoading: false,
 			editFormVisible: false,//编辑界面显是否显示
 			editFormTtile: '编辑',//编辑界面标题
@@ -320,7 +320,7 @@ export default {
 		},
 		//分类
 		changegoodstype(value) {
-			this.editForm.goods_type_id = value[value.length - 1]
+			this.editForm.goods_type_id = value[value.length - 1]+'';
 		},
 		//全选
 		toggleSelection(rows) {
@@ -594,6 +594,7 @@ export default {
 			for (let key in this.editForm) {
 				this.editForm[key] = '';
 			}
+			this.option=[];
 			this.editForm.id = 0;
 
 			// this.$router.push('/addshop');

@@ -328,6 +328,7 @@ export default {
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             this.editForm.class = row.class;
+            this.editForm.icon = row.icon;
             this.editForm.platform = row.platform;
             if (row.params) {
                 
@@ -367,7 +368,7 @@ export default {
                         let para = {
                             class: _this.editForm.class,
                             appid: _this.editForm.appid,
-                            mchid: _this.editForm.mchid,
+                            // mchid: _this.editForm.mchid,
                             // public_key: _this.editForm.public_key,
                             platform: _this.editForm.platform,
                             icon: _this.editForm.icon
@@ -375,9 +376,10 @@ export default {
 
                         if (para.class == 'wxpayapp') {
                             para.key = _this.editForm.public_key
-                            // para.mchid = _this.editForm.mchid
+                            para.mchid = _this.editForm.mchid
                         }else if(para.class == 'alipayapp'){
                             para.public_key = _this.editForm.public_key
+                            para.private_key = _this.editForm.mchid
                         } 
                         else {
                            

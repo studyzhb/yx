@@ -11,7 +11,27 @@ export default {
     api:{
         //权限
         author:{
-            
+            //部门管理
+            originlist:'/depart/list',
+            originadd:'/depart/add',
+            originedit:'/depart/edit',
+            origindelete:'/depart/delete',
+            originupdatestatus:'/depart/status',
+            originsingleinfo:'/depart/one',
+            //员工管理
+            userlist:"/admin/list",
+            useradd:"/admin/add",
+            useredit:"/admin/edit",
+            usersingleinfo:"/admin/one",
+            //角色
+            rolelist:'/role/list',
+            roleadd:'/role/add',
+            roleedit:'/role/actionEdit',
+            //权限
+            authorlist:'/action/list',
+            authoradd:"/action/add",
+            authoredit:'/action/edit',
+            authordelete:'/action/delete'
         },
         //店铺
         shop:{
