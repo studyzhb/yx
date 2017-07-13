@@ -415,10 +415,10 @@ export default {
                         }
                     })
             }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '取消输入'
-                });
+                // this.$message({
+                //     type: 'info',
+                //     message: '取消输入'
+                // });
             });
         },
         cancelToExamine() {
@@ -455,10 +455,10 @@ export default {
                         }
                     })
             }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '取消输入'
-                });
+                // this.$message({
+                //     type: 'info',
+                //     message: '取消输入'
+                // });
             });
         },
         handleCurrentChange(val) {

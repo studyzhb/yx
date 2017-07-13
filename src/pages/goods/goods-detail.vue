@@ -32,12 +32,12 @@
 				</el-table-column>
 				<el-table-column prop="code" label="国际条形码" width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="supplier" label="供应商" width="180" sortable>
+				<el-table-column prop="supplier.name" label="供应商" width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="brand" label="品牌" width="120" sortable>
+				<el-table-column prop="brand.name" label="品牌" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="norm" label="规格" width="120" sortable>
-				</el-table-column>
+				<!--<el-table-column prop="norm" label="规格" width="120" sortable>
+				</el-table-column>-->
 				<el-table-column prop="buying_price" label="进货价" width="100" sortable>
 				</el-table-column>
 				<el-table-column prop="retail_price" label="零售价" width="100" sortable>

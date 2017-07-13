@@ -94,6 +94,10 @@
 					<el-input v-model="editForm.sort" auto-complete="off"></el-input>
 					<el-input type="hidden" v-model="editForm.pic" auto-complete="off"></el-input>
 				</el-form-item>
+				<el-form-item label="状态" prop="status">
+					<el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+					</el-switch>
+				</el-form-item>
 				<el-form-item label="描述" prop="note">
 					<el-input type="area" v-model="editForm.note" auto-complete="off"></el-input>
 				</el-form-item>
@@ -382,6 +386,7 @@ export default {
 				this.editForm[key]=row[key];
 			}
 			this.editForm.pic=row.app_pic;
+			this.editForm.status+='';
 			this.filelist = [{ name: '', url: row.app_pic }]
 		},
 		//编辑 or 新增
@@ -486,6 +491,7 @@ export default {
 			this.editForm.pid = row.id;
 			this.editForm.sort = 0;
 			this.editForm.note = '';
+			this.editForm.status = '1';
 
 		}
 	},

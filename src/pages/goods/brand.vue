@@ -22,7 +22,7 @@
 				</el-table-column>
 				<el-table-column prop="name" label="名称" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="状态" width="120" sortable>
+				<el-table-column prop="status" label="状态" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="name" label="排序" width="120" sortable>
 				</el-table-column>
