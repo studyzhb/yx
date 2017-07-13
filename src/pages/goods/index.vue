@@ -82,10 +82,10 @@
 					<el-form-item label="国际条形码" prop="code" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.code" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="原产地" prop="production_origin" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="原产地"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.production_origin" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="生产厂家" prop="manufacturer" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="生产厂家" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
 					</el-form-item>
 					<el-form-item label="计价方式" prop="valuation_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -147,7 +147,7 @@
 					<el-form-item label="进货价" prop="buying_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.buying_price" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="批发价" prop="trade_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="批发价" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.trade_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<el-form-item label="零售价" prop="retail_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -220,21 +220,22 @@ export default {
 				id: 0,
 				name: '',
 				code: '',
-				production_origin: '',
-				manufacturer: '',
+				production_origin: ' ',
+				manufacturer: ' ',
 				valuation_id: '',
 				retail_unit_id: '',
 				goods_type_id: '',
 				goods_brand_id: '',
 				supplier_id: '',
-				buying_price: '',
+				buying_price: '0',
 				trade_price: '',
 				retail_price: '',
 				num: '',
 				is_rebate: '1',
 				norm: '',
 				market_price: '',
-				status:'1'
+				status:'1',
+				is_sell:''
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -529,8 +530,8 @@ export default {
 						if (_this.editForm.id == 0) {
 							//新增
 							let para = _this.editForm;
-
 							para.norm = JSON.stringify(arr);
+							para.is_sell=para.status;
 							delete para.id;
 							request.post(config.api.goods.addGoods, para)
 								.then(res => {
@@ -557,6 +558,7 @@ export default {
 						} else {
 							//编辑
 							let para = _this.editForm;
+							para.is_sell=para.status;
 							para.norm = JSON.stringify(arr);
 							request.post(config.api.goods.updateGoods, para)
 								.then(res => {

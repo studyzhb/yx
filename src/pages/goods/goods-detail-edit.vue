@@ -2,7 +2,7 @@
     <section>
         <el-col :span="24" class="toolbar">
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="padding-bottom:20px;">
-                <el-popover ref="popover4" placement="right" width="400" trigger="click">
+                <el-popover ref="popoverF" placement="right" width="400" trigger="click">
                     <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
                         <el-button size="small" type="primary">点击上传</el-button>
                     </el-upload>
@@ -11,7 +11,7 @@
                     </el-dialog>
                     <!--<el-button @click="addtitle" style="margin:20px;">添加文字</el-button>-->
                 </el-popover>
-                <el-popover ref="popover3" placement="right" width="400" trigger="click">
+                <el-popover ref="popoverT" placement="right" width="400" trigger="click">
                     <el-upload action="" :file-list="filelist1" :http-request="handleRequestOssBanner" list-type="picture-card" :on-remove="handleRemoveBanner" :on-success="getUpstr">
                         <i class="el-icon-plus"></i>
                     </el-upload>
@@ -92,9 +92,9 @@
                             <el-form-item label="市场价" prop="market_price" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
                                 <el-input v-model="form.market_price" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+                            <!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
                                 <el-input v-model="form.name" auto-complete="off"></el-input>
-                            </el-form-item>
+                            </el-form-item>-->
                         </el-card>
                     </el-form>
     
@@ -106,15 +106,14 @@
                                 <img :src="item" width="100%">
                             </el-carousel-item>
                         </el-carousel>
-                        <el-button style="width:284px;height:200px;overflow:hidden;position:absolute;border:none;top:32px;z-index:100;opacity:0" @click="test" v-popover:popover3>
+                        <el-button style="width:284px;height:200px;overflow:hidden;position:absolute;border:none;top:32px;z-index:100;opacity:0" @click="test" v-popover:popoverT>
                         </el-button>
-                        <el-button id="imageContent" style="width:100%;height:300px;overflow:auto;margin-left:-1px" v-popover:popover4>
-    
+                        <el-button id="imageContent" style="width:100%;height:300px;overflow:auto;margin-left:-1px"  v-popover:popoverF>
+                            <div v-html="editForm.content"></div>
                             <div class="img-single" style="width:100%;" v-for="item in picContent" :key="item">
                                 <div class="deleteAvata" style="display: none;">删除</div>
                                 <img src="http://enclosure.wandlm.net/web_pic/2017/01/09/1483941258379.png" :src="item" width="100%">
                             </div>
-                            <p>ceshi</p>
                         </el-button>
     
                     </div>
@@ -292,17 +291,21 @@ export default {
 					} else {
 
 						this.form = data.cnt;
+                        this.form.pic=JSON.stringify(this.form.pic)
+                        for (let key in this.editForm){
+                            this.editForm[key]=this.form[key]
+                        }
+                        this.filelist1=[]
                         this.filelist=[]
+                        
                         //商品图片
                         if(this.form.pic){
-                            this.pic=this.form.pic=this.form.pic instanceof Array?this.form.pic:JSON.parse(this.form.pic);
-                            this.form.pic.forEach(item=>{
-                                this.filelist.push({name:'img',url:item})
+                            this.pic=this.form.pic instanceof Array?this.form.pic:JSON.parse(this.form.pic);
+                            this.pic.forEach(item=>{
+                                this.filelist1.push({name:'img',url:item})
                             })
-                            
                         }
                         
-
                         //详情图片
                         // this.filelist1
 					}
@@ -315,6 +318,7 @@ export default {
                     .then(res => {
                         this.pic.push((res.res.requestUrls[0]).split('?')[0]);
                         this.filelist1 = [];
+                        
                         this.pic.forEach((item, index) => {
                             this.filelist1.push({ name: index, url: item })
                         })
@@ -339,9 +343,9 @@ export default {
                 client.multipartUpload(file.name, file)
                     .then(res => {
                         this.picContent.push((res.res.requestUrls[0]).split('?')[0]);
-                        this.filelist = [];
+                        this.filelist1 = [];
                         this.picContent.forEach((item, index) => {
-                            this.filelist.push({ name: index, url: item })
+                            this.filelist1.push({ name: index, url: item })
                         })
                     }).catch(err => {
                         console.log(err)

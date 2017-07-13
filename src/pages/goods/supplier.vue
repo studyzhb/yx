@@ -157,11 +157,9 @@ export default {
 				],
 				phone: [
 					{ required: true, message: '请输入固定电话', trigger: 'blur' },
-					{ type: 'number', message: '请输入数字',trigger: 'blur' }
 				],
 				link_tel: [
-					{ required: true, message: '请输入联系人电话', trigger: 'blur' },
-					{ type: 'number', message: '请输入数字',trigger: 'blur' }
+					{ required: true, message: '请输入联系人电话', trigger: 'blur' }
 				],
 				province: [
 					{ required: true, message: '请选择地区', trigger: 'blur' }
@@ -183,7 +181,7 @@ export default {
 				],
 				emali: [
 					{ required: true, message: '请输入邮箱', trigger: 'blur' },
-					{ type: 'emali', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
+					{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
 				],
 				note: [
 					{ required: true, message: '请填写备注', trigger: 'blur' }
@@ -242,6 +240,9 @@ export default {
 						this.users = data.cnt.data;
 						this.pagesize = data.cnt.per_page || 10;
 					}
+				})
+				.catch(err=>{
+					this.listLoading = false;
 				})
 		},
 		//删除
@@ -348,11 +349,13 @@ export default {
 										_this.editFormVisible = false;
 										_this.getUsers();
 									}
+								}).catch(err=>{
+									_this.editLoading = false;
 								})
 						} else {
 							//编辑
 							
-							request.post(config.api.supplier.updatesupplier, _this.form)
+							request.post(config.api.goods.updatesupplier, _this.form)
 								.then(res => {
 									let { message, code, data } = res;
 									_this.editLoading = false;
@@ -373,6 +376,8 @@ export default {
 										_this.editFormVisible = false;
 										_this.getUsers();
 									}
+								}).catch(err=>{
+									_this.editLoading = false;
 								})
 
 						}

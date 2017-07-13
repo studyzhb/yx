@@ -22,7 +22,7 @@
 				</el-table-column>
 				<el-table-column prop="name" label="名称" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="status" label="状态" width="120" sortable>
+				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="name" label="排序" width="120" sortable>
 				</el-table-column>
@@ -59,6 +59,10 @@
 					<el-dialog v-model="dialogVisible" size="tiny">
 						<img width="100%" :src="dialogImageUrl" alt="">
 					</el-dialog>
+				</el-form-item>
+				<el-form-item label="状态" prop="status">
+					<el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+					</el-switch>
 				</el-form-item>
 				<el-form-item label="描述">
 					<el-input type="textarea" v-model="editForm.note"></el-input>
@@ -106,7 +110,8 @@ export default {
 				name: '',
 				logo: '',
 				sort: 0,
-				note: ''
+				note: '',
+				status:'1'
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -124,7 +129,7 @@ export default {
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
-			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			return row.status == 1 ? '启用' : row.status == 0 ? '停用' : '未知';
 		},
 		//图片上传
 		handleRemove(file, fileList) {
@@ -253,7 +258,7 @@ export default {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
 			for(let key in this.editForm){
-				this.editForm[key] = row[key];
+				this.editForm[key] = row[key]+'';
 			}
 			
 			this.filelist = [{ name: "", url: row.logo }]

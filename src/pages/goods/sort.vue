@@ -204,7 +204,8 @@ export default {
 				pic:'',
 				sort:'',
 				pid:'',
-				note:""
+				note:"",
+				status:""
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -383,7 +384,7 @@ export default {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
 			for (let key in this.editForm){
-				this.editForm[key]=row[key];
+				this.editForm[key]=row[key]+'';
 			}
 			this.editForm.pic=row.app_pic;
 			this.editForm.status+='';
@@ -475,6 +476,7 @@ export default {
 			this.filelist = [];
 			this.editForm.sort = 0;
 			this.editForm.note = '';
+			this.editForm.status = '1';
 
 		},
 		//显示新增顶级分类界面

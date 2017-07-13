@@ -261,6 +261,8 @@ export default {
                                     message: message,
                                     type: 'success'
                                 });
+                               
+                                _this.getUsers();
                             }
                         })
                 })

@@ -7,7 +7,7 @@
             </el-form-item>
         </el-form>
     
-        <el-tree :data="data2" :props="defaultProps" show-checkbox node-key="id" default-expand-all :expand-on-click-node="false" :render-content="renderContent">
+        <el-tree :data="data2" :props="defaultProps" node-key="id" default-expand-all :expand-on-click-node="false" :render-content="renderContent">
         </el-tree>
     
         <!--编辑界面-->
@@ -16,18 +16,46 @@
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="editForm.name" auto-complete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="是否显示" prop="display">
+                    <el-switch v-model="editForm.display" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="2">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="是否启用" prop="status">
+                    <el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="2">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="模块" prop="module">
+                    <el-input v-model="editForm.module" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="控制器" prop="controller">
+                    <el-input v-model="editForm.controller" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="动作" prop="action">
+                    <el-input v-model="editForm.action" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="排序" prop="displayorder">
+                    <el-input v-model="editForm.displayorder" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="level" prop="level">
+                    <el-select v-model="editForm.level" placeholder="请选择">
+                        <el-option  label="模块" value="1">
+                        </el-option>
+                        <el-option  label="动作" value="2">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <!--<el-form-item label="logo" prop="logo">
-                        <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                            <i class="el-icon-plus"></i>
-                        </el-upload>
-                        <el-dialog v-model="dialogVisible" size="tiny">
-                            <img width="100%" :src="dialogImageUrl" alt="">
-                        </el-dialog>
-                    </el-form-item>
-        
-                    <el-form-item>
-                        <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
-                    </el-form-item>-->
+                            <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                                <i class="el-icon-plus"></i>
+                            </el-upload>
+                            <el-dialog v-model="dialogVisible" size="tiny">
+                                <img width="100%" :src="dialogImageUrl" alt="">
+                            </el-dialog>
+                        </el-form-item>
+            
+                        <el-form-item>
+                            <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
+                        </el-form-item>-->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -93,27 +121,20 @@ export default {
             editForm: {
                 id: 0,
                 name: '',
-                code: '',
-                production_origin: '',
-                manufacturer: '',
-                valuation_id: '',
-                retail_unit_id: '',
-                goods_type_id: '',
-                goods_brand_id: '',
-                supplier_id: '',
-                buying_price: '',
-                trade_price: '',
-                retail_price: '',
-                num: '',
-                is_rebate: '1',
-                norm: '',
-                market_price: ''
+                display: '',
+                pid: '0',
+                module: '',
+                controller: '',
+                action: '',
+                displayorder: '',
+                status: '',
+                level: ''
             },
             editLoading: false,
             btnEditText: '提 交',
             editFormRules: {
                 name: [
-                    { required: true, message: '请输入姓名', trigger: 'blur' }
+                    { required: true, message: '请输入名称', trigger: 'blur' }
                 ],
                 code: [
                     { required: true, message: '请输入国际条形码', trigger: 'blur' }
