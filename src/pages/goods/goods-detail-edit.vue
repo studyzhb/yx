@@ -28,14 +28,8 @@
                             <el-form-item label="商品名称" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
                                 <el-input v-model="form.name" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="商品编码" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="form.name" auto-complete="off"></el-input>
-                            </el-form-item>
                             <el-form-item label="国际条形码" prop="code" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
                                 <el-input v-model="form.code" auto-complete="off"></el-input>
-                            </el-form-item>
-                            <el-form-item label="规格" prop="norm" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="form.norm" auto-complete="off"></el-input>
                             </el-form-item>
                             <el-form-item label="原产地" prop="production_origin" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
                                 <el-input v-model="form.production_origin" auto-complete="off"></el-input>
@@ -275,27 +269,39 @@ export default {
         },
         //获取用户列表
         getUsers() {
-            let para = {
-                page: this.page,
-                name: this.filters.name
-            };
+            
             let { params } = this.$route;
             this.editForm.id = params.id
+            let para = {
+                id: params.id
+            };
             this.listLoading = true;
             NProgress.start();
-            // getUserListPage(para).then((res) => {
-            //     this.total = res.data.total;
-            //     this.users = res.data.users;
-            //     this.listLoading = false;
-            //     NProgress.done();
-            // });
+            
+            request.get(config.api.goods.goodsdetail, para)
+				.then((res) => {
+					this.listLoading = false;
+					NProgress.done();
+					let { message, code, data } = res;
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+
+						this.form = data.cnt;
+						
+					}
+				})
         },
         handleRequestOssBanner(files) {
             let file = files.file
             Sign.then((client) => {
                 client.multipartUpload(file.name, file)
                     .then(res => {
-                        this.pic.push(res.url);
+                        this.pic.push((res.res.requestUrls[0]).split('?')[0]);
                         this.filelist1 = [];
                         this.pic.forEach((item, index) => {
                             this.filelist1.push({ name: index, url: item })
@@ -320,7 +326,7 @@ export default {
             Sign.then((client) => {
                 client.multipartUpload(file.name, file)
                     .then(res => {
-                        this.picContent.push(res.url);
+                        this.picContent.push((res.res.requestUrls[0]).split('?')[0]);
                         this.filelist = [];
                         this.picContent.forEach((item, index) => {
                             this.filelist.push({ name: index, url: item })

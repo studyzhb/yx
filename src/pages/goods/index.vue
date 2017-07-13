@@ -426,7 +426,7 @@ export default {
 						this.total = data.cnt.good.total;
 						this.users = data.cnt.good.data;
 						data.cnt.num.forEach((item) => {
-							if (item.status == 0) {
+							if (item.is_sell == 0) {
 								this.notpick = '未上架 ' + item.num
 							} else {
 								this.pick = '上架 ' + item.num

@@ -204,10 +204,10 @@ export default {
             Sign.then((client) => {
                 client.multipartUpload('/pic/' + file.name, file)
                     .then(res => {
-                        this.editForm.icon = res.url;
+                        this.editForm.icon = (res.res.requestUrls[0]).split('?')[0];
                         //this.filelist.splice(0,1)
-                        console.log(res.url)
-                        this.filelist = [{ name: 'editpic', url: res.url }]
+                        
+                        this.filelist = [{ name: 'editpic', url: (res.res.requestUrls[0]).split('?')[0] }]
                     }).catch(err => {
                         console.log(err)
                     })

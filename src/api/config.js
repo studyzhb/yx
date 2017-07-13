@@ -9,6 +9,10 @@ export default {
     baseUrl:'/api',
     outputexcel:'http://a.ejiabl.com/api',
     api:{
+        //权限
+        author:{
+            
+        },
         //店铺
         shop:{
             showlist:'/shop/list',
@@ -105,6 +109,8 @@ export default {
             goodstooglestatus:'/goods/shelves',
             //商品详情编辑
             goodsdetailadd:'/goods/editgood',
+            //商品详情
+            goodsdetail:'/goods/detail',
             //分类
             sortindex:"/type/show",
             //添加分类

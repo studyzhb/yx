@@ -329,7 +329,7 @@ export default {
 			Sign.then((client) => {
 				client.multipartUpload(file.name, file)
 					.then(res => {
-						this.form.avatar = res.url;
+						this.form.avatar = (res.res.requestUrls[0]).split('?')[0];
 					}).catch(err => {
 						console.log(err)
 					})

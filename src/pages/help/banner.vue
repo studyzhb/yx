@@ -190,7 +190,7 @@ export default {
                 })
                     .then(res => {
                         console.log(res)
-                        this.editForm.img_url = res.url;
+                        this.editForm.img_url = (res.res.requestUrls[0]).split('?')[0];
                     }).catch(err => {
                         console.log(err)
                     })
