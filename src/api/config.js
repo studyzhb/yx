@@ -115,7 +115,21 @@ export default {
             addpay:'/pay/save',
             //展示支付信息
             shopayinfo:'/pay/list',
-            updatepaystatus:"/pay/status"
+            updatepaystatus:"/pay/status",
+            //文章
+            articlesortlist:'/article/cate_list',
+            addarticlesort:'/article/add_cate',
+            articlesortdetail:"/article/cate_detail",
+            articlelist:'/article/list',
+            addarticle:"/article/add_detail",
+            articledetail:"/article/detail",
+            deletearticlesort:"/article/del_cate",
+            deletearticle:"/article/del_detail",
+            //数据字典
+            dictionarylist:'/dictionary/show',
+            adddictionary:'/dictionary/create',
+            editdictionary:"/dictionary/edit",
+            deletedictionary:'/dictionary/del'
         },
         goods:{
             index:'/goods/show',

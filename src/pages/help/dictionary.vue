@@ -3,12 +3,12 @@
         <!--工具条-->
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filters">
-                <el-form-item>
-                    <el-input v-model="filters.title" placeholder="文章标题"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
-                </el-form-item>
+                <!--<el-form-item>
+                        <el-input v-model="filters.title" placeholder="文章标题"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                    </el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" @click="handleAdd">新增</el-button>
                 </el-form-item>
@@ -20,16 +20,15 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="title" label="名称" width="180" sortable>
+                <el-table-column prop="title" label="标题" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="cover" label="封面" width="120" sortable>
-                    <template scope="scope">
-                        <img width="24" :src="scope.row.cover" alt="">
-                    </template>
+                <el-table-column prop="name" label="名字" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="type" label="类别" :formatter="formatSex" width="180" sortable>
+                <el-table-column prop="contents" label="内容" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="intro" label="文章介绍" width="180" sortable>
+                <el-table-column prop="url" label="url" width="180" sortable>
+                </el-table-column>
+                <el-table-column prop="note" label="备注" width="180" sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="150" sortable>
                     <template scope="scope">
@@ -41,6 +40,7 @@
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
+                        <el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
                     </span>
                 </el-table-column>
             </el-table>
@@ -48,7 +48,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -58,43 +58,29 @@
                 <el-form-item label="标题" prop="title">
                     <el-input v-model="editForm.title" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="封面" prop="cover">
+                <!--<el-form-item label="封面" prop="cover">
                     <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
                         <i class="el-icon-plus"></i>
                     </el-upload>
                     <el-dialog v-model="dialogVisible" size="tiny">
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
+                </el-form-item>-->
+                <el-form-item label="名字" prop="name">
+                    <el-input v-model="editForm.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="简介" prop="intro">
-                    <el-input v-model="editForm.intro" auto-complete="off"></el-input>
+                <el-form-item label="状态" prop="status">
+					<el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+					</el-switch>
+				</el-form-item>
+                <el-form-item label="显示内容" prop="contents">
+                    <el-input v-model="editForm.contents" auto-complete="off"></el-input>
                 </el-form-item>
-    
-                <el-form-item label="文章内容" prop="content">
-                    <el-input v-model="editForm.content" auto-complete="off"></el-input>
+                <el-form-item label="url" prop="url">
+                    <el-input v-model="editForm.url" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="文章内容" prop="type">
-                    <el-select v-model="editForm.type" placeholder="请选择">
-                        <el-option label="文章" value="1"></el-option>
-                        <el-option label="公告" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-               <el-form-item label="文章状态" prop="status">
-                    <el-select v-model="editForm.status" placeholder="请选择">
-                        <el-option label="正常 " value="1"></el-option>
-                        <el-option label="审核中" value="2"></el-option>
-                        <el-option label="禁用删除" value="3"></el-option>
-                    </el-select>
-                </el-form-item>
-    
-                <el-form-item label="跳转" prop="is_link">
-                    <el-select v-model="editForm.is_link" placeholder="请选择">
-                        <el-option label="正常跳转详情" value="1"></el-option>
-                        <el-option label="不跳转详情" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-input type="hidden" v-model="editForm.cover" auto-complete="off"></el-input>
+                <el-form-item label="备注" prop="note">
+                    <el-input type="area" v-model="editForm.note" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -139,7 +125,10 @@ export default {
             editForm: {
                 id: 0,
                 title: '',
-                cover: ''
+                contents: '',
+                url: '',
+                note: '',
+                status: "1"
             },
             editLoading: false,
             editstatusLoading: false,
@@ -233,7 +222,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.articlelist, this.filters)
+            request.get(config.api.help.dictionarylist, this.filters)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -261,16 +250,26 @@ export default {
                 _this.listLoading = true;
                 NProgress.start();
                 let para = { id: row.id };
-                removeUser(para).then((res) => {
-                    _this.listLoading = false;
-                    NProgress.done();
-                    _this.$notify({
-                        title: '成功',
-                        message: '删除成功',
-                        type: 'success'
-                    });
-                    _this.getUsers();
-                });
+                request.post(config.api.help.deletedictionary, para)
+                    .then((res) => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: message,
+                                type: 'sucess'
+                            });
+                            _this.getUsers();
+                        }
+                    })
 
             }).catch(() => {
 
@@ -301,16 +300,9 @@ export default {
             console.log(row)
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
-            this.editForm.id = row.id;
-            this.editForm.title = row.title;
-            this.editForm.cover = row.cover;
-            this.editForm.cate_id = row.cate_id;
-            this.editForm.intro = row.intro;
-            this.editForm.content = row.content;
-            this.editForm.type = row.type;
-            this.editForm.status = row.status;
-            this.editForm.is_link = row.is_link;
-            this.filelist = row.cover ? [{ name: 'editlogo', url: row.cover }] : [];
+            for (let key in this.editForm) {
+                this.editForm[key] = row[key] + '';
+            }
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -327,7 +319,7 @@ export default {
                         if (_this.editForm.id == 0) {
                             //新增
                             let para = _this.editForm;
-                            request.post(config.api.help.addarticle, para)
+                            request.post(config.api.help.adddictionary, para)
                                 .then(res => {
                                     let { message, code, data } = res;
                                     _this.editLoading = false;
@@ -352,7 +344,7 @@ export default {
                         } else {
                             //编辑
                             let para = _this.editForm;
-                            request.post(config.api.help.addarticle, para)
+                            request.post(config.api.help.editdictionary, para)
                                 .then(res => {
                                     let { message, code, data } = res;
                                     _this.editLoading = false;

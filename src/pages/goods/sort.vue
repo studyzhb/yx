@@ -398,7 +398,7 @@ export default {
 			}
 			this.editForm.pic = row.app_pic;
 			this.editForm.status += '';
-			this.filelist = [{ name: '', url: row.app_pic }]
+			this.filelist =row.app_pic?[{ name: '', url: row.app_pic }]:[]
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -481,7 +481,7 @@ export default {
 
 			this.editForm.id = 0;
 			this.editForm.name = '';
-			this.editForm.pic = 1;
+			this.editForm.pic = '';
 			this.editForm.pid = 0;
 			this.filelist = [];
 			this.editForm.sort = 0;
@@ -498,7 +498,7 @@ export default {
 
 			this.editForm.id = 0;
 			this.editForm.name = '';
-			this.editForm.pic = 1;
+			this.editForm.pic = '';
 			this.filelist = [];
 			this.editForm.pid = row.id;
 			this.editForm.sort = 0;

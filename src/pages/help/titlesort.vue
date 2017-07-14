@@ -3,12 +3,12 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
-				<el-form-item label="分类">
+				<!--<el-form-item label="分类">
 					<el-input v-model="filters.name" placeholder="分类"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">搜索</el-button>
-				</el-form-item>
+				</el-form-item>-->
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
@@ -28,22 +28,15 @@
 									<img width="24" :src="scope.row.cover" alt="">
 								</template>
 							</el-table-column>
-							<el-table-column prop="name" width="120" sortable>
+							<el-table-column prop="title" width="120" sortable>
 							</el-table-column>
 							<el-table-column prop="status" :formatter="formatSex" width="120" sortable>
 							</el-table-column>
-							<el-table-column prop="displayorder" width="120" sortable>
-								<template scope="scope">
-									<el-input size="small" v-model="scope.row.displayorder" placeholder="请输入位置"></el-input>
-								</template>
-							</el-table-column>
-							<el-table-column prop="name" width="120" sortable>
-							</el-table-column>
+							
 							<el-table-column inline-template :context="_self" min-width="320">
 								<span>
 									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
-									<el-button size="small" @click="putoroutaway(row,1)">全部上架</el-button>
-									<el-button size="small" @click="putoroutaway(row,0)">全部下架</el-button>
+			
 									<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
 								</span>
 							</el-table-column>
@@ -57,23 +50,15 @@
 						<img width="24" :src="scope.row.app_pic" alt="">
 					</template>
 				</el-table-column>
-				<el-table-column prop="name" label="名称" width="120" sortable>
+				<el-table-column prop="title" label="名称" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="displayorder" label="排序" width="120" sortable>
-					<template scope="scope">
-						<el-input size="small" style="" v-model="scope.row.displayorder" placeholder="请输入位置"></el-input>
-					</template>
-				</el-table-column>
-				<el-table-column prop="name" label="上架/下架" width="120" sortable>
-				</el-table-column>
+				
 				<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<el-button size="small" @click="handlesubAdd(row)">添加</el-button>
-						<el-button size="small" @click="putoroutaway(row,1)">全部上架</el-button>
-						<el-button size="small" @click="putoroutaway(row,0)">全部下架</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
 					</span>
 				</el-table-column>
@@ -89,10 +74,10 @@
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="名称" prop="name">
+				<el-form-item label="名称" prop="title">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="图片" prop="pic">
+				<el-form-item label="图片" prop="cover">
 					<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
 						<i class="el-icon-plus"></i>
 					</el-upload>
@@ -100,17 +85,9 @@
 						<img width="100%" :src="dialogImageUrl" alt="">
 					</el-dialog>
 				</el-form-item>
-				<el-form-item label="排序" prop="sort">
-					<el-input v-model="editForm.sort" auto-complete="off"></el-input>
-					<el-input type="hidden" v-model="editForm.pic" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="状态" prop="status">
-					<el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
-					</el-switch>
-				</el-form-item>
-				<el-form-item label="描述" prop="note">
+				<!--<el-form-item label="描述" prop="note">
 					<el-input type="area" v-model="editForm.note" auto-complete="off"></el-input>
-				</el-form-item>
+				</el-form-item>-->
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -188,7 +165,7 @@ export default {
 	data() {
 		return {
 			filters: {
-				name: ''
+				
 			},
 			//图片上传
 			dialogImageUrl: '',
@@ -210,12 +187,9 @@ export default {
 			//编辑界面数据
 			editForm: {
 				id: 0,
-				name: '',
-				pic: '',
-				sort: '',
-				pid: '',
-				note: "",
-				status: ""
+				title: '',
+				cover: '',
+				parent_id: ''
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -273,7 +247,7 @@ export default {
 			Sign.then((client) => {
 				client.multipartUpload('/pic/' + file.name, file)
 					.then(res => {
-						this.editForm.pic = (res.res.requestUrls[0]).split('?')[0];
+						this.editForm.cover = (res.res.requestUrls[0]).split('?')[0];
 					}).catch(err => {
 						console.log(err)
 					})
@@ -313,11 +287,7 @@ export default {
 		//获取用户列表
 		getUsers() {
 
-			let para = {
-				page: this.page,
-				name: this.filters.name,
-				// shop_id:this.$route.params.id
-			};
+			let para =this.filters;
 			this.listLoading = true;
 			NProgress.start();
 			// getUserListPage(para).then((res) => {
@@ -326,7 +296,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.goods.sortindex, para)
+			request.get(config.api.help.articlesortlist, para)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -396,9 +366,8 @@ export default {
 			for (let key in this.editForm) {
 				this.editForm[key] = row[key] + '';
 			}
-			this.editForm.pic = row.app_pic;
-			this.editForm.status += '';
-			this.filelist = [{ name: '', url: row.app_pic }]
+	
+			this.filelist = row.cover?[{ name: '', url: row.cover }]:[];
 		},
 		//编辑 or 新增
 		editSubmit: function () {
@@ -416,7 +385,7 @@ export default {
 							//新增
 							let para = _this.editForm;
 							delete para.id;
-							request.post(config.api.goods.addsort, para)
+							request.post(config.api.help.addarticlesort, para)
 								.then(res => {
 									let { message, code, data } = res;
 									_this.editLoading = false;
@@ -441,7 +410,7 @@ export default {
 						} else {
 							//编辑
 							let para = _this.editForm;
-							request.post(config.api.goods.updatesort, para)
+							request.post(config.api.help.addarticlesort, para)
 								.then(res => {
 									let { message, code, data } = res;
 									_this.editLoading = false;
@@ -480,13 +449,12 @@ export default {
 			this.editFormTtile = '新增一级分类';
 
 			this.editForm.id = 0;
-			this.editForm.name = '';
-			this.editForm.pic = 1;
-			this.editForm.pid = 0;
+			this.editForm.cover = '';
+			this.editForm.title = '';
+			this.editForm.parent_id = 0;
 			this.filelist = [];
-			this.editForm.sort = 0;
-			this.editForm.note = '';
-			this.editForm.status = '1';
+
+			// this.editForm.status = '1';
 
 		},
 		//显示新增顶级分类界面
@@ -497,13 +465,12 @@ export default {
 			this.editFormTtile = '新增' + row.name + '下的分类';
 
 			this.editForm.id = 0;
-			this.editForm.name = '';
-			this.editForm.pic = 1;
+			this.editForm.cover = '';
+			this.editForm.title = '';
 			this.filelist = [];
-			this.editForm.pid = row.id;
-			this.editForm.sort = 0;
-			this.editForm.note = '';
-			this.editForm.status = '1';
+			this.editForm.parent_id = row.id;
+
+			// this.editForm.status = '1';
 
 		}
 	},
