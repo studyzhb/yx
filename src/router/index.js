@@ -54,6 +54,7 @@ import Pay from '../pages/help/pay'
 import ArticleSort from '../pages/help/titlesort'
 import Article from '../pages/help/article'
 import Dictionary from '../pages/help/dictionary'
+import SysShare from '../pages/help/sysshare'
 
 
 //
@@ -162,6 +163,7 @@ export default [
         children: [
             //{ path: '/main', component: Main },
             { path: '/help', component: Help, name: '帮助列表' },
+            { path: '/sysshare', component: SysShare, name: '分润比例' },
             { path: '/dictionary', component: Dictionary, name: '数据字典' },
             { path: '/bank', component: Bank, name: '银行类型' },
             { path: '/banner', component: Banner, name: 'banner图管理' },

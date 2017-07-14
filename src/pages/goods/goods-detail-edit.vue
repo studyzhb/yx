@@ -294,7 +294,7 @@ export default {
                         this.form.is_rebate+='';
                         this.form.pic=JSON.stringify(this.form.pic)
                         for (let key in this.editForm){
-                            this.editForm[key]=this.form[key]
+                            this.editForm[key]=this.form[key]+'';
                         }
                         this.filelist1=[]
                         this.filelist=[]

@@ -1,43 +1,34 @@
 <template>
     <section>
         <!--工具条-->
-        <el-col :span="24" class="toolbar">
-            <el-form :inline="true" :model="filters">
-                <el-form-item>
-                    <el-input v-model="filters.title" placeholder="文章标题"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" v-on:click="getUsers">查询</el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleAdd">新增</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
+        <!--<el-col :span="24" class="toolbar">
+                    <el-form :inline="true" :model="filters">
+                        <el-form-item>
+                            <el-input v-model="filters.title" placeholder="文章标题"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="handleAdd">新增</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>-->
     
         <!--列表-->
         <template>
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="title" label="名称" width="180" sortable>
+                <el-table-column prop="ping_fee" label="平台分润百分比" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="cover" label="封面" width="120" sortable>
-                    <template scope="scope">
-                        <img width="24" :src="scope.row.cover" alt="">
-                    </template>
+                <el-table-column prop="shop_fee" label="店铺分润百分比" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="type" label="类别" :formatter="formatSex" width="180" sortable>
+                <el-table-column prop="queque_fee" label="队列分润百分比" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="intro" label="文章介绍" width="180" sortable>
+                <el-table-column prop="fanli_fee" label="返利盘分润百分比" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="status" label="状态" :formatter="formatStatus" width="150" sortable>
-                    <!--<template scope="scope">
-                        <el-button size="small" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
-                    </template>-->
-                </el-table-column>
-                <el-table-column prop="created_at" label="创建时间" min-width="180" sortable>
-                </el-table-column>
+    
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
@@ -47,60 +38,29 @@
         </template>
     
         <!--分页-->
-        <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-            </el-pagination>
-        </el-col>
+        <!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
+                    <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+                    </el-pagination>
+                </el-col>-->
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-            <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-                <el-form-item label="标题" prop="title">
-                    <el-input v-model="editForm.title" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="封面" prop="cover">
-                    <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                    <el-dialog v-model="dialogVisible" size="tiny">
-                        <img width="100%" :src="dialogImageUrl" alt="">
-                    </el-dialog>
-                </el-form-item>
-                <el-form-item label="简介" prop="intro">
-                    <el-input v-model="editForm.intro" auto-complete="off"></el-input>
+            <el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
+                <el-form-item label="平台分润" prop="ping_fee">
+                    <el-input v-model="editForm.ping_fee" auto-complete="off"></el-input>
                 </el-form-item>
     
-                <el-form-item label="文章内容" prop="content">
-                    <el-input v-model="editForm.content" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="文章分类" prop="cate_id">
-                    <el-select v-model="editForm.cate_id" placeholder="请选择">
-                        <el-option v-for="(item,index) in articlesorts" :key="index" :label="item.title "  :value="item.id+''"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="文章类别" prop="type">
-                    <el-select v-model="editForm.type" placeholder="请选择">
-                        <el-option label="文章" value="1"></el-option>
-                        <el-option label="公告" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="文章状态" prop="status">
-                    <el-select v-model="editForm.status" placeholder="请选择">
-                        <el-option label="正常 " value="1"></el-option>
-                        <el-option label="审核中" value="2"></el-option>
-                        <el-option label="禁用删除" value="3"></el-option>
-                    </el-select>
+                <el-form-item label="店铺分润" prop="shop_fee">
+                    <el-input v-model="editForm.shop_fee" auto-complete="off"></el-input>
                 </el-form-item>
     
-                <el-form-item label="跳转" prop="is_link">
-                    <el-select v-model="editForm.is_link" placeholder="请选择">
-                        <el-option label="正常跳转详情" value="1"></el-option>
-                        <el-option label="不跳转详情" value="2"></el-option>
-                    </el-select>
+                <el-form-item label="队列分润" prop="queque_fee">
+                    <el-input v-model="editForm.queque_fee" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item>
-                    <el-input type="hidden" v-model="editForm.cover" auto-complete="off"></el-input>
+                <el-form-item label="返利盘分润" prop="fanli_fee">
+                    <el-input v-model="editForm.fanli_fee" auto-complete="off"></el-input>
                 </el-form-item>
+    
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -124,7 +84,7 @@ export default {
                 title: '',
                 page: 1
             },
-            articlesorts:[],
+            articlesorts: [],
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
@@ -143,24 +103,25 @@ export default {
             filelist: [],
             //编辑界面数据
             editForm: {
-                id: 0,
-                title: '',
-                cover: '',
-                cate_id: '0',
-                intro: '',
-                content: '',
-                type: '',
-                status: '',
-                is_link: ''
+                ping_fee: '',
+                shop_fee: '',
+                queque_fee: '',
+                fanli_fee: ''
             },
             editLoading: false,
             editstatusLoading: false,
             btnEditText: '提 交',
             editFormRules: {
-                name: [
+                ping_fee: [
                     { required: true, message: '请输入姓名', trigger: 'blur' }
                 ],
-                logo: [
+                shop_fee: [
+                    { required: true, message: '请添加图片', trigger: 'blur' }
+                ],
+                queque_fee: [
+                    { required: true, message: '请输入姓名', trigger: 'blur' }
+                ],
+                fanli_fee: [
                     { required: true, message: '请添加图片', trigger: 'blur' }
                 ]
             }
@@ -172,8 +133,8 @@ export default {
         formatSex: function (row, column) {
             return row.type == 1 ? '文章' : row.type == 0 ? '公告' : '未知';
         },
-        formatStatus(row, column){
-             return row.status == 1 ? '正常' : row.status == 2 ? '审核中' : '禁用删除';
+        formatStatus(row, column) {
+            return row.status == 1 ? '正常' : row.status == 2 ? '审核中' : '禁用删除';
         },
         //图片上传
         handleRemove(file, fileList) {
@@ -237,7 +198,7 @@ export default {
         getarticlesort() {
             request.get(config.api.help.articlesortlist)
                 .then((res) => {
-                    
+
                     let { message, code, data } = res;
                     if (code !== 200) {
                         this.$notify({
@@ -267,7 +228,7 @@ export default {
             // 	this.listLoading = false;
             // 	NProgress.done();
             // });
-            request.get(config.api.help.articlelist, this.filters)
+            request.get(config.api.help.showsyssharelist)
                 .then((res) => {
                     this.listLoading = false;
                     NProgress.done();
@@ -279,9 +240,9 @@ export default {
                             type: 'error'
                         });
                     } else {
-                        this.total = data.cnt.total;
-                        this.users = data.cnt.data;
-                        this.pagesize = data.cnt.per_page || 10;
+                        // this.total = data.cnt.total;
+                        this.users = [data.cnt];
+                        // this.pagesize = data.cnt.per_page || 10;
                     }
                 })
         },
@@ -334,17 +295,13 @@ export default {
         handleEdit: function (row) {
             console.log(row)
             this.editFormVisible = true;
-            this.editFormTtile = '编辑';
-            this.editForm.id = row.id;
-            this.editForm.title = row.title;
-            this.editForm.cover = row.cover;
-            this.editForm.cate_id = row.cate_id+'';
-            this.editForm.intro = row.intro;
-            this.editForm.content = row.content;
-            this.editForm.type = row.type+'';
-            this.editForm.status = row.status+'';
-            this.editForm.is_link = row.is_link+'';
-            this.filelist = row.cover ? [{ name: 'editlogo', url: row.cover }] : [];
+            this.editFormTtile = '分润合计100';
+
+            this.editForm.ping_fee = row.ping_fee + '';
+            this.editForm.shop_fee = row.shop_fee + '';
+            this.editForm.queque_fee = row.queque_fee + '';
+            this.editForm.fanli_fee = row.fanli_fee + '';
+            // this.filelist = row.cover ? [{ name: 'editlogo', url: row.cover }] : [];
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -386,28 +343,40 @@ export default {
                         } else {
                             //编辑
                             let para = _this.editForm;
-                            request.post(config.api.help.addarticle, para)
-                                .then(res => {
-                                    let { message, code, data } = res;
-                                    _this.editLoading = false;
-                                    NProgress.done();
-                                    _this.btnEditText = '提 交';
-                                    if (code !== 200) {
-                                        this.$notify({
-                                            title: '错误',
-                                            message: message,
-                                            type: 'error'
-                                        });
-                                    } else {
-                                        _this.$notify({
-                                            title: '成功',
-                                            message: '更新成功',
-                                            type: 'success'
-                                        });
-                                        _this.editFormVisible = false;
-                                        _this.getUsers();
-                                    }
-                                })
+
+                            let sum = (_this.editForm.ping_fee - 0) + (_this.editForm.shop_fee - 0) + (_this.editForm.queque_fee - 0) + (_this.editForm.fanli_fee - 0);
+
+                            if (sum == 100) {
+                                request.post(config.api.help.editsyssharelist, para)
+                                    .then(res => {
+                                        let { message, code, data } = res;
+                                        _this.editLoading = false;
+                                        NProgress.done();
+                                        _this.btnEditText = '提 交';
+                                        if (code !== 200) {
+                                            this.$notify({
+                                                title: '错误',
+                                                message: message,
+                                                type: 'error'
+                                            });
+                                        } else {
+                                            _this.$notify({
+                                                title: '成功',
+                                                message: '更新成功',
+                                                type: 'success'
+                                            });
+                                            _this.editFormVisible = false;
+                                            _this.getUsers();
+                                        }
+                                    })
+                            } else {
+                                _this.editLoading = false;
+                                this.$notify({
+                                    title: '错误',
+                                    message: '分润比例必须合计为100',
+                                    type: 'error'
+                                });
+                            }
 
                         }
 
@@ -466,7 +435,6 @@ export default {
     },
     mounted() {
         this.getUsers();
-        this.getarticlesort();
     }
 }
 </script>

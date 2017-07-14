@@ -57,7 +57,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10,15, 20, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -121,7 +121,8 @@ export default {
                 status: '',
                 order_sn: '',
                 start_time: '',
-                end_time: ''
+                end_time: '',
+                page:1
             },
             users: [],
             total: 0,
@@ -169,6 +170,7 @@ export default {
         handleCurrentChange(val) {
             if (this.filters.page != val) {
                 this.page = val;
+                this.filters.page = val;
                 this.getUsers();
             }
 
@@ -262,7 +264,7 @@ export default {
                                     type: 'success'
                                 });
                                
-                                _this.getUsers();
+                                this.getUsers();
                             }
                         })
                 })

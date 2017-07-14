@@ -129,7 +129,9 @@ export default {
             dictionarylist:'/dictionary/show',
             adddictionary:'/dictionary/create',
             editdictionary:"/dictionary/edit",
-            deletedictionary:'/dictionary/del'
+            deletedictionary:'/dictionary/del',
+            showsyssharelist:'/sys/show',
+            editsyssharelist:'/sys/edit'
         },
         goods:{
             index:'/goods/show',
