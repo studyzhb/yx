@@ -73,13 +73,18 @@
                 <el-form-item label="文章内容" prop="content">
                     <el-input v-model="editForm.content" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="文章内容" prop="type">
+                <el-form-item label="文章分类" prop="cate_id">
+                    <el-select v-model="editForm.cate_id" placeholder="请选择">
+                        <el-option v-for="(item,index) in articlesorts" :key="index" :label="item.title "  :value="item.id+''"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="文章类别" prop="type">
                     <el-select v-model="editForm.type" placeholder="请选择">
                         <el-option label="文章" value="1"></el-option>
                         <el-option label="公告" value="2"></el-option>
                     </el-select>
                 </el-form-item>
-               <el-form-item label="文章状态" prop="status">
+                <el-form-item label="文章状态" prop="status">
                     <el-select v-model="editForm.status" placeholder="请选择">
                         <el-option label="正常 " value="1"></el-option>
                         <el-option label="审核中" value="2"></el-option>
@@ -119,6 +124,7 @@ export default {
                 title: '',
                 page: 1
             },
+            articlesorts:[],
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
@@ -139,7 +145,13 @@ export default {
             editForm: {
                 id: 0,
                 title: '',
-                cover: ''
+                cover: '',
+                cate_id: '0',
+                intro: '',
+                content: '',
+                type: '',
+                status: '',
+                is_link: ''
             },
             editLoading: false,
             editstatusLoading: false,
@@ -217,6 +229,25 @@ export default {
                     })
             })
 
+        },
+        //获取分类
+        getarticlesort() {
+            request.get(config.api.help.articlesortlist)
+                .then((res) => {
+                    
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+                        // this.total = data.cnt.total;
+                        this.articlesorts = data.cnt;
+                        // this.pagesize = data.cnt.per_page || 10;
+                    }
+                })
         },
         //获取用户列表
         getUsers() {
@@ -304,12 +335,12 @@ export default {
             this.editForm.id = row.id;
             this.editForm.title = row.title;
             this.editForm.cover = row.cover;
-            this.editForm.cate_id = row.cate_id;
+            this.editForm.cate_id = row.cate_id+'';
             this.editForm.intro = row.intro;
             this.editForm.content = row.content;
-            this.editForm.type = row.type;
-            this.editForm.status = row.status;
-            this.editForm.is_link = row.is_link;
+            this.editForm.type = row.type+'';
+            this.editForm.status = row.status+'';
+            this.editForm.is_link = row.is_link+'';
             this.filelist = row.cover ? [{ name: 'editlogo', url: row.cover }] : [];
         },
         //编辑 or 新增
@@ -432,6 +463,7 @@ export default {
     },
     mounted() {
         this.getUsers();
+        this.getarticlesort();
     }
 }
 </script>

@@ -45,9 +45,9 @@
 				</el-table-column>
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="app_pic" label="图标" width="120" sortable>
+				<el-table-column prop="cover" label="图标" width="120" sortable>
 					<template scope="scope">
-						<img width="24" :src="scope.row.app_pic" alt="">
+						<img width="24" :src="scope.row.cover" alt="">
 					</template>
 				</el-table-column>
 				<el-table-column prop="title" label="名称" width="120" sortable>
@@ -75,7 +75,8 @@
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="名称" prop="title">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+					<el-input v-model="editForm.title" auto-complete="off"></el-input>
+					<el-input type="hidden" v-model="editForm.cover" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="图片" prop="cover">
 					<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
@@ -462,7 +463,7 @@ export default {
 			var _this = this;
 
 			this.editFormVisible = true;
-			this.editFormTtile = '新增' + row.name + '下的分类';
+			this.editFormTtile = '新增' + row.title + '下的分类';
 
 			this.editForm.id = 0;
 			this.editForm.cover = '';
