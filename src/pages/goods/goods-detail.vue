@@ -238,7 +238,7 @@ export default {
 		},
 		//性别显示转换
 		formatSex: function (row, column) {
-			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			return row.is_sell == 1 ? '已上架' : row.is_sell == 0 ? '未上架' : '未知';
 		},
 		handleClick(tab, event) {
 			this.filters.page = 1;
