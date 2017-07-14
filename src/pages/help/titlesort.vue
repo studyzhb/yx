@@ -18,7 +18,7 @@
 		<!--列表-->
 		<template>
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
-				<el-table-column type="expand">
+				<!--<el-table-column type="expand">
 					<template scope="props">
 						<el-table :data="props.row.sub_type" style="width: 100%">
 							<el-table-column type="index" width="60">
@@ -37,12 +37,12 @@
 								<span>
 									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 			
-									<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
+									<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
 								</span>
 							</el-table-column>
 						</el-table>
 					</template>
-				</el-table-column>
+				</el-table-column>-->
 				<el-table-column type="index" width="60">
 				</el-table-column>
 				<el-table-column prop="cover" label="图标" width="120" sortable>
@@ -58,7 +58,7 @@
 				<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
-						<el-button size="small" @click="handlesubAdd(row)">添加</el-button>
+						<!--<el-button size="small" @click="handlesubAdd(row)">添加</el-button>-->
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
 					</span>
 				</el-table-column>
