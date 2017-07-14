@@ -51,6 +51,8 @@ import Help from '../pages/help/index'
 import Bank from '../pages/help/bank'
 import Banner from '../pages/help/banner'
 import Pay from '../pages/help/pay'
+import ArticleSort from '../pages/help/titlesort'
+import Article from '../pages/help/article'
 
 
 //
@@ -161,6 +163,8 @@ export default [
             { path: '/help', component: Help, name: '帮助列表' },
             { path: '/bank', component: Bank, name: '银行类型' },
             { path: '/banner', component: Banner, name: 'banner图管理' },
+            { path: '/articlesort', component: ArticleSort, name: '文章分类' },
+            { path: '/article', component: Article, name: '文章' },
             { path: '/pay', component: Pay, name: '支付管理' }
         ]
     }

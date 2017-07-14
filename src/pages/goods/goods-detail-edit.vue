@@ -291,6 +291,7 @@ export default {
 					} else {
 
 						this.form = data.cnt;
+                        this.form.is_rebate+='';
                         this.form.pic=JSON.stringify(this.form.pic)
                         for (let key in this.editForm){
                             this.editForm[key]=this.form[key]

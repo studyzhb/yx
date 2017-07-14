@@ -23,6 +23,11 @@
 						<el-table :data="props.row.sub_type" style="width: 100%">
 							<el-table-column type="index" width="60">
 							</el-table-column>
+							<el-table-column prop="app_pic" label="图标" width="120" sortable>
+								<template scope="scope">
+									<img width="24" :src="scope.row.app_pic" alt="">
+								</template>
+							</el-table-column>
 							<el-table-column prop="name" width="120" sortable>
 							</el-table-column>
 							<el-table-column prop="status" :formatter="formatSex" width="120" sortable>
@@ -32,7 +37,7 @@
 									<el-input size="small" v-model="scope.row.displayorder" placeholder="请输入位置"></el-input>
 								</template>
 							</el-table-column>
-							<el-table-column prop="name"  width="120" sortable>
+							<el-table-column prop="name" width="120" sortable>
 							</el-table-column>
 							<el-table-column inline-template :context="_self" min-width="320">
 								<span>
@@ -46,6 +51,11 @@
 					</template>
 				</el-table-column>
 				<el-table-column type="index" width="60">
+				</el-table-column>
+				<el-table-column prop="app_pic" label="图标" width="120" sortable>
+					<template scope="scope">
+						<img width="24" :src="scope.row.app_pic" alt="">
+					</template>
 				</el-table-column>
 				<el-table-column prop="name" label="名称" width="120" sortable>
 				</el-table-column>
@@ -72,9 +82,9 @@
 	
 		<!--分页-->
 		<!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-											<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-											</el-pagination>
-										</el-col>-->
+												<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+												</el-pagination>
+											</el-col>-->
 	
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -200,12 +210,12 @@ export default {
 			//编辑界面数据
 			editForm: {
 				id: 0,
-				name:'',
-				pic:'',
-				sort:'',
-				pid:'',
-				note:"",
-				status:""
+				name: '',
+				pic: '',
+				sort: '',
+				pid: '',
+				note: "",
+				status: ""
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -383,11 +393,11 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			for (let key in this.editForm){
-				this.editForm[key]=row[key]+'';
+			for (let key in this.editForm) {
+				this.editForm[key] = row[key] + '';
 			}
-			this.editForm.pic=row.app_pic;
-			this.editForm.status+='';
+			this.editForm.pic = row.app_pic;
+			this.editForm.status += '';
 			this.filelist = [{ name: '', url: row.app_pic }]
 		},
 		//编辑 or 新增

@@ -602,7 +602,7 @@ export default {
 			}
 			this.option=[];
 			this.editForm.id = 0;
-
+			this.dynamicTags=[];
 			// this.$router.push('/addshop');
 		},
 		//更改上下架

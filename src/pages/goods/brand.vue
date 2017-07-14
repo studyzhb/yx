@@ -20,11 +20,16 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
+				<el-table-column prop="logo" label="图标" width="120" sortable>
+                    <template scope="scope">
+                        <img width="24" :src="scope.row.logo" alt="">
+                    </template>
+                </el-table-column>
 				<el-table-column prop="name" label="名称" width="120" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="排序" width="120" sortable>
+				<el-table-column prop="sort" label="排序" width="120" sortable>
 				</el-table-column>
 				<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
