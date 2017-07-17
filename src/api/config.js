@@ -27,6 +27,9 @@ export default {
             rolelist:'/role/list',
             roleadd:'/role/add',
             roleedit:'/role/actionEdit',
+            roleAuthor:'/role/actionList',
+            roledelete:'/role/delete',
+            rolesingle:'/role/one',
             //权限
             authorlist:'/action/list',
             authoradd:"/action/add",

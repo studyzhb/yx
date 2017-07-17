@@ -33,29 +33,35 @@
                 <el-form-item label="动作" prop="action">
                     <el-input v-model="editForm.action" auto-complete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="页面组件" prop="formation">
+                    <el-input v-model="editForm.formation" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="页面地址" prop="url">
+                    <el-input v-model="editForm.url" auto-complete="off"></el-input>
+                </el-form-item>
                 <el-form-item label="排序" prop="displayorder">
                     <el-input v-model="editForm.displayorder" auto-complete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="level" prop="level">
                     <el-select v-model="editForm.level" placeholder="请选择">
-                        <el-option  label="模块" value="1">
+                        <el-option label="模块" value="1">
                         </el-option>
-                        <el-option  label="动作" value="2">
+                        <el-option label="动作" value="2">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <!--<el-form-item label="logo" prop="logo">
-                            <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                                <i class="el-icon-plus"></i>
-                            </el-upload>
-                            <el-dialog v-model="dialogVisible" size="tiny">
-                                <img width="100%" :src="dialogImageUrl" alt="">
-                            </el-dialog>
-                        </el-form-item>
-            
-                        <el-form-item>
-                            <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
-                        </el-form-item>-->
+                                        <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                                            <i class="el-icon-plus"></i>
+                                        </el-upload>
+                                        <el-dialog v-model="dialogVisible" size="tiny">
+                                            <img width="100%" :src="dialogImageUrl" alt="">
+                                        </el-dialog>
+                                    </el-form-item>
+                        
+                                    <el-form-item>
+                                        <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
+                                    </el-form-item>-->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -91,7 +97,6 @@ export default {
                 page: 1,
                 status: '',
                 is_sell: ''
-
             },
             preData: {
                 brand: [],
@@ -124,6 +129,8 @@ export default {
                 display: '',
                 pid: '0',
                 module: '',
+                formation:'',
+                url:'',
                 controller: '',
                 action: '',
                 displayorder: '',
@@ -192,11 +199,55 @@ export default {
 
         //
         append(store, data) {
-            store.append({ id: id++, label: 'testtest', children: [] }, data);
+            console.log(data)
+            // store.append({ id: id++, label: 'testtest', children: [] }, data);
+            this.editFormVisible = true;
+            this.editFormTtile = '新增' + data.name + '下的权限';
+            for (let key in this.editForm) {
+                this.editForm[key] = '';
+            }
+            this.editForm.id = 0;
+            this.editForm.pid = data.id;
         },
 
         remove(store, data) {
-            store.remove(data);
+            var _this = this;
+            this.$confirm('确认删除该记录吗?', '提示', {
+                //type: 'warning'
+            }).then(() => {
+                _this.listLoading = true;
+                NProgress.start();
+                let para = { id: data.id };
+                request.post(config.api.author.authordelete, { id: data.id })
+                    .then((res) => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code } = res;
+                        if (code !== 200) {
+                            this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            // _this.getUsers();
+                            store.remove(data);
+                        }
+
+                        // _this.getUsers();
+
+                    })
+
+            }).catch(() => {
+
+            });
+
+
         },
 
         renderContent(h, { node, data, store }) {
@@ -207,6 +258,7 @@ export default {
                     </span>
                     <span style="float: right; margin-right: 20px">
                         <el-button size="mini" on-click={() => this.append(store, data)}>添加</el-button>
+                        <el-button size="mini" on-click={() => this.handleEdit(store, data)}>编辑</el-button>
                         <el-button size="mini" on-click={() => this.remove(store, data)}>删除</el-button>
                     </span>
                 </span>);
@@ -249,8 +301,9 @@ export default {
                 })
         },
         //删除
-        handleDel: function (row) {
-            //console.log(row);
+        handleDel: function (row, data) {
+
+
             var _this = this;
             this.$confirm('确认删除该记录吗?', '提示', {
                 //type: 'warning'
@@ -275,30 +328,20 @@ export default {
         },
 
         //显示编辑界面
-        handleEdit: function (row) {
+        handleEdit: function (store, data) {
+            console.log(data.id);
+            let row = null;
+            this.users.forEach(item => {
+                if (item.id == data.id) {
+                    row = item
+                }
+            })
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             for (let key in this.editForm) {
                 this.editForm[key] = row[key];
             }
-            this.dynamicTags = [];
-            if (row.norm instanceof Array) {
-                row.norm.forEach(item => {
-                    this.dynamicTags.push(item.name)
-                })
-            }
-            this.options.forEach(item => {
 
-                if (item.children) {
-                    item.children.forEach(its => {
-                        if (its.value == row.goods_type_id) {
-                            this.option = [item.value, its.value]
-                        }
-                    })
-                }
-            })
-            // this.option = [row.goods_type_id];
-            // this.$router.push('/addshop');
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -318,10 +361,8 @@ export default {
                         if (_this.editForm.id == 0) {
                             //新增
                             let para = _this.editForm;
-
-                            para.norm = JSON.stringify(arr);
                             delete para.id;
-                            request.post(config.api.goods.addGoods, para)
+                            request.post(config.api.author.authoradd, para)
                                 .then(res => {
                                     let { message, code, data } = res;
                                     _this.editLoading = false;
@@ -347,7 +388,7 @@ export default {
                             //编辑
                             let para = _this.editForm;
                             para.norm = JSON.stringify(arr);
-                            request.post(config.api.goods.updateGoods, para)
+                            request.post(config.api.author.authoredit, para)
                                 .then(res => {
                                     let { message, code, data } = res;
                                     _this.editLoading = false;
@@ -389,6 +430,7 @@ export default {
             }
             this.option = [];
             this.editForm.id = 0;
+            this.editForm.pid = 0;
 
             // this.$router.push('/addshop');
         },

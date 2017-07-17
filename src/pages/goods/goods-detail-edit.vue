@@ -302,6 +302,7 @@ export default {
                         //商品图片
                         if(this.form.pic){
                             this.pic=this.form.pic instanceof Array?this.form.pic:JSON.parse(this.form.pic);
+                            this.pic=this.pic?this.pic:[];
                             this.pic.forEach(item=>{
                                 this.filelist1.push({name:'img',url:item})
                             })

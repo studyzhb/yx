@@ -57,7 +57,23 @@
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="editForm.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="logo" prop="logo">
+                <el-form-item label="登录账号" prop="login">
+                    <el-input v-model="editForm.login" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="登录密码" prop="password">
+                    <el-input v-model="editForm.password" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="部门" prop="department">
+                   <el-select v-model="editForm.department" placeholder="请选择" @change="departchange" >
+                        <el-option v-for="(item,index) in departs" v-if="item.status==1" :key="index" :label="item.name "  :value="item.id+''"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="角色" prop="roleids">
+                    <el-checkbox-group v-model="checkboxGroup">
+                        <el-checkbox-button v-for="role in iscanrolelist" v-if="role.status==1" @change="handlerole" :label="role.id" :key="role.id">{{role.name}}</el-checkbox-button>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="头像" prop="avatar">
                     <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
                         <i class="el-icon-plus"></i>
                     </el-upload>
@@ -65,10 +81,17 @@
                         <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
                 </el-form-item>
-    
-                <el-form-item>
-                    <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
+                <el-form-item label="排序" prop="displayorder">
+                    <el-input v-model="editForm.displayorder" auto-complete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="状态" prop="status">
+                    <el-switch v-model="editForm.status" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="2">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item>
+                    <el-input type="hidden" v-model="editForm.avatar" auto-complete="off"></el-input>
+                </el-form-item>
+    
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -90,9 +113,13 @@ export default {
         return {
             filters: {
                 name: '',
-                department:'',
+                department: '',
                 page: 1
             },
+            departs: [],
+            rolelist:[],
+            iscanrolelist:[],
+            checkboxGroup:[],
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
@@ -113,7 +140,13 @@ export default {
             editForm: {
                 id: 0,
                 name: '',
-                logo: ''
+                login: '',
+                password: '',
+                department: '',
+                roleids: '',
+                avatar: '',
+                displayorder: '',
+                status: '',
             },
             editLoading: false,
             editstatusLoading: false,
@@ -130,6 +163,26 @@ export default {
         }
     },
     methods: {
+        handlerole(a){
+            this.editForm.roleids=this.checkboxGroup.join(',')
+        },
+        departchange(id){
+            this.iscanrolelist=[];
+            this.departs.forEach(item=>{
+                if(item.id==id){
+                    console.log(item.roleids);
+                    let arr=item.roleids.split(',');
+                    arr?arr.forEach(item=>{
+                        this.rolelist.forEach(its=>{
+                            if(item==its.id){
+                                this.iscanrolelist.push(its)
+                            }
+                        })
+                    }):'';
+
+                }
+            })
+        },
         //性别显示转换
         formatSex: function (row, column) {
             return row.status == 1 ? '已启用' : row.sex == 0 ? '已停用' : '未知';
@@ -168,8 +221,6 @@ export default {
             console.log(`每页 ${val} 条`);
         },
         handleRequestOss(files) {
-
-
             // client.list({
             //     'max-keys': 10
             // }).then(res => {
@@ -180,9 +231,9 @@ export default {
 
             let file = files.file
             Sign.then((client) => {
-                client.multipartUpload('/pic/'+file.name, file)
+                client.multipartUpload('/pic/' + file.name, file)
                     .then(res => {
-                        this.editForm.logo = (res.res.requestUrls[0]).split('?')[0];
+                        this.editForm.avatar = (res.res.requestUrls[0]).split('?')[0];
                         //this.filelist.splice(0,1)
                         console.log((res.res.requestUrls[0]).split('?')[0])
                         this.filelist = [{ name: 'editpic', url: (res.res.requestUrls[0]).split('?')[0] }]
@@ -274,11 +325,31 @@ export default {
         handleEdit: function (row) {
             console.log(row)
             this.editFormVisible = true;
+            this.editLoading=false;
+            this.btnEditText = '提交';
             this.editFormTtile = '编辑';
-            this.editForm.id = row.id;
-            this.editForm.name = row.name;
-            this.editForm.logo = row.logo;
-            this.filelist = [{ name: 'editlogo', url: row.logo }]
+            for (let key in this.editForm) {
+                this.editForm[key] = row[key];
+            }
+            this.editForm.password='';
+            this.checkboxGroup=this.editForm.roleids.split(',')
+            this.iscanrolelist=[];
+            this.departs.forEach(item=>{
+                if(item.id==this.editForm.department){
+                    
+                    let arr=item.roleids.split(',');
+                    arr?arr.forEach(item=>{
+                        this.rolelist.forEach(its=>{
+                            if(item==its.id){
+                                this.iscanrolelist.push(its)
+                            }
+                        })
+                    }):'';
+
+                }
+            })
+
+            this.filelist = row.avatar?[{ name: 'editlogo', url: row.avatar }]:[];
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -292,12 +363,10 @@ export default {
                         NProgress.start();
                         _this.btnEditText = '提交中';
 
-                        if (_this.editForm.id == 0) {
+                        if (!_this.editForm.id) {
                             //新增
-                            let para = {
-                                name: _this.editForm.name,
-                                logo: _this.editForm.logo,
-                            };
+                            let para = _this.editForm;
+                            delete para.id;
                             request.post(config.api.author.useradd, para)
                                 .then(res => {
                                     let { message, code, data } = res;
@@ -322,12 +391,7 @@ export default {
                                 })
                         } else {
                             //编辑
-                            let para = {
-                                id: _this.editForm.id,
-                                name: _this.editForm.name,
-                                logo: _this.editForm.logo,
-
-                            };
+                            let para = _this.editForm;
                             request.post(config.api.author.useredit, para)
                                 .then(res => {
                                     let { message, code, data } = res;
@@ -363,12 +427,13 @@ export default {
         handleAdd: function () {
             var _this = this;
             this.filelist = [];
-
+            this.editLoading=false;
+            this.btnEditText = '提交';
             this.editFormTtile = '新增';
             for (let key in this.editForm) {
                 this.editForm[key] = '';
             }
-
+            
             this.editForm.id = 0;
             setTimeout(() => {
                 this.editFormVisible = true;
@@ -383,12 +448,33 @@ export default {
                 id: row.id,
                 status: row.status == 0 ? 1 : 0
             };
-            request.post(config.api.help.updatestatus, para)
-                .then(res => {
+            // request.post(config.api.help.updatestatus, para)
+            //     .then(res => {
+            //         let { message, code, data } = res;
+            //         _this.editstatusLoading = false;
+            //         NProgress.done();
+            //         _this.btnEditText = '提 交';
+            //         if (code !== 200) {
+            //             this.$notify({
+            //                 title: '错误',
+            //                 message: message,
+            //                 type: 'error'
+            //             });
+            //         } else {
+            //             _this.$notify({
+            //                 title: '成功',
+            //                 message: '更新成功',
+            //                 type: 'success'
+            //             });
+            //             _this.getUsers();
+            //         }
+            //     })
+        },
+        getrolelist() {
+            request.get(config.api.author.rolelist)
+                .then((res) => {
+
                     let { message, code, data } = res;
-                    _this.editstatusLoading = false;
-                    NProgress.done();
-                    _this.btnEditText = '提 交';
                     if (code !== 200) {
                         this.$notify({
                             title: '错误',
@@ -396,18 +482,39 @@ export default {
                             type: 'error'
                         });
                     } else {
-                        _this.$notify({
-                            title: '成功',
-                            message: '更新成功',
-                            type: 'success'
+
+                        this.rolelist = data.cnt.data;
+
+                    }
+                })
+        },
+        getoriginlist() {
+            request.get(config.api.author.originlist)
+                .then((res) => {
+
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
                         });
-                        _this.getUsers();
+                    } else {
+
+                        this.departs = data.cnt;
+
+
+
                     }
                 })
         }
     },
     mounted() {
         this.getUsers();
+        //获取部门列表
+        this.getoriginlist();
+        //获取角色列表
+        this.getrolelist();
     }
 }
 </script>
