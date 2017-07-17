@@ -116,6 +116,8 @@ export default {
                 department: '',
                 page: 1
             },
+            //防止角色不选中
+            changetag:0,
             departs: [],
             rolelist:[],
             iscanrolelist:[],
@@ -170,6 +172,10 @@ export default {
         departchange(id){
             this.iscanrolelist=[];
             this.checkboxGroup=[];
+            if(this.changetag==id){
+                this.checkboxGroup=this.editForm.roleids.split(',').slice(0)
+            }
+            
             this.departs.forEach(item=>{
                 if(item.id==id){
                     console.log(item.roleids);
@@ -181,9 +187,9 @@ export default {
                             }
                         })
                     }):'';
-
                 }
             })
+            
         },
         //性别显示转换
         formatSex: function (row, column) {
@@ -333,6 +339,7 @@ export default {
             for (let key in this.editForm) {
                 this.editForm[key] = row[key];
             }
+            this.changetag=this.editForm.department;
             this.editForm.password='';
             this.checkboxGroup=[];
             this.iscanrolelist=[];
@@ -352,7 +359,7 @@ export default {
                 }
             })
             this.checkboxGroup=this.editForm.roleids.split(',').slice(0)
-            console.log(this.checkboxGroup)
+            
             this.filelist = row.avatar?[{ name: 'editlogo', url: row.avatar }]:[];
         },
         //编辑 or 新增
