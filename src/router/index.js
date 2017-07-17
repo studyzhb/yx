@@ -3,59 +3,15 @@
 import Login from '../pages/Login.vue'
 import Home from '../pages/Home.vue'
 import Main from '../pages/Main.vue'
-import Table from '../pages/nav1/Table.vue'
-import Form from '../pages/nav1/Form.vue'
-import user from '../pages/nav1/user.vue'
-import Page4 from '../pages/nav2/Page4.vue'
-import Page5 from '../pages/nav2/Page5.vue'
-import Page6 from '../pages/nav3/Page6.vue'
-import echarts from '../pages/charts/echarts.vue'
-
-import Shop from '../pages/shop/index'
-import Addshop from '../pages/shop/addshop'
-import ShopOrder from '../pages/shop/shoporder'
-import ShopLog from '../pages/shop/shoplog'
-
-//会员管理
-import Vip from '../pages/vip/index'
-import ShopRecord from '../pages/vip/shop-record'
-import PlatFormRecord from '../pages/vip/platform-record'
-import Viplog from '../pages/vip/userlog'
-
-//资金中心
-import Fund from '../pages/fund/index'
-import ShopFund from '../pages/fund/shop-fund'
-import ShareMoney from '../pages/fund/share-money'
-
-//商品管理
-import Goods from '../pages/goods/index'
-import GoodsDetail from '../pages/goods/goods-detail'
-import GoodsDetailEdit from '../pages/goods/goods-detail-edit'
-import Sort from '../pages/goods/sort'
-import Brand from '../pages/goods/brand'
-import Supplier from '../pages/goods/supplier'
-import AddSupplier from '../pages/goods/addsupplier'
-
-//订单管理
-import Order from '../pages/order/index'
+// import Table from '../pages/nav1/Table.vue'
+// import Form from '../pages/nav1/Form.vue'
+// import user from '../pages/nav1/user.vue'
+// import Page4 from '../pages/nav2/Page4.vue'
+// import Page5 from '../pages/nav2/Page5.vue'
+// import Page6 from '../pages/nav3/Page6.vue'
+// import echarts from '../pages/charts/echarts.vue'
 
 
-//组织机构
-import Sector from '../pages/origination/sector'
-import User from '../pages/origination/user'
-import Role from '../pages/origination/role'
-import Menu from '../pages/origination/menu'
-
-
-//帮助审核
-import Help from '../pages/help/index'
-import Bank from '../pages/help/bank'
-import Banner from '../pages/help/banner'
-import Pay from '../pages/help/pay'
-import ArticleSort from '../pages/help/titlesort'
-import Article from '../pages/help/article'
-import Dictionary from '../pages/help/dictionary'
-import SysShare from '../pages/help/sysshare'
 
 
 //
@@ -75,7 +31,7 @@ export default [
         children: [
             //{ path: '/main', component: Main },
             {
-                path: '/shop', component: Shop, name: '商户信息',
+                path: '/shop', component: resolve=>require(['../pages/shop/index'],resolve), name: '商户信息',
                
                 // children: [
                 //     {
@@ -85,10 +41,10 @@ export default [
                 //     }
                 // ]
             },{
-                path: '/addshop/:id', component: Addshop
+                path: '/addshop/:id', component:resolve=>require(['../pages/shop/addshop'],resolve) 
             },
-            {path: '/shoporder/:id', component: ShopOrder},
-            {path: '/shoplog/:id', component: ShopLog}
+            {path: '/shoporder/:id', component:resolve=>require(['../pages/shop/shoporder'],resolve)},
+            {path: '/shoplog/:id', component: resolve=>require(['../pages/shop/shoplog'],resolve)}
         ]
     },
     {
@@ -98,10 +54,10 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/vip', component: Vip, name: '会员资料' },
-            { path: '/shop-record', component: ShopRecord, name: '店铺报表' },
-            { path: '/platform-record', component: PlatFormRecord, name: '平台购物流水' },
-            { path: '/viplog/:id', component: Viplog }
+            { path: '/vip', component:resolve=>require(['../pages/vip/index'],resolve), name: '会员资料' },
+            { path: '/shop-record', component: resolve=>require(['../pages/vip/shop-record'],resolve) , name: '店铺报表' },
+            { path: '/platform-record', component:resolve=>require(['../pages/vip/platform-record'],resolve) , name: '平台购物流水' },
+            { path: '/viplog/:id', component:resolve=>require(['../pages/vip/userlog'],resolve)  }
         ]
     },
     {
@@ -111,9 +67,9 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/fund', component: Fund, name: '会员提现' },
-            { path: '/shopfund', component: ShopFund, name: '店铺提现' },
-            { path: '/share-money', component: ShareMoney },
+            { path: '/fund', component:resolve=>require(['../pages/fund/index'],resolve) , name: '会员提现' },
+            { path: '/shopfund', component:resolve=>require(['../pages/fund/shop-fund'],resolve) , name: '店铺提现' },
+            { path: '/share-money', component:resolve=>require(['../pages/fund/share-money'],resolve)  },
         ]
     },
     {
@@ -123,13 +79,13 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/goods', component: Goods, name: '商品档案' },
-            { path: '/goods-detail', component: GoodsDetail, name: '商品档案详情' },
-            { path: '/goods-detail-edit/:id', component: GoodsDetailEdit },
-            { path: '/sort', component: Sort, name: '分类管理' },
-            { path: '/brand', component: Brand, name: '品牌管理' },
-            { path: '/supplier', component: Supplier, name: '供应商管理' },
-            { path: '/addsupplier/:id', component: AddSupplier },
+            { path: '/goods', component:resolve=>require(['../pages/goods/index'],resolve) , name: '商品档案' },
+            { path: '/goods-detail', component:resolve=>require(['../pages/goods/goods-detail'],resolve) , name: '商品档案详情' },
+            { path: '/goods-detail-edit/:id', component:resolve=>require(['../pages/goods/goods-detail-edit'],resolve)  },
+            { path: '/sort', component:resolve=>require(['../pages/goods/sort'],resolve) , name: '分类管理' },
+            { path: '/brand', component:resolve=>require(['../pages/goods/brand'],resolve) , name: '品牌管理' },
+            { path: '/supplier', component:resolve=>require(['../pages/goods/supplier'],resolve) , name: '供应商管理' },
+            { path: '/addsupplier/:id', component:resolve=>require(['../pages/goods/supplier'],resolve)  },
         ]
     },
     {
@@ -139,7 +95,7 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/order', component: Order, name: '订单信息' }
+            { path: '/order', component:resolve=>require(['../pages/order/index'],resolve) , name: '订单信息' }
         ]
     },
     {
@@ -149,10 +105,10 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/sector', component: Sector, name: '部门管理' },
-            { path: '/user', component: User, name: '员工管理' },
-            { path: '/role', component: Role, name: '角色管理' },
-            { path: '/menu', component: Menu, name: '菜单管理' }
+            { path: '/sector', component:resolve=>require(['../pages/origination/sector'],resolve) , name: '部门管理' },
+            { path: '/user', component:resolve=>require(['../pages/origination/user'],resolve) , name: '员工管理' },
+            { path: '/role', component:resolve=>require(['../pages/origination/role'],resolve) , name: '角色管理' },
+            { path: '/menu', component:resolve=>require(['../pages/origination/menu'],resolve) , name: '菜单管理' }
         ]
     },
     {
@@ -162,14 +118,14 @@ export default [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             //{ path: '/main', component: Main },
-            { path: '/help', component: Help, name: '帮助列表' },
-            { path: '/sysshare', component: SysShare, name: '分润比例' },
-            { path: '/dictionary', component: Dictionary, name: '数据字典' },
-            { path: '/bank', component: Bank, name: '银行类型' },
-            { path: '/banner', component: Banner, name: 'banner图管理' },
-            { path: '/articlesort', component: ArticleSort, name: '文章分类' },
-            { path: '/article', component: Article, name: '文章' },
-            { path: '/pay', component: Pay, name: '支付管理' }
+            { path: '/help', component:resolve=>require(['../pages/help/index'],resolve) , name: '帮助列表' },
+            { path: '/sysshare', component:resolve=>require(['../pages/help/sysshare'],resolve) , name: '分润比例' },
+            { path: '/dictionary', component:resolve=>require(['../pages/help/dictionary'],resolve) , name: '数据字典' },
+            { path: '/bank', component:resolve=>require(['../pages/help/bank'],resolve) , name: '银行类型' },
+            { path: '/banner', component:resolve=>require(['../pages/help/banner'],resolve) , name: 'banner图管理' },
+            { path: '/articlesort', component:resolve=>require(['../pages/help/titlesort'],resolve) , name: '文章分类' },
+            { path: '/article', component:resolve=>require(['../pages/help/article'],resolve) , name: '文章' },
+            { path: '/pay', component:resolve=>require(['../pages/help/pay'],resolve) , name: '支付管理' }
         ]
     }
 ]

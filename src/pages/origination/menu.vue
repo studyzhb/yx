@@ -349,7 +349,7 @@ export default {
             this.editFormVisible = true;
             this.editFormTtile = '编辑';
             for (let key in this.editForm) {
-                this.editForm[key] = row[key];
+                this.editForm[key] = row[key]+'';
             }
 
         },
