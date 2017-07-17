@@ -88,7 +88,6 @@ export default [
             },
             {path: '/shoporder/:id', component: ShopOrder},
             {path: '/shoplog/:id', component: ShopLog}
-             
         ]
     },
     {

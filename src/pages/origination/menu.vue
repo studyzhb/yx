@@ -51,17 +51,17 @@
                     </el-select>
                 </el-form-item>
                 <!--<el-form-item label="logo" prop="logo">
-                                        <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
-                                            <i class="el-icon-plus"></i>
-                                        </el-upload>
-                                        <el-dialog v-model="dialogVisible" size="tiny">
-                                            <img width="100%" :src="dialogImageUrl" alt="">
-                                        </el-dialog>
-                                    </el-form-item>
-                        
-                                    <el-form-item>
-                                        <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
-                                    </el-form-item>-->
+                                            <el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+                                                <i class="el-icon-plus"></i>
+                                            </el-upload>
+                                            <el-dialog v-model="dialogVisible" size="tiny">
+                                                <img width="100%" :src="dialogImageUrl" alt="">
+                                            </el-dialog>
+                                        </el-form-item>
+                            
+                                        <el-form-item>
+                                            <el-input type="hidden" v-model="editForm.logo" auto-complete="off"></el-input>
+                                        </el-form-item>-->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -129,8 +129,8 @@ export default {
                 display: '',
                 pid: '0',
                 module: '',
-                formation:'',
-                url:'',
+                formation: '',
+                url: '',
                 controller: '',
                 action: '',
                 displayorder: '',
@@ -331,9 +331,19 @@ export default {
         handleEdit: function (store, data) {
             console.log(data.id);
             let row = null;
+            console.log(this.users)
             this.users.forEach(item => {
                 if (item.id == data.id) {
                     row = item
+                    return;
+                }
+                if (item.son && item.son instanceof Array) {
+                    item.son.forEach(its => {
+                        if (its.id == data.id) {
+                            row = its
+                            return;
+                        }
+                    })
                 }
             })
             this.editFormVisible = true;

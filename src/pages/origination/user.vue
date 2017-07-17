@@ -70,7 +70,7 @@
                 </el-form-item>
                 <el-form-item label="角色" prop="roleids">
                     <el-checkbox-group v-model="checkboxGroup">
-                        <el-checkbox-button v-for="role in iscanrolelist" v-if="role.status==1" @change="handlerole" :label="role.id" :key="role.id">{{role.name}}</el-checkbox-button>
+                        <el-checkbox-button v-for="role in iscanrolelist" v-if="role.status==1" @change="handlerole" :label="role.id+''" :key="role.id">{{role.name}}</el-checkbox-button>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="头像" prop="avatar">
@@ -164,10 +164,12 @@ export default {
     },
     methods: {
         handlerole(a){
+            console.log(this.checkboxGroup)
             this.editForm.roleids=this.checkboxGroup.join(',')
         },
         departchange(id){
             this.iscanrolelist=[];
+            this.checkboxGroup=[];
             this.departs.forEach(item=>{
                 if(item.id==id){
                     console.log(item.roleids);
@@ -332,7 +334,7 @@ export default {
                 this.editForm[key] = row[key];
             }
             this.editForm.password='';
-            this.checkboxGroup=this.editForm.roleids.split(',')
+            this.checkboxGroup=[];
             this.iscanrolelist=[];
             this.departs.forEach(item=>{
                 if(item.id==this.editForm.department){
@@ -342,13 +344,15 @@ export default {
                         this.rolelist.forEach(its=>{
                             if(item==its.id){
                                 this.iscanrolelist.push(its)
+                                
                             }
                         })
                     }):'';
 
                 }
             })
-
+            this.checkboxGroup=this.editForm.roleids.split(',').slice(0)
+            console.log(this.checkboxGroup)
             this.filelist = row.avatar?[{ name: 'editlogo', url: row.avatar }]:[];
         },
         //编辑 or 新增
@@ -433,7 +437,7 @@ export default {
             for (let key in this.editForm) {
                 this.editForm[key] = '';
             }
-            
+            this.checkboxGroup=[];
             this.editForm.id = 0;
             setTimeout(() => {
                 this.editFormVisible = true;

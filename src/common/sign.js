@@ -2,8 +2,6 @@
 import request from 'api';
 let url = "/oss/key";
 
-
-
 export default request.get(url)
     .then(res => {
         console.log(res)
