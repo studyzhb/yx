@@ -368,7 +368,7 @@ export default {
                         NProgress.start();
                         _this.btnEditText = '提交中';
 
-                        if (_this.editForm.id == 0) {
+                        if (!_this.editForm.id) {
                             //新增
                             let para = _this.editForm;
                             delete para.id;
@@ -397,7 +397,7 @@ export default {
                         } else {
                             //编辑
                             let para = _this.editForm;
-                            para.norm = JSON.stringify(arr);
+                           
                             request.post(config.api.author.authoredit, para)
                                 .then(res => {
                                     let { message, code, data } = res;
