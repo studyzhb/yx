@@ -85,6 +85,13 @@ export default {
                 });
               } else {
                 localStorage.setItem('user', 'true');
+                request.get(config.api.menulist)
+                  .then(res => {
+                    console.log(res)
+                  })
+                  .catch(err => {
+
+                  })
                 if (this.$route.query.redirect) {
                   this.$router.push({ path: this.$route.query.redirect });
                 } else {

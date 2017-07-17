@@ -9,6 +9,7 @@ export default {
     baseUrl:'/api',
     outputexcel:'http://a.ejiabl.com/api',
     api:{
+        menulist:'/home/menu',
         //权限
         author:{
             //部门管理
