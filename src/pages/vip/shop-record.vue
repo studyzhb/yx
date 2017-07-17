@@ -41,6 +41,13 @@
 				</el-table-column>
 				<el-table-column prop="audit_date" label="时间" min-width="180" sortable>
 				</el-table-column>
+                <el-table-column inline-template :context="_self" label="操作" min-width="200">
+                    <span>
+                        <el-button v-if="row.status==1" size="small" @click="audit(row,2)">审核</el-button>
+                        <el-button v-if="row.status==2" size="small" @click="audit(row,3)">确认完成</el-button>
+                        <!--<el-button size="small" @click="handleEdit(row)">明细</el-button>-->
+                    </span>
+                </el-table-column>
 				<!--<el-table-column inline-template :context="_self" label="操作" min-width="320">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">更多</el-button>
@@ -133,6 +140,8 @@ export default {
             page: 1,
             pagesize: 10,
             listLoading: false,
+
+            dialogFormVisible: false,
             editFormVisible: false,//编辑界面显是否显示
             editFormTtile: '编辑',//编辑界面标题
             shopdetailVisible: false,
@@ -141,6 +150,9 @@ export default {
 
             },
             filelist: [],
+            form: {
+
+            },
             //编辑界面数据
             editForm: {
                 id: 0,
@@ -380,6 +392,39 @@ export default {
                 }
             });
 
+        },
+        audit(row,status) {
+            let para = {
+                id: row.id,
+                status: status
+            }
+            let _this = this;
+            this.$confirm('确认?', '提示', {
+                //type: 'warning'
+            }).then(() => {
+                _this.listLoading = true;
+                NProgress.start();
+                request.post(config.api.fund.updatesharereportstatus, para)
+                    .then(res => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            _this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+                    })
+            })
         },
         //显示新增界面
         handleAdd: function () {

@@ -86,7 +86,8 @@ export default {
             //获取单个申请提现数据
             getOneShopApplyinfo:"/withdr/one",
             //获取店铺流水
-            getShoprecord:'/report/list'
+            getShoprecord:'/report/list',
+            updatesharereportstatus:"/report/status"
         },
         //订单
         order:{

@@ -141,7 +141,7 @@ export default {
             btnEditText: '提 交',
             editFormRules: {
                 name: [
-                    { required: true, message: '请输入名称', trigger: 'blur' }
+                   
                 ],
                 code: [
                     { required: true, message: '请输入国际条形码', trigger: 'blur' }
