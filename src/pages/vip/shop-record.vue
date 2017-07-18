@@ -39,12 +39,12 @@
 				</el-table-column>
 				<el-table-column prop="money_product" label="产品分润" width="180" sortable>
 				</el-table-column>
-				<el-table-column prop="audit_date" label="时间" min-width="180" sortable>
+				<el-table-column prop="audit_date" label="时间" :formatter="changetime" min-width="180" sortable>
 				</el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button v-if="row.status==1" size="small" @click="audit(row,2)">审核</el-button>
-                        <el-button v-if="row.status==2" size="small" @click="audit(row,3)">确认完成</el-button>
+                        <!--<el-button v-if="row.status==2" size="small" @click="audit(row,3)">确认完成</el-button>-->
                         <!--<el-button size="small" @click="handleEdit(row)">明细</el-button>-->
                     </span>
                 </el-table-column>
@@ -177,6 +177,9 @@ export default {
         //性别显示转换
         formatSex: function (row, column) {
             return row.status == 1 ? '已启用' : row.sex == 0 ? '已停用' : '未知';
+        },
+        changetime(row){
+            return new Date(row.audit_date*1000).toLocaleString();
         },
         //图片上传
         handleRemove(file, fileList) {

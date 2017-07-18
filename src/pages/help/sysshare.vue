@@ -28,7 +28,10 @@
                 </el-table-column>
                 <el-table-column prop="fanli_fee" label="返利盘分润百分比" width="180" sortable>
                 </el-table-column>
-    
+                <el-table-column prop="balance" label="余额" width="120" sortable>
+                </el-table-column>
+                <el-table-column prop="share_gold" label="分润金" width="120" sortable>
+                </el-table-column>
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
@@ -60,7 +63,6 @@
                 <el-form-item label="返利盘分润" prop="fanli_fee">
                     <el-input v-model="editForm.fanli_fee" auto-complete="off"></el-input>
                 </el-form-item>
-    
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click.native="editFormVisible = false">取 消</el-button>

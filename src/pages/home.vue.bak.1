@@ -10,7 +10,7 @@
 			<el-col :span="4" class="rightbar">
 				<el-dropdown trigger="click">
 					<span class="el-dropdown-link" style="color:#c0ccda;cursor: pointer;">
-						<img src="../assets/user.png" class="head"> {{user_name}}
+						<img src="../assets/user.png" class="head"> 张某某
 					</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
@@ -44,14 +44,14 @@
 							<el-menu-item index="/page6"><i class="fa fa-line-chart"></i>导航三</el-menu-item>
 						</el-menu>-->
 				<el-menu :default-active="currentPath" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect" theme="dark" unique-opened router>
-					<template v-for="(item,index) in menulist" >
+					<template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">
 						<el-submenu :index="index+''" v-if="!item.leaf">
 							<template slot="title">
-								<i class="el-icon-message"></i>{{item.name}}</template>
-							<el-menu-item v-for="(child,ind) in item.son" v-if="child.url" :index="child.url">{{child.name}}</el-menu-item>
+								<i :class="item.iconCls"></i>{{item.name}}</template>
+							<el-menu-item v-for="child in item.children" v-if="child.name" :index="child.path">{{child.name}}</el-menu-item>
 						</el-submenu>
-						<el-menu-item v-if="item.leaf&&item.son.length>0" :index="item.son[0].url">
-							<i :class="item.iconCls"></i>{{item.son[0].name}}</el-menu-item>
+						<el-menu-item v-if="item.leaf&&item.children.length>0" :index="item.children[0].path">
+							<i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
 					</template>
 				</el-menu>
 			</aside>
@@ -86,11 +86,10 @@ import NProgress from 'nprogress'
 export default {
 	data() {
 		return {
-			currentPath: '/vip',
-			currentPathName: '会员资料',
-			currentPathNameParent: '会员管理',
+			currentPath: '/shop',
+			currentPathName: '商户信息',
+			currentPathNameParent: '商户管理',
 			menulist:[],
-			user_name:'',
 			form: {
 				name: '',
 				region: '',
@@ -105,25 +104,43 @@ export default {
 	},
 	watch: {
 		'$route'(to, from) {//监听路由改变
-			
+			console.log(to)
 			this.currentPath = to.path;
 			this.currentPathName = to.name;
 			this.currentPathNameParent = to.matched[0].name;
 		}
 	},
 	mounted() {
-		this.menulist=JSON.parse(localStorage.menulist);
-		this.user_name=localStorage.user_name;
+		console.log(this.$router.options)
+		request.get(config.api.menulist)
+			.then(res => {
+				console.log(res)
+				let { message, code, data } = res;
+				if (code !== 200) {
+					this.$notify({
+						title: '错误',
+						message: message,
+						type: 'error'
+					});
+				} else {
+					
+					this.menulist=data.cnt;
+
+				}
+			})
+			.catch(err => {
+
+			})
 	},
 	methods: {
 		onSubmit() {
-			// console.log('submit!');
+			console.log('submit!');
 		},
 		handleopen() {
-			// console.log('handleopen');
+			console.log('handleopen');
 		},
 		handleclose() {
-			// console.log('handleclose');
+			console.log('handleclose');
 		},
 		handleselect: function (a, b) {
 		},

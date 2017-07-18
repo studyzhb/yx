@@ -332,6 +332,7 @@ export default {
             console.log(data.id);
             let row = null;
             console.log(this.users)
+            this.editLoading = false;
             this.users.forEach(item => {
                 if (item.id == data.id) {
                     row = item
@@ -434,6 +435,7 @@ export default {
             var _this = this;
 
             this.editFormVisible = true;
+            this.editLoading = false;
             this.editFormTtile = '新增';
             for (let key in this.editForm) {
                 this.editForm[key] = '';

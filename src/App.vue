@@ -19,7 +19,7 @@
                   this.$router.push({ path: this.$route.query.redirect });
                 } else {
 					console.log('update in')
-                  this.$router.push({ path: '/shop' });
+                  this.$router.push({ path: '/vip' });
                 }
 			}else{
 				this.$router.replace('/login')

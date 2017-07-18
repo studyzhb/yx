@@ -93,8 +93,8 @@
                                 <el-input v-model="form.market_price" auto-complete="off"></el-input>
                             </el-form-item>
                             <!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-                                <el-input v-model="form.name" auto-complete="off"></el-input>
-                            </el-form-item>-->
+                                    <el-input v-model="form.name" auto-complete="off"></el-input>
+                                </el-form-item>-->
                         </el-card>
                     </el-form>
     
@@ -108,9 +108,9 @@
                         </el-carousel>
                         <el-button style="width:284px;height:200px;overflow:hidden;position:absolute;border:none;top:32px;z-index:100;opacity:0" @click="test" v-popover:popoverT>
                         </el-button>
-                        <el-button id="imageContent" style="width:100%;height:300px;overflow:auto;margin-left:-1px"  v-popover:popoverF>
+                        <el-button id="imageContent" style="width:100%;height:300px;overflow:auto;margin-left:-1px" v-popover:popoverF>
                             <div v-if="editForm.content" v-html="editForm.content" class="ceshi"></div>
-                            <div class="img-single" style="width:100%;" v-for="item in picContent" :key="item">
+                            <div @mouseover="hoverdelete" class="img-single" style="width:100%;" v-for="item in picContent" :key="item">
                                 <div class="deleteAvata" style="display: none;">删除</div>
                                 <img src="http://enclosure.wandlm.net/web_pic/2017/01/09/1483941258379.png" :src="item" width="100%">
                             </div>
@@ -199,7 +199,22 @@ export default {
     },
     methods: {
         test() {
-            console.log('12144141 test')
+
+        },
+        //
+        hoverdelete(e) {
+            let _this=this;
+            let node=e.currentTarget
+            this.$confirm('确认删除该图片吗?', '提示', {
+                //type: 'warning'
+            }).then(() => {
+                
+                node.parentNode.removeChild(node)
+
+            }).catch(() => {
+
+            });
+            
         },
         //性别显示转换
         formatSex: function (row, column) {
@@ -207,7 +222,7 @@ export default {
         },
         //添加详情
         adddetail() {
-            console.log('1213133')
+            console.log('')
         },
         //添加标题
         addtitle() {
@@ -268,7 +283,7 @@ export default {
         },
         //获取用户列表
         getUsers() {
-            
+
             let { params } = this.$route;
             this.editForm.id = params.id
             let para = {
@@ -276,42 +291,42 @@ export default {
             };
             this.listLoading = true;
             NProgress.start();
-            
-            request.get(config.api.goods.goodsdetail, para)
-				.then((res) => {
-					this.listLoading = false;
-					NProgress.done();
-					let { message, code, data } = res;
-					if (code !== 200) {
-						this.$notify({
-							title: '错误',
-							message: message,
-							type: 'error'
-						});
-					} else {
 
-						this.form = data.cnt;
-                        this.form.is_rebate+='';
-                        this.form.pic=JSON.stringify(this.form.pic)
-                        for (let key in this.editForm){
-                            this.editForm[key]=this.form[key]+'';
+            request.get(config.api.goods.goodsdetail, para)
+                .then((res) => {
+                    this.listLoading = false;
+                    NProgress.done();
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                        this.$notify({
+                            title: '错误',
+                            message: message,
+                            type: 'error'
+                        });
+                    } else {
+
+                        this.form = data.cnt;
+                        this.form.is_rebate += '';
+                        this.form.pic = JSON.stringify(this.form.pic)
+                        for (let key in this.editForm) {
+                            this.editForm[key] = this.form[key] + '';
                         }
-                        this.filelist1=[]
-                        this.filelist=[]
-                        
+                        this.filelist1 = []
+                        this.filelist = []
+
                         //商品图片
-                        if(this.form.pic){
-                            this.pic=this.form.pic instanceof Array?this.form.pic:JSON.parse(this.form.pic);
-                            this.pic=this.pic?this.pic:[];
-                            this.pic.forEach(item=>{
-                                this.filelist1.push({name:'img',url:item})
+                        if (this.form.pic) {
+                            this.pic = this.form.pic instanceof Array ? this.form.pic : JSON.parse(this.form.pic);
+                            this.pic = this.pic ? this.pic : [];
+                            this.pic.forEach(item => {
+                                this.filelist1.push({ name: 'img', url: item })
                             })
                         }
-                        
+
                         //详情图片
                         // this.filelist1
-					}
-				})
+                    }
+                })
         },
         handleRequestOssBanner(files) {
             let file = files.file
@@ -320,7 +335,7 @@ export default {
                     .then(res => {
                         this.pic.push((res.res.requestUrls[0]).split('?')[0]);
                         this.filelist1 = [];
-                        
+
                         this.pic.forEach((item, index) => {
                             this.filelist1.push({ name: index, url: item })
                         })
@@ -345,9 +360,9 @@ export default {
                 client.multipartUpload(file.name, file)
                     .then(res => {
                         this.picContent.push((res.res.requestUrls[0]).split('?')[0]);
-                        this.filelist1 = [];
+                        this.filelist = [];
                         this.picContent.forEach((item, index) => {
-                            this.filelist1.push({ name: index, url: item })
+                            this.filelist.push({ name: index, url: item })
                         })
                     }).catch(err => {
                         console.log(err)

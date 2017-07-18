@@ -125,7 +125,8 @@ export default [
             { path: '/banner', component:resolve=>require(['../pages/help/banner'],resolve) , name: 'banner图管理' },
             { path: '/articlesort', component:resolve=>require(['../pages/help/titlesort'],resolve) , name: '文章分类' },
             { path: '/article', component:resolve=>require(['../pages/help/article'],resolve) , name: '文章' },
-            { path: '/pay', component:resolve=>require(['../pages/help/pay'],resolve) , name: '支付管理' }
+            { path: '/pay', component:resolve=>require(['../pages/help/pay'],resolve) , name: '支付管理' },
+            { path: '/syslog', component:resolve=>require(['../pages/help/syslog'],resolve) , name: '系统日志' }
         ]
     }
 ]

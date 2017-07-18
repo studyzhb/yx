@@ -97,6 +97,8 @@ export default {
         },
         login:'/login/login',
         help:{
+            //系统金额日志
+            syslog:"/sys/moneylog",
             bank:'/cardType/list',
             //添加银行卡
             addbank:'/cardType/add',

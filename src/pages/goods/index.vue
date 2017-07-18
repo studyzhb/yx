@@ -178,6 +178,22 @@ import config from 'config';
 
 export default {
 	data() {
+		let checkRepeatcode=(rule,value,callback)=>{
+			console.log(value)
+			request.get(config.api.check.goodscode,{code:value})
+				.then(res=>{
+					console.log(res)
+					let {code,data,message}=res;
+					if(code==10){
+						callback(new Error('条形码已存在'))
+					}else if(code==200){
+						callback()
+					}
+				})
+				.catch(err=>{
+					console.log(err)
+				})
+		}
 		return {
 			//标签
 			dynamicTags: [],
@@ -241,10 +257,12 @@ export default {
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
-					{ required: true, message: '请输入姓名', trigger: 'blur' }
+					{ required: true, message: '请输入姓名', trigger: 'blur' },
+					 { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
 				],
 				code: [
-					{ required: true, message: '请输入国际条形码', trigger: 'blur' }
+					{ required: true, message: '请输入国际条形码', trigger: 'blur' },
+					{validator:checkRepeatcode,trigger:'blur'}
 				],
 				production_origin: [
 					{ required: true, message: '请输入生成产地', trigger: 'blur' }

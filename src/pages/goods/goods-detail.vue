@@ -373,9 +373,9 @@ export default {
 		},
 		//显示编辑界面
 		handleEdit: function (row) {
-			this.editFormVisible = true;
-			this.editFormTtile = '编辑';
-			this.editForm = row;
+			// this.editFormVisible = true;
+			// this.editFormTtile = '编辑';
+			// this.editForm = row;
 			this.$router.push('/goods-detail-edit/' + row.id);
 		},
 		//编辑 or 新增

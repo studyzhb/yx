@@ -89,6 +89,22 @@ import config from 'config';
 import Sign from 'common/sign'
 export default {
 	data() {
+		let checkRepeatcode=(rule,value,callback)=>{
+			console.log(value)
+			request.get(config.api.check.brand,{brand:value})
+				.then(res=>{
+					console.log(res)
+					let {code,data,message}=res;
+					if(code==10){
+						callback(new Error(message))
+					}else if(code==200){
+						callback()
+					}
+				})
+				.catch(err=>{
+					console.log(err)
+				})
+		}
 		return {
 			filters: {
 				name: ''
@@ -122,7 +138,8 @@ export default {
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
-					{ required: true, message: '请输入姓名', trigger: 'blur' }
+					{ required: true, message: '请输入姓名', trigger: 'blur' },
+					{validator:checkRepeatcode,trigger:'blur'}
 				],
 				logo: [
 					{ required: true, message: '请添加图片', trigger: 'blur' }

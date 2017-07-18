@@ -369,6 +369,7 @@ export default {
             for (let key in this.editForm) {
                 this.editForm[key] = row[key];
             }
+            this.isshowdepart=row.level==1?false:true;
             this.editForm.id = row.id;
             this.changetag = this.editForm.department;
             this.editForm.password = '';

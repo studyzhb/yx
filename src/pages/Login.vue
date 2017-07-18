@@ -85,18 +85,32 @@ export default {
                 });
               } else {
                 localStorage.setItem('user', 'true');
+                this.$store.state.user_name = this.ruleForm2.account;
+                localStorage.setItem('user_name', this.ruleForm2.account);
                 request.get(config.api.menulist)
                   .then(res => {
                     console.log(res)
+                    let { message, code, data } = res;
+                    if (code !== 200) {
+                      this.$notify({
+                        title: '错误',
+                        message: message,
+                        type: 'error'
+                      });
+                    } else {
+                      localStorage.menulist=JSON.stringify(data.cnt);
+                      this.$store.state.menulist = data.cnt;
+                      if (this.$route.query.redirect) {
+                        this.$router.push({ path: this.$route.query.redirect });
+                      } else {
+                        this.$router.push({ path: data.cnt[0].son[0].url });
+                      }
+                    }
                   })
                   .catch(err => {
 
                   })
-                if (this.$route.query.redirect) {
-                  this.$router.push({ path: this.$route.query.redirect });
-                } else {
-                  this.$router.push({ path: '/shop' });
-                }
+
               }
             })
 
