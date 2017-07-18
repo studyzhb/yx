@@ -61,7 +61,7 @@
                 </el-form-item>
                 <el-form-item label="角色" prop="roleids">
                     <el-checkbox-group v-model="checkboxGroup">
-                        <el-checkbox-button v-for="role in rolelist" v-if="role.status==1" @change="handlerole" :label="role.id" :key="role.id">{{role.name}}</el-checkbox-button>
+                        <el-checkbox-button v-for="role in rolelist" v-if="role.status==1" @change="handlerole" :label="role.id+''" :key="role.id">{{role.name}}</el-checkbox-button>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="排序" prop="displayorder">
@@ -305,7 +305,8 @@ export default {
             for (let key in this.editForm) {
                 this.editForm[key] = row[key]
             }
-
+            this.editForm.id=row.id;
+            this.checkboxGroup=this.editForm.roleids.split(',')
             // this.filelist = [{ name: 'editlogo', url: row.logo }]
         },
         //编辑 or 新增

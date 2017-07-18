@@ -109,7 +109,7 @@
                         <el-button style="width:284px;height:200px;overflow:hidden;position:absolute;border:none;top:32px;z-index:100;opacity:0" @click="test" v-popover:popoverT>
                         </el-button>
                         <el-button id="imageContent" style="width:100%;height:300px;overflow:auto;margin-left:-1px"  v-popover:popoverF>
-                            <div v-html="editForm.content"></div>
+                            <div v-if="editForm.content" v-html="editForm.content" class="ceshi"></div>
                             <div class="img-single" style="width:100%;" v-for="item in picContent" :key="item">
                                 <div class="deleteAvata" style="display: none;">删除</div>
                                 <img src="http://enclosure.wandlm.net/web_pic/2017/01/09/1483941258379.png" :src="item" width="100%">

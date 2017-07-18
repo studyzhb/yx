@@ -297,6 +297,7 @@ export default {
 			for(let key in this.form){
 				this.form[key]=row[key]
 			}
+			this.editForm.id = row.id;
 			this.selectedOptions=[];
 
 			this.selectedOptions=[TextToCode[row.province].code,TextToCode[row.province][row.city].code,TextToCode[row.province][row.city][row.area].code];

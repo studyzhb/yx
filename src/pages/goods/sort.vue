@@ -396,6 +396,7 @@ export default {
 			for (let key in this.editForm) {
 				this.editForm[key] = row[key] + '';
 			}
+			this.editForm.id = row.id;
 			this.editForm.pic = row.app_pic;
 			this.editForm.status += '';
 			this.filelist =row.app_pic?[{ name: '', url: row.app_pic }]:[]

@@ -265,7 +265,7 @@ export default {
 			for(let key in this.editForm){
 				this.editForm[key] = row[key]+'';
 			}
-			
+			this.editForm.id = row.id;
 			this.filelist = [{ name: "", url: row.logo }]
 		},
 		//编辑 or 新增

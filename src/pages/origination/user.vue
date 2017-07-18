@@ -40,6 +40,7 @@
                 <el-table-column inline-template :context="_self" label="操作" min-width="200">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
+                        <el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
                     </span>
                 </el-table-column>
             </el-table>
@@ -63,12 +64,18 @@
                 <el-form-item label="登录密码" prop="password">
                     <el-input v-model="editForm.password" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="部门" prop="department">
-                   <el-select v-model="editForm.department" placeholder="请选择" @change="departchange" >
-                        <el-option v-for="(item,index) in departs" v-if="item.status==1" :key="index" :label="item.name "  :value="item.id+''"></el-option>
+                <el-form-item label="等级" prop="level">
+                    <el-select v-model="editForm.level" placeholder="请选择" @change="levelchange">
+                        <el-option label="普通管理员" :value="2"></el-option>
+                        <el-option label="超级管理员" :value="1"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="角色" prop="roleids">
+                <el-form-item v-show="isshowdepart" label="部门" prop="department">
+                    <el-select v-model="editForm.department" placeholder="请选择" @change="departchange">
+                        <el-option v-for="(item,index) in departs" v-if="item.status==1" :key="index" :label="item.name " :value="item.id+''"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-show="isshowdepart" label="角色" prop="roleids">
                     <el-checkbox-group v-model="checkboxGroup">
                         <el-checkbox-button v-for="role in iscanrolelist" v-if="role.status==1" @change="handlerole" :label="role.id+''" :key="role.id">{{role.name}}</el-checkbox-button>
                     </el-checkbox-group>
@@ -116,12 +123,13 @@ export default {
                 department: '',
                 page: 1
             },
+            isshowdepart:true,
             //防止角色不选中
-            changetag:0,
+            changetag: 0,
             departs: [],
-            rolelist:[],
-            iscanrolelist:[],
-            checkboxGroup:[],
+            rolelist: [],
+            iscanrolelist: [],
+            checkboxGroup: [],
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
@@ -146,6 +154,7 @@ export default {
                 password: '',
                 department: '',
                 roleids: '',
+                level:"",
                 avatar: '',
                 displayorder: '',
                 status: '',
@@ -165,31 +174,41 @@ export default {
         }
     },
     methods: {
-        handlerole(a){
-            console.log(this.checkboxGroup)
-            this.editForm.roleids=this.checkboxGroup.join(',')
-        },
-        departchange(id){
-            this.iscanrolelist=[];
-            this.checkboxGroup=[];
-            if(this.changetag==id){
-                this.checkboxGroup=this.editForm.roleids.split(',').slice(0)
+        levelchange(value){
+            console.log(value)
+            console.log('1321313')
+            if(value==1){
+                this.isshowdepart=false;
+                this.editForm.department="";
+                this.editForm.roleids="";
+            }else if(value==2){
+                this.isshowdepart=true;
             }
-            
-            this.departs.forEach(item=>{
-                if(item.id==id){
+        },
+        handlerole(a) {
+            console.log(this.checkboxGroup)
+            this.editForm.roleids = this.checkboxGroup.join(',')
+        },
+        departchange(id) {
+            this.iscanrolelist = [];
+            this.checkboxGroup = [];
+            if (this.changetag == id) {
+                this.checkboxGroup = this.editForm.roleids.split(',').slice(0)
+            }
+
+            this.departs.forEach(item => {
+                if (item.id == id) {
                     console.log(item.roleids);
-                    let arr=item.roleids.split(',');
-                    arr?arr.forEach(item=>{
-                        this.rolelist.forEach(its=>{
-                            if(item==its.id){
+                    let arr = item.roleids.split(',');
+                    arr ? arr.forEach(item => {
+                        this.rolelist.forEach(its => {
+                            if (item == its.id) {
                                 this.iscanrolelist.push(its)
                             }
                         })
-                    }):'';
+                    }) : '';
                 }
             })
-            
         },
         //性别显示转换
         formatSex: function (row, column) {
@@ -294,16 +313,27 @@ export default {
                 _this.listLoading = true;
                 NProgress.start();
                 let para = { id: row.id };
-                removeUser(para).then((res) => {
-                    _this.listLoading = false;
-                    NProgress.done();
-                    _this.$notify({
-                        title: '成功',
-                        message: '删除成功',
-                        type: 'success'
+                request.post(config.api.author.userdelete, para)
+                    .then((res) => {
+                        _this.listLoading = false;
+                        NProgress.done();
+                        let { message, code, data } = res;
+                        if (code !== 200) {
+                            this.$notify({
+                                title: '错误',
+                                message: message,
+                                type: 'error'
+                            });
+                        } else {
+                            _this.$notify({
+                                title: '成功',
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            _this.getUsers();
+                        }
+
                     });
-                    _this.getUsers();
-                });
 
             }).catch(() => {
 
@@ -333,34 +363,35 @@ export default {
         handleEdit: function (row) {
             console.log(row)
             this.editFormVisible = true;
-            this.editLoading=false;
+            this.editLoading = false;
             this.btnEditText = '提交';
             this.editFormTtile = '编辑';
             for (let key in this.editForm) {
                 this.editForm[key] = row[key];
             }
-            this.changetag=this.editForm.department;
-            this.editForm.password='';
-            this.checkboxGroup=[];
-            this.iscanrolelist=[];
-            this.departs.forEach(item=>{
-                if(item.id==this.editForm.department){
-                    
-                    let arr=item.roleids.split(',');
-                    arr?arr.forEach(item=>{
-                        this.rolelist.forEach(its=>{
-                            if(item==its.id){
+            this.editForm.id = row.id;
+            this.changetag = this.editForm.department;
+            this.editForm.password = '';
+            this.checkboxGroup = [];
+            this.iscanrolelist = [];
+            this.departs.forEach(item => {
+                if (item.id == this.editForm.department) {
+
+                    let arr = item.roleids.split(',');
+                    arr ? arr.forEach(item => {
+                        this.rolelist.forEach(its => {
+                            if (item == its.id) {
                                 this.iscanrolelist.push(its)
-                                
+
                             }
                         })
-                    }):'';
+                    }) : '';
 
                 }
             })
-            this.checkboxGroup=this.editForm.roleids.split(',').slice(0)
-            
-            this.filelist = row.avatar?[{ name: 'editlogo', url: row.avatar }]:[];
+            this.checkboxGroup = this.editForm.roleids.split(',').slice(0)
+
+            this.filelist = row.avatar ? [{ name: 'editlogo', url: row.avatar }] : [];
         },
         //编辑 or 新增
         editSubmit: function () {
@@ -438,13 +469,13 @@ export default {
         handleAdd: function () {
             var _this = this;
             this.filelist = [];
-            this.editLoading=false;
+            this.editLoading = false;
             this.btnEditText = '提交';
             this.editFormTtile = '新增';
             for (let key in this.editForm) {
                 this.editForm[key] = '';
             }
-            this.checkboxGroup=[];
+            this.checkboxGroup = [];
             this.editForm.id = 0;
             setTimeout(() => {
                 this.editFormVisible = true;

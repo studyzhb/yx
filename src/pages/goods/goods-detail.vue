@@ -100,12 +100,12 @@
 					</el-form-item>
 					<el-form-item label="品牌" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.goods_brand_id" placeholder="请选择品牌">
-							<el-option v-for="(item,index) in preData.brand" :key="index" :label="item.name" :value="item.id"></el-option>
+							<el-option v-for="(item,index) in preData.brand" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="供应商" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.supplier_id" placeholder="请选择供应商">
-							<el-option v-for="(item,index) in preData.supplier" :key="index" :label="item.name" :value="item.id"></el-option>
+							<el-option v-for="(item,index) in preData.supplier" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="是否分润" style="display:inline-block;margin:10px;width:30%;min-width:200px;">

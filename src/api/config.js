@@ -7,7 +7,7 @@ export default {
         withCredentials:true
     },
     baseUrl:'/api',
-    outputexcel:'http://a.ejiabl.com/api',
+    outputexcel:'http://aadmin.gexinec.com/api',
     api:{
         menulist:'/home/menu',
         //权限
@@ -24,6 +24,7 @@ export default {
             useradd:"/admin/add",
             useredit:"/admin/edit",
             usersingleinfo:"/admin/one",
+            userdelete:"/admin/delete",
             //角色
             rolelist:'/role/list',
             roleadd:'/role/add',
@@ -174,6 +175,10 @@ export default {
             addsupplier:'/supplier/create',
             //更新供应商
             updatesupplier:'/supplier/edit'
+        },
+        check:{
+            goodscode:'/check/code',
+            brand:'/check/brand'
         }
     }
 }

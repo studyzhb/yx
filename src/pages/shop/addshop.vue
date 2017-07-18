@@ -221,6 +221,7 @@ export default {
 				bank: '',
 				branch: '',
 				bankCard: '',
+				bank_card:''
 			},
 			options: regionData,
 			selectedOptions: [],

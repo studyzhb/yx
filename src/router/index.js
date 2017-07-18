@@ -1,8 +1,8 @@
 
 
-import Login from '../pages/Login.vue'
-import Home from '../pages/Home.vue'
-import Main from '../pages/Main.vue'
+// import Login from '../pages/Login.vue'
+// import Home from '../pages/Home.vue'
+// import Main from '../pages/Main.vue'
 // import Table from '../pages/nav1/Table.vue'
 // import Form from '../pages/nav1/Form.vue'
 // import user from '../pages/nav1/user.vue'
@@ -19,13 +19,13 @@ import Main from '../pages/Main.vue'
 export default [
     {
         path: '/login',
-        component: Login,
+        component: resolve=>require(['../pages/Login.vue'],resolve),
         hidden: true//不显示在导航中
     },
     //{ path: '/main', component: Main },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '商户管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
@@ -49,7 +49,7 @@ export default [
     },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '会员管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
@@ -62,7 +62,7 @@ export default [
     },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '资金中心',
         iconCls: 'el-icon-message',//图标样式class
         children: [
@@ -74,7 +74,7 @@ export default [
     },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '商品管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
@@ -90,7 +90,7 @@ export default [
     },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '订单管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
@@ -100,7 +100,7 @@ export default [
     },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '组织机构',
         iconCls: 'el-icon-message',//图标样式class
         children: [
@@ -113,7 +113,7 @@ export default [
     },
     {
         path: '/',
-        component: Home,
+        component: resolve=>require(['../pages/Home.vue'],resolve),
         name: '帮助审核',
         iconCls: 'el-icon-message',//图标样式class
         children: [
