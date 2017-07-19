@@ -328,7 +328,7 @@ export default {
 
 			let file = files.file
 			Sign.then((client) => {
-				client.multipartUpload(file.name, file)
+				client.multipartUpload('/pic/'+new Date().getTime()+Math.floor(Math.random()*1000)+'.png', file)
 					.then(res => {
 						this.form.avatar = (res.res.requestUrls[0]).split('?')[0];
 					}).catch(err => {

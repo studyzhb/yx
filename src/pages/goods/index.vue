@@ -42,12 +42,17 @@
 				<el-table-column prop="brand.name" label="品牌" width="120" sortable>
 				</el-table-column>
 				<!--<el-table-column prop="norm" label="规格" width="120" sortable>
-				</el-table-column>-->
+					</el-table-column>-->
 				<el-table-column prop="buying_price" label="进货价" width="100" sortable>
 				</el-table-column>
 				<el-table-column prop="retail_price" label="零售价" width="100" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
+				</el-table-column>
+				<el-table-column prop="sort" sortable width="100" label="排序">
+					<template scope="scope">
+						<input @blur="goodChsort(scope.row)" type="number" v-model="scope.row.sort" style="padding:4px 6px;;font-size:15px;width:50px;">
+					</template>
 				</el-table-column>
 				<el-table-column inline-template :context="_self" label="操作" min-width="200">
 					<span>
@@ -82,7 +87,7 @@
 					<el-form-item label="国际条形码" prop="code" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.code" auto-complete="off"></el-input>
 					</el-form-item>
-					<el-form-item label="原产地"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="原产地" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-input v-model="editForm.production_origin" auto-complete="off"></el-input>
 					</el-form-item>
 					<el-form-item label="生产厂家" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -93,19 +98,19 @@
 							<el-option v-for="(item,index) in preData.valuation" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="零售单位" prop="retail_unit_id"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="零售单位" prop="retail_unit_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.retail_unit_id" placeholder="请选择零售单位">
 							<el-option v-for="(item,index) in preData.retail_nuit" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="分类" prop="goods_type_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-																		
-																		
-																	</el-select>-->
+																			
+																			
+																		</el-select>-->
 						<el-cascader @change="changegoodstype" v-model="option" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
-					<el-form-item label="品牌" prop="goods_brand_id"  style="display:inline-block;margin:10px;width:30%;min-width:200px;">
+					<el-form-item label="品牌" prop="goods_brand_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<el-select v-model="editForm.goods_brand_id" placeholder="请选择品牌">
 							<el-option v-for="(item,index) in preData.brand" :key="index" :label="item.name" :value="item.id+''"></el-option>
 						</el-select>
@@ -136,9 +141,9 @@
 					</el-form-item>
 	
 					<!--<el-form-item v-for="(domain, index) in editForm.norm" :label="'规格' + index" :key="domain.key" :prop="'domains.' + index + '.value'">
-										<el-input v-model="domain.name"></el-input>
-										<el-button @click.prevent="removeDomain(domain)">删除</el-button>
-									</el-form-item>-->
+											<el-input v-model="domain.name"></el-input>
+											<el-button @click.prevent="removeDomain(domain)">删除</el-button>
+										</el-form-item>-->
 				</el-card>
 				<el-card class="box-card">
 					<div slot="header" class="clearfix">
@@ -157,8 +162,8 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-																	<el-input v-model="editForm.name" auto-complete="off"></el-input>
-																</el-form-item>-->
+																		<el-input v-model="editForm.name" auto-complete="off"></el-input>
+																	</el-form-item>-->
 				</el-card>
 	
 			</el-form>
@@ -178,19 +183,19 @@ import config from 'config';
 
 export default {
 	data() {
-		let checkRepeatcode=(rule,value,callback)=>{
+		let checkRepeatcode = (rule, value, callback) => {
 			console.log(value)
-			request.get(config.api.check.goodscode,{code:value})
-				.then(res=>{
+			request.get(config.api.check.goodscode, { code: value })
+				.then(res => {
 					console.log(res)
-					let {code,data,message}=res;
-					if(code==10){
+					let { code, data, message } = res;
+					if (code == 10) {
 						callback(new Error('条形码已存在'))
-					}else if(code==200){
+					} else if (code == 200) {
 						callback()
 					}
 				})
-				.catch(err=>{
+				.catch(err => {
 					console.log(err)
 				})
 		}
@@ -250,19 +255,19 @@ export default {
 				is_rebate: '1',
 				norm: '',
 				market_price: '',
-				status:'1',
-				is_sell:''
+				status: '1',
+				is_sell: ''
 			},
 			editLoading: false,
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' },
-					 { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+					{ min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
 				],
 				code: [
 					{ required: true, message: '请输入国际条形码', trigger: 'blur' },
-					{validator:checkRepeatcode,trigger:'blur'}
+					{ validator: checkRepeatcode, trigger: 'blur' }
 				],
 				production_origin: [
 					{ required: true, message: '请输入生成产地', trigger: 'blur' }
@@ -312,7 +317,27 @@ export default {
 		handleClose(tag) {
 			this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
 		},
-
+		//商品排序
+		goodChsort(row){
+			request.post(config.api.goods.goodssort,{id:row.id,name:'sort',num:row.sort})
+				.then(res=>{
+					let {code,message}=res;
+					if(code==200){
+						this.$notify({
+							title: '成功',
+							message: message,
+							type: 'success'
+						});
+						this.getUsers();
+					}else{
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					}
+				})
+		},
 		showInput() {
 			this.inputVisible = true;
 			this.$nextTick(_ => {
@@ -343,7 +368,7 @@ export default {
 		},
 		//分类
 		changegoodstype(value) {
-			this.editForm.goods_type_id = value[value.length - 1]+'';
+			this.editForm.goods_type_id = value[value.length - 1] + '';
 		},
 		//全选
 		toggleSelection(rows) {
@@ -509,7 +534,7 @@ export default {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
 			for (let key in this.editForm) {
-				this.editForm[key] = row[key]+'';
+				this.editForm[key] = row[key] + '';
 			}
 			this.editForm.id = row.id;
 			this.dynamicTags = [];
@@ -550,7 +575,7 @@ export default {
 							//新增
 							let para = _this.editForm;
 							para.norm = JSON.stringify(arr);
-							para.is_sell=para.status;
+							para.is_sell = para.status;
 							delete para.id;
 							request.post(config.api.goods.addGoods, para)
 								.then(res => {
@@ -577,7 +602,7 @@ export default {
 						} else {
 							//编辑
 							let para = _this.editForm;
-							para.is_sell=para.status;
+							para.is_sell = para.status;
 							para.norm = JSON.stringify(arr);
 							request.post(config.api.goods.updateGoods, para)
 								.then(res => {
@@ -619,9 +644,9 @@ export default {
 			for (let key in this.editForm) {
 				this.editForm[key] = '';
 			}
-			this.option=[];
+			this.option = [];
 			this.editForm.id = 0;
-			this.dynamicTags=[];
+			this.dynamicTags = [];
 			// this.$router.push('/addshop');
 		},
 		//更改上下架

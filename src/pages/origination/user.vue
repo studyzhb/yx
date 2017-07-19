@@ -25,10 +25,7 @@
                 </el-table-column>
                 <el-table-column prop="name" label="名称" width="180" sortable>
                 </el-table-column>
-                <el-table-column prop="logo" label="图标" width="120" sortable>
-                    <template scope="scope">
-                        <img width="24" :src="scope.row.logo" alt="">
-                    </template>
+                <el-table-column prop="department_name" label="所属部门" width="120" sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="150" sortable>
                     <template scope="scope">
@@ -66,8 +63,8 @@
                 </el-form-item>
                 <el-form-item label="等级" prop="level">
                     <el-select v-model="editForm.level" placeholder="请选择" @change="levelchange">
-                        <el-option label="普通管理员" :value="2"></el-option>
-                        <el-option label="超级管理员" :value="1"></el-option>
+                        <el-option label="普通管理员" value="2"></el-option>
+                        <el-option label="超级管理员" value="1"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item v-show="isshowdepart" label="部门" prop="department">
@@ -258,7 +255,7 @@ export default {
 
             let file = files.file
             Sign.then((client) => {
-                client.multipartUpload('/pic/' + file.name, file)
+                client.multipartUpload('/pic/'+new Date().getTime()+Math.floor(Math.random()*1000)+'.png', file)
                     .then(res => {
                         this.editForm.avatar = (res.res.requestUrls[0]).split('?')[0];
                         //this.filelist.splice(0,1)
@@ -367,7 +364,7 @@ export default {
             this.btnEditText = '提交';
             this.editFormTtile = '编辑';
             for (let key in this.editForm) {
-                this.editForm[key] = row[key];
+                this.editForm[key] = row[key]+'';
             }
             this.isshowdepart=row.level==1?false:true;
             this.editForm.id = row.id;
@@ -383,13 +380,12 @@ export default {
                         this.rolelist.forEach(its => {
                             if (item == its.id) {
                                 this.iscanrolelist.push(its)
-
                             }
                         })
                     }) : '';
-
                 }
             })
+
             this.checkboxGroup = this.editForm.roleids.split(',').slice(0)
 
             this.filelist = row.avatar ? [{ name: 'editlogo', url: row.avatar }] : [];

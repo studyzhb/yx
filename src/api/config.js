@@ -155,6 +155,7 @@ export default {
             goodsdetailadd:'/goods/editgood',
             //商品详情
             goodsdetail:'/goods/detail',
+            goodssort:'/goods/sort',
             //分类
             sortindex:"/type/show",
             //添加分类

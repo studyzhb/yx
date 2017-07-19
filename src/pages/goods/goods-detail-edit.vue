@@ -205,15 +205,15 @@ export default {
         hoverdelete(e) {
             let _this=this;
             let node=e.currentTarget
-            this.$confirm('确认删除该图片吗?', '提示', {
-                //type: 'warning'
-            }).then(() => {
+            // this.$confirm('确认删除该图片吗?', '提示', {
+            //     //type: 'warning'
+            // }).then(() => {
                 
-                node.parentNode.removeChild(node)
+            //     node.parentNode.removeChild(node)
 
-            }).catch(() => {
+            // }).catch(() => {
 
-            });
+            // });
             
         },
         //性别显示转换
@@ -331,7 +331,7 @@ export default {
         handleRequestOssBanner(files) {
             let file = files.file
             Sign.then((client) => {
-                client.multipartUpload(file.name, file)
+                client.multipartUpload('/pic/'+new Date().getTime()+Math.floor(Math.random()*1000)+'.png', file)
                     .then(res => {
                         this.pic.push((res.res.requestUrls[0]).split('?')[0]);
                         this.filelist1 = [];
@@ -357,7 +357,7 @@ export default {
 
             let file = files.file
             Sign.then((client) => {
-                client.multipartUpload(file.name, file)
+                client.multipartUpload('/pic/'+new Date().getTime()+Math.floor(Math.random()*1000)+'.png', file)
                     .then(res => {
                         this.picContent.push((res.res.requestUrls[0]).split('?')[0]);
                         this.filelist = [];

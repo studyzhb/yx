@@ -8,10 +8,12 @@ export default request.get(url, { date: new Date().getTime() })
         let { code, data } = res;
         if (code == 200) {
             return new OSS.Wrapper({
-                region: 'oss-cn-qingdao',
+                // region: 'oss-cn-qingdao',
+                endpoint: 'http://public.gexinec.com/',
                 accessKeyId: 'LTAIZ23GkQIjMoJu',
                 accessKeySecret: 'lSgHmhdnCOYFYcy60JSu34nhOjQfXy',
-                bucket: 'accessorygx'
+                bucket: 'accessorygx',
+                cname:true
             })
         }
     })
