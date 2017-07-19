@@ -40,19 +40,19 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="user_mobile" label="用户名" width="180" sortable>
+                <el-table-column prop="user_mobile" label="用户名" sortable>
                 </el-table-column>
-                <el-table-column prop="card_tip" label="开户行" width="100" sortable>
+                <el-table-column prop="card_tip" label="开户行" sortable>
                 </el-table-column>
-                <el-table-column prop="card_num" label="卡号" width="180" sortable>
+                <el-table-column prop="card_num" label="卡号"  sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column prop="money" label="金额" width="150" sortable>
+                <el-table-column prop="money" label="金额" sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间" width="180" sortable>
+                <el-table-column prop="created_at" label="时间"  sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="200">
+                <el-table-column inline-template :context="_self" label="操作" >
                     <span>
                         <el-button v-if="row.status==0" size="small" @click="audit(row)">审核</el-button>
                         <el-button v-if="row.status==1" size="small" @click="confirmdone(row)">确认打款</el-button>

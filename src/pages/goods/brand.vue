@@ -25,13 +25,13 @@
                         <img width="24" :src="scope.row.logo" alt="">
                     </template>
                 </el-table-column>
-				<el-table-column prop="name" label="名称" width="120" sortable>
+				<el-table-column prop="name" label="名称"  sortable>
 				</el-table-column>
-				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
+				<el-table-column prop="status" label="状态" :formatter="formatSex" sortable>
 				</el-table-column>
 				<el-table-column prop="sort" label="排序" width="120" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+				<el-table-column inline-template :context="_self" label="操作" >
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->

@@ -19,32 +19,32 @@
 					</el-dropdown-menu>
 				</el-dropdown>
 				<!--<el-tooltip class="item tip-logout" effect="dark" content="退出" placement="bottom" style="padding:0px;">
-		<i class="fa fa-sign-out" aria-hidden="true" v-on:click="logout"></i>
-		</el-tooltip>-->
+				<i class="fa fa-sign-out" aria-hidden="true" v-on:click="logout"></i>
+				</el-tooltip>-->
 			</el-col>
 		</el-col>
 		<el-col :span="24" class="panel-center">
 			<!--<el-col :span="4">-->
 			<aside style="width:230px;">
 				<!--<h5 class="admin">
-			<i class="fa fa-user" aria-hidden="true" style="margin-right:5px;"></i>欢迎系统管理员：测试</h5>-->
+					<i class="fa fa-user" aria-hidden="true" style="margin-right:5px;"></i>欢迎系统管理员：测试</h5>-->
 				<!--<el-menu style="border-top: 1px solid #475669;" default-active="/table" class="el-menu-vertical-demo" @open="handleopen"
-							@close="handleclose" @select="handleselect" theme="dark" unique-opened router>
-							<el-submenu index="1">
-								<template slot="title"><i class="el-icon-message"></i>导航一</template>
-								<el-menu-item index="/table">Table</el-menu-item>
-								<el-menu-item index="/form">Form</el-menu-item>
-								<el-menu-item index="/page3">页面3</el-menu-item>
-							</el-submenu>
-							<el-submenu index="2">
-								<template slot="title"><i class="fa fa-id-card-o"></i>导航二</template>
-								<el-menu-item index="/page4">选项4</el-menu-item>
-								<el-menu-item index="/page5">选项5</el-menu-item>
-							</el-submenu>
-							<el-menu-item index="/page6"><i class="fa fa-line-chart"></i>导航三</el-menu-item>
-						</el-menu>-->
+									@close="handleclose" @select="handleselect" theme="dark" unique-opened router>
+									<el-submenu index="1">
+										<template slot="title"><i class="el-icon-message"></i>导航一</template>
+										<el-menu-item index="/table">Table</el-menu-item>
+										<el-menu-item index="/form">Form</el-menu-item>
+										<el-menu-item index="/page3">页面3</el-menu-item>
+									</el-submenu>
+									<el-submenu index="2">
+										<template slot="title"><i class="fa fa-id-card-o"></i>导航二</template>
+										<el-menu-item index="/page4">选项4</el-menu-item>
+										<el-menu-item index="/page5">选项5</el-menu-item>
+									</el-submenu>
+									<el-menu-item index="/page6"><i class="fa fa-line-chart"></i>导航三</el-menu-item>
+								</el-menu>-->
 				<el-menu :default-active="currentPath" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect" theme="dark" unique-opened router>
-					<template v-for="(item,index) in menulist" >
+					<template v-for="(item,index) in menulist">
 						<el-submenu :index="index+''" v-if="!item.leaf">
 							<template slot="title">
 								<i class="el-icon-message"></i>{{item.name}}</template>
@@ -89,8 +89,8 @@ export default {
 			currentPath: '/vip',
 			currentPathName: '会员资料',
 			currentPathNameParent: '会员管理',
-			menulist:[],
-			user_name:'',
+			menulist: [],
+			user_name: '',
 			form: {
 				name: '',
 				region: '',
@@ -105,15 +105,27 @@ export default {
 	},
 	watch: {
 		'$route'(to, from) {//监听路由改变
-			
+
 			this.currentPath = to.path;
 			this.currentPathName = to.name;
 			this.currentPathNameParent = to.matched[0].name;
 		}
 	},
 	mounted() {
-		this.menulist=JSON.parse(localStorage.menulist);
-		this.user_name=localStorage.user_name;
+		this.menulist = JSON.parse(localStorage.menulist);
+		if (this.menulist[0] && this.menulist[0].son) {
+			this.menulist[0].son.forEach(item => {
+				if (item.url) {
+					this.currentPath=item.url;
+					this.currentPathName=item.name
+					this.currentPathNameParent=this.menulist[0].name
+				}
+			})
+
+		} else {
+			this.$router.replace('/login')
+		}
+		this.user_name = localStorage.user_name;
 	},
 	methods: {
 		onSubmit() {

@@ -28,18 +28,18 @@
 									<img width="24" :src="scope.row.app_pic" alt="">
 								</template>
 							</el-table-column>
-							<el-table-column prop="name" width="120" sortable>
+							<el-table-column prop="name"  sortable>
 							</el-table-column>
 							<el-table-column prop="status" :formatter="formatSex" width="120" sortable>
 							</el-table-column>
-							<el-table-column prop="displayorder" width="120" sortable>
+							<!--<el-table-column prop="displayorder" width="120" sortable>
 								<template scope="scope">
 									<el-input size="small" v-model="scope.row.displayorder" placeholder="请输入位置"></el-input>
 								</template>
-							</el-table-column>
-							<el-table-column prop="name" width="120" sortable>
-							</el-table-column>
-							<el-table-column inline-template :context="_self" min-width="320">
+							</el-table-column>-->
+							<!--<el-table-column prop="name" width="120" sortable>
+							</el-table-column>-->
+							<el-table-column inline-template :context="_self" >
 								<span>
 									<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 									<el-button size="small" @click="putoroutaway(row,1)">全部上架</el-button>
@@ -57,18 +57,18 @@
 						<img width="24" :src="scope.row.app_pic" alt="">
 					</template>
 				</el-table-column>
-				<el-table-column prop="name" label="名称" width="120" sortable>
+				<el-table-column prop="name" label="名称" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" :formatter="formatSex" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="displayorder" label="排序" width="120" sortable>
+				<!--<el-table-column prop="displayorder" label="排序" width="120" sortable>
 					<template scope="scope">
 						<el-input size="small" style="" v-model="scope.row.displayorder" placeholder="请输入位置"></el-input>
 					</template>
-				</el-table-column>
-				<el-table-column prop="name" label="上架/下架" width="120" sortable>
-				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+				</el-table-column>-->
+				<!--<el-table-column prop="name" label="上架/下架" width="120" sortable>
+				</el-table-column>-->
+				<el-table-column inline-template :context="_self" label="操作" >
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<el-button size="small" @click="handlesubAdd(row)">添加</el-button>

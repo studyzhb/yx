@@ -33,19 +33,22 @@
 				</el-table-column>
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="name" label="商品名称" width="120" sortable>
+				<el-table-column prop="name" label="商品名称" width="300" sortable>
+					<template scope="scope">
+						<span style="margin-left: 0px">{{ scope.row.name }}</span>
+					</template>
 				</el-table-column>
 				<el-table-column prop="code" label="国际条形码" width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="supplier.name" label="供应商" width="180" sortable>
+				<el-table-column prop="supplier.name" label="供应商" sortable>
 				</el-table-column>
-				<el-table-column prop="brand.name" label="品牌" width="120" sortable>
+				<el-table-column prop="brand.name" label="品牌" sortable>
 				</el-table-column>
 				<!--<el-table-column prop="norm" label="规格" width="120" sortable>
-					</el-table-column>-->
-				<el-table-column prop="buying_price" label="进货价" width="100" sortable>
+						</el-table-column>-->
+				<el-table-column prop="buying_price" label="进货价" sortable>
 				</el-table-column>
-				<el-table-column prop="retail_price" label="零售价" width="100" sortable>
+				<el-table-column prop="retail_price" label="零售价" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
 				</el-table-column>
@@ -54,9 +57,9 @@
 						<input @blur="goodChsort(scope.row)" type="number" v-model="scope.row.sort" style="padding:4px 6px;;font-size:15px;width:50px;">
 					</template>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="200">
+				<el-table-column inline-template :context="_self" label="操作">
 					<span>
-						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+						<el-button size="small" type="primary" @click="handleEdit(row)" icon="edit">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
 					</span>
 				</el-table-column>
@@ -105,9 +108,9 @@
 					</el-form-item>
 					<el-form-item label="分类" prop="goods_type_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-																			
-																			
-																		</el-select>-->
+																				
+																				
+																			</el-select>-->
 						<el-cascader @change="changegoodstype" v-model="option" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
 					<el-form-item label="品牌" prop="goods_brand_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -141,9 +144,9 @@
 					</el-form-item>
 	
 					<!--<el-form-item v-for="(domain, index) in editForm.norm" :label="'规格' + index" :key="domain.key" :prop="'domains.' + index + '.value'">
-											<el-input v-model="domain.name"></el-input>
-											<el-button @click.prevent="removeDomain(domain)">删除</el-button>
-										</el-form-item>-->
+												<el-input v-model="domain.name"></el-input>
+												<el-button @click.prevent="removeDomain(domain)">删除</el-button>
+											</el-form-item>-->
 				</el-card>
 				<el-card class="box-card">
 					<div slot="header" class="clearfix">
@@ -162,8 +165,8 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-																		<el-input v-model="editForm.name" auto-complete="off"></el-input>
-																	</el-form-item>-->
+																			<el-input v-model="editForm.name" auto-complete="off"></el-input>
+																		</el-form-item>-->
 				</el-card>
 	
 			</el-form>
@@ -262,8 +265,8 @@ export default {
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
-					{ required: true, message: '请输入姓名', trigger: 'blur' },
-					{ min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+					{ required: true, message: '请输入姓名', trigger: 'blur' }
+					// { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
 				],
 				code: [
 					{ required: true, message: '请输入国际条形码', trigger: 'blur' },
@@ -318,18 +321,18 @@ export default {
 			this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
 		},
 		//商品排序
-		goodChsort(row){
-			request.post(config.api.goods.goodssort,{id:row.id,name:'sort',num:row.sort})
-				.then(res=>{
-					let {code,message}=res;
-					if(code==200){
+		goodChsort(row) {
+			request.post(config.api.goods.goodssort, { id: row.id, name: 'sort', num: row.sort })
+				.then(res => {
+					let { code, message } = res;
+					if (code == 200) {
 						this.$notify({
 							title: '成功',
 							message: message,
 							type: 'success'
 						});
 						this.getUsers();
-					}else{
+					} else {
 						this.$notify({
 							title: '错误',
 							message: message,

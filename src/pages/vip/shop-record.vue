@@ -27,21 +27,21 @@
 				</el-table-column>
 				<el-table-column prop="order_num" label="订单个数" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="money_all" label="总金额" width="120" sortable>
+				<el-table-column prop="money_all" label="总金额"  sortable>
 				</el-table-column>
-				<el-table-column prop="money" label="总分润" width="120" sortable>
+				<el-table-column prop="money" label="总分润"  sortable>
 				</el-table-column>
-                <el-table-column prop="money_company" label="公司分润" width="120" sortable>
+                <el-table-column prop="money_company" label="公司分润" sortable>
 				</el-table-column>
-                <el-table-column prop="money_shop" label="店铺分润" width="120" sortable>
+                <el-table-column prop="money_shop" label="店铺分润"  sortable>
 				</el-table-column>
-                <el-table-column prop="money_queue" label="队列分润" width="120" sortable>
+                <el-table-column prop="money_queue" label="队列分润" sortable>
 				</el-table-column>
-				<el-table-column prop="money_product" label="产品分润" width="180" sortable>
+				<el-table-column prop="money_product" label="产品分润"  sortable>
 				</el-table-column>
-				<el-table-column prop="audit_date" label="时间" :formatter="changetime" min-width="180" sortable>
+				<el-table-column prop="audit_date" label="时间" :formatter="changetime"  sortable>
 				</el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="200">
+                <el-table-column inline-template :context="_self" label="操作" >
                     <span>
                         <el-button v-if="row.status==1" size="small" @click="audit(row,2)">审核</el-button>
                         <!--<el-button v-if="row.status==2" size="small" @click="audit(row,3)">确认完成</el-button>-->

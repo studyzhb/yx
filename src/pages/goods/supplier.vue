@@ -25,17 +25,17 @@
 				</el-table-column>
 				<el-table-column prop="code" label="编号" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="供应商" width="120" sortable>
+				<el-table-column prop="name" label="供应商"  sortable>
 				</el-table-column>
-				<el-table-column prop="address" label="地址" width="120" sortable>
+				<el-table-column prop="address" label="地址"  sortable>
 				</el-table-column>
-				<el-table-column prop="phone" label="电话" width="180" sortable>
+				<el-table-column prop="phone" label="电话"  sortable>
 				</el-table-column>
-				<el-table-column prop="link_name" label="联系人" width="180" sortable>
+				<el-table-column prop="link_name" label="联系人"  sortable>
 				</el-table-column>
-				<el-table-column prop="link_tel" label="联系人电话" width="180" sortable>
+				<el-table-column prop="link_tel" label="联系人电话"  sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="320">
+				<el-table-column inline-template :context="_self" label="操作" >
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->

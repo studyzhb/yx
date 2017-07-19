@@ -21,24 +21,24 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="user_mobile" label="手机号" width="150" sortable>
+				<el-table-column prop="user_mobile" label="手机号"  sortable>
 				</el-table-column>
-				<el-table-column prop="user_nickname" label="昵称" width="100" sortable>
+				<el-table-column prop="user_nickname" label="昵称" sortable>
 				</el-table-column>
-				<el-table-column prop="real_name" label="姓名" width="100" sortable>
+				<el-table-column prop="real_name" label="姓名"  sortable>
 				</el-table-column>
-				<el-table-column prop="id_card" label="身份证号" width="180" sortable>
+				<el-table-column prop="id_card" label="身份证号"  sortable>
 				</el-table-column>
-				<el-table-column prop="created_at" label="注册时间" width="180" sortable>
+				<el-table-column prop="created_at" label="注册时间"  sortable>
 				</el-table-column>
 				<el-table-column prop="shop_name" label="绑定店铺" width="150" sortable>
 				</el-table-column>
 				<el-table-column prop="balance" label="金额（平台）" width="150" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="200">
+				<el-table-column inline-template :context="_self" label="操作" >
 					<span>
 						<el-button size="small" @click="getUserLog(row)">流水</el-button>
-						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
+						<el-button size="small" type="primary" @click="handleEdit(row)" icon="edit"></el-button>
 					</span>
 				</el-table-column>
 			</el-table>

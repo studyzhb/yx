@@ -28,23 +28,26 @@
 			<el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="name" label="商品名称" width="120" sortable>
+				<el-table-column prop="name" label="商品名称" width="300" sortable>
+					<template scope="scope">
+						<span style="margin-left: 0px">{{ scope.row.name }}</span>
+					</template>
 				</el-table-column>
 				<el-table-column prop="code" label="国际条形码" width="150" sortable>
 				</el-table-column>
-				<el-table-column prop="supplier.name" label="供应商" width="180" sortable>
+				<el-table-column prop="supplier.name" label="供应商"  sortable>
 				</el-table-column>
-				<el-table-column prop="brand.name" label="品牌" width="120" sortable>
+				<el-table-column prop="brand.name" label="品牌"  sortable>
 				</el-table-column>
 				<!--<el-table-column prop="norm" label="规格" width="120" sortable>
 				</el-table-column>-->
-				<el-table-column prop="buying_price" label="进货价" width="100" sortable>
+				<el-table-column prop="buying_price" label="进货价"  sortable>
 				</el-table-column>
-				<el-table-column prop="retail_price" label="零售价" width="100" sortable>
+				<el-table-column prop="retail_price" label="零售价" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" min-width="200">
+				<el-table-column inline-template :context="_self" label="操作" >
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->

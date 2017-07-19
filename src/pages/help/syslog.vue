@@ -29,13 +29,13 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="order_sn" label="订单号" width="180" sortable>
+				<el-table-column prop="order_sn" label="订单号"  sortable>
 				</el-table-column>
 				<el-table-column prop="money" label="金额" width="120" sortable>
 				</el-table-column>
-                <el-table-column prop="type" label="类型" :formatter="formattertype" width="120" sortable>
+                <el-table-column prop="type" label="类型" :formatter="formattertype"  sortable>
 				</el-table-column>
-				<el-table-column prop="created_at" label="添加时间" min-width="180"  sortable>
+				<el-table-column prop="created_at" label="添加时间"   sortable>
 				</el-table-column>
 			</el-table>
 		</template>

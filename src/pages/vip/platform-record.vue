@@ -29,15 +29,15 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="order_sn" label="订单号" width="180" sortable>
+				<el-table-column prop="order_sn" label="订单号" sortable>
 				</el-table-column>
-				<el-table-column prop="card_name" label="姓名" width="120" sortable>
+				<el-table-column prop="card_name" label="姓名"  sortable>
 				</el-table-column>
-				<el-table-column prop="user_mobile" label="手机号" width="150" sortable>
+				<el-table-column prop="user_mobile" label="手机号"  sortable>
 				</el-table-column>
-				<el-table-column prop="money" label="价格" width="120" sortable>
+				<el-table-column prop="money" label="价格"  sortable>
 				</el-table-column>
-				<el-table-column prop="created_at" label="支付时间" min-width="180"  sortable>
+				<el-table-column prop="created_at" label="支付时间"  sortable>
 				</el-table-column>
 			</el-table>
 		</template>

@@ -20,19 +20,19 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="ping_fee" label="平台分润百分比" width="180" sortable>
+                <el-table-column prop="ping_fee" label="平台分润百分比"  sortable>
                 </el-table-column>
-                <el-table-column prop="shop_fee" label="店铺分润百分比" width="180" sortable>
+                <el-table-column prop="shop_fee" label="店铺分润百分比" sortable>
                 </el-table-column>
-                <el-table-column prop="queque_fee" label="队列分润百分比" width="180" sortable>
+                <el-table-column prop="queque_fee" label="队列分润百分比"  sortable>
                 </el-table-column>
-                <el-table-column prop="fanli_fee" label="返利盘分润百分比" width="180" sortable>
+                <el-table-column prop="fanli_fee" label="返利盘分润百分比"  sortable>
                 </el-table-column>
-                <el-table-column prop="balance" label="余额" width="120" sortable>
+                <el-table-column prop="balance" label="余额"  sortable>
                 </el-table-column>
-                <el-table-column prop="share_gold" label="分润金" width="120" sortable>
+                <el-table-column prop="share_gold" label="分润金"  sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="200">
+                <el-table-column inline-template :context="_self" label="操作" >
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
                     </span>

@@ -37,17 +37,17 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="order_sn" label="订单号" width="180" sortable>
+                <el-table-column prop="order_sn" label="订单号"  sortable>
                 </el-table-column>
-                <el-table-column prop="tel" label="手机号" width="180" sortable>
+                <el-table-column prop="tel" label="手机号"  sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间" width="180" sortable>
+                <el-table-column prop="created_at" label="时间"  sortable>
                 </el-table-column>
-                <el-table-column prop="pay_amount" label="支付金额" width="120" sortable>
+                <el-table-column prop="pay_amount" label="支付金额"  sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="订单状态" width="150" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column :context="_self" label="操作" min-width="200">
+                <el-table-column :context="_self" label="操作" >
                     <template scope="scope">
                         <el-button  size="small" v-if='scope.row.status==1' @click="audit(scope.row)">发货</el-button>
                     </template>

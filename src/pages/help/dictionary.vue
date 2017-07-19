@@ -20,24 +20,24 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="title" label="标题" width="180" sortable>
+                <el-table-column prop="title" label="标题"  sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="名字" width="180" sortable>
+                <el-table-column prop="name" label="名字"  sortable>
                 </el-table-column>
-                <el-table-column prop="contents" label="内容" width="180" sortable>
+                <el-table-column prop="contents" label="内容"  sortable>
                 </el-table-column>
-                <el-table-column prop="url" label="url" width="180" sortable>
+                <el-table-column prop="url" label="url"  sortable>
                 </el-table-column>
-                <el-table-column prop="note" label="备注" width="180" sortable>
+                <el-table-column prop="note" label="备注"  sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="150" sortable>
                     <template scope="scope">
                         <el-button size="small" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column prop="created_at" label="创建时间" min-width="180" sortable>
+                <el-table-column prop="created_at" label="创建时间"  sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" min-width="200">
+                <el-table-column inline-template :context="_self" label="操作">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
                         <el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>

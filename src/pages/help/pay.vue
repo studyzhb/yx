@@ -6,7 +6,7 @@
             <el-table :data="paydata" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="name" label="名称" width="180" sortable>
+                <el-table-column prop="name" label="名称"  sortable>
                 </el-table-column>
                 <el-table-column prop="icon" label="图标" width="120" sortable>
                     <template scope="scope">
@@ -18,7 +18,7 @@
                         <el-button size="small" @click="updatestatus(scope.row)" :type="scope.row.status == '2' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 2 ? '已停用' : '未知'}}</el-button>
                     </template>
                 </el-table-column>
-                <el-table-column :context="_self" label="操作" min-width="200">
+                <el-table-column :context="_self" label="操作" >
                     <template scope="scope">
                         <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
                     </template>
