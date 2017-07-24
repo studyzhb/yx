@@ -221,7 +221,8 @@ export default {
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
-					{ required: true, message: '请输入姓名', trigger: 'blur' }
+					{ required: true, message: '请输入名称', trigger: 'blur' },
+					{ min: 1, max: 6, message: '最多5个字符', trigger: 'blur' }
 				]
 			}
 

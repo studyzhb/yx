@@ -2,37 +2,37 @@
     <section>
         <!--工具条-->
         <!--<el-col :span="24" class="toolbar">
-                    <el-form :inline="true" :model="filters">
-                        <el-form-item>
-                            <el-input v-model="filters.title" placeholder="文章标题"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" v-on:click="getUsers">查询</el-button>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="handleAdd">新增</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-col>-->
+                        <el-form :inline="true" :model="filters">
+                            <el-form-item>
+                                <el-input v-model="filters.title" placeholder="文章标题"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" v-on:click="getUsers">查询</el-button>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="handleAdd">新增</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-col>-->
     
         <!--列表-->
         <template>
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="ping_fee" label="平台分润百分比"  sortable>
+                <el-table-column prop="ping_fee" label="平台分润百分比" sortable>
                 </el-table-column>
                 <el-table-column prop="shop_fee" label="店铺分润百分比" sortable>
                 </el-table-column>
-                <el-table-column prop="queque_fee" label="队列分润百分比"  sortable>
+                <el-table-column prop="queque_fee" label="队列分润百分比" sortable>
                 </el-table-column>
-                <el-table-column prop="fanli_fee" label="返利盘分润百分比"  sortable>
+                <el-table-column prop="fanli_fee" label="返利盘分润百分比" sortable>
                 </el-table-column>
-                <el-table-column prop="balance" label="余额"  sortable>
+                <el-table-column prop="balance" label="余额" sortable>
                 </el-table-column>
-                <el-table-column prop="share_gold" label="分润金"  sortable>
+                <el-table-column prop="share_gold" label="分润金" sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" >
+                <el-table-column inline-template :context="_self" label="操作">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
                     </span>
@@ -42,9 +42,9 @@
     
         <!--分页-->
         <!--<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-                    <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
-                    </el-pagination>
-                </el-col>-->
+                        <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+                        </el-pagination>
+                    </el-col>-->
     
         <!--编辑界面-->
         <el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -373,6 +373,8 @@ export default {
                                     })
                             } else {
                                 _this.editLoading = false;
+                                NProgress.done();
+                                _this.btnEditText = '提 交';
                                 this.$notify({
                                     title: '错误',
                                     message: '分润比例必须合计为100',

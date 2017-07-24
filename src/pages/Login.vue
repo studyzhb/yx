@@ -41,6 +41,15 @@ export default {
       checked: true
     };
   },
+  mounted(){
+    let _this=this;
+    document.onkeyup=function(e){
+      //回车事件
+      if(e.keyCode==13){
+        _this.handleSubmit2();
+      }
+    }
+  },
   methods: {
     handleReset2() {
       this.$refs.ruleForm2.resetFields();

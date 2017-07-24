@@ -1,11 +1,12 @@
 <template>
 	<el-row class="panel">
 		<el-col :span="24" class="panel-top">
-			<el-col :span="20" style="font-size:26px;">
-				<img src="../assets/logo4.png" class="logo">
-				<span>AD
+			<el-col :span="20" style="font-size:17px;">
+				<img src="../assets/logo.png" class="logo">
+				<!--<span>AD
 					<i style="color:#20a0ff">MIN</i>
-				</span>
+				</span>-->
+				<span style="color:rgb(32,160,255)">系统平台</span>
 			</el-col>
 			<el-col :span="4" class="rightbar">
 				<el-dropdown trigger="click">
@@ -109,19 +110,21 @@ export default {
 			this.currentPath = to.path;
 			this.currentPathName = to.name;
 			this.currentPathNameParent = to.matched[0].name;
+			document.title='格信管理后台-'+this.currentPathName;
 		}
 	},
 	mounted() {
 		this.menulist = JSON.parse(localStorage.menulist);
+
 		if (this.menulist[0] && this.menulist[0].son) {
 			this.menulist[0].son.forEach(item => {
 				if (item.url) {
 					this.currentPath=item.url;
 					this.currentPathName=item.name
 					this.currentPathNameParent=this.menulist[0].name
+					document.title='格信管理后台-'+this.currentPathName;
 				}
 			})
-
 		} else {
 			this.$router.replace('/login')
 		}
@@ -223,9 +226,10 @@ export default {
 }
 
 .logo {
-	width: 40px;
+	width: 197px;
+	height: 60px;
 	float: left;
-	margin: 10px 10px 10px 18px;
+	margin: 0 10px 0 0;
 }
 
 .tip-logout {

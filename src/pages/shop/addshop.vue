@@ -1,18 +1,6 @@
 <template>
 	<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit" style="margin:20px;width:60%;min-width:600px;">
-		<el-form-item label="店铺名字" prop="shopname">
-			<el-input v-model="form.shopname"></el-input>
-		</el-form-item>
-		<el-form-item label="店铺所有人" prop="shopuser">
-			<el-input v-model="form.shopuser"></el-input>
-		</el-form-item>
-		<el-form-item label="所有人电话" prop="tel">
-			<el-input v-model="form.tel"></el-input>
-		</el-form-item>
-		<el-form-item label="密码" prop="password">
-			<el-input v-model="form.password"></el-input>
-		</el-form-item>
-		<el-form-item label="头像" prop="avatar">
+		<el-form-item label="上传图片" prop="avatar">
 			<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
 				<i class="el-icon-plus"></i>
 			</el-upload>
@@ -20,6 +8,14 @@
 				<img width="100%" :src="dialogImageUrl" alt="">
 			</el-dialog>
 		</el-form-item>
+		<el-form-item label="店铺名字" prop="shopname">
+			<el-input v-model="form.shopname"></el-input>
+		</el-form-item>
+	
+		<el-form-item label="密码" prop="password">
+			<el-input v-model="form.password"></el-input>
+		</el-form-item>
+	
 		<el-form-item label="微信" prop="wx">
 			<el-input v-model="form.wx"></el-input>
 			<el-input type="hidden" v-model="form.avatar"></el-input>
@@ -30,23 +26,31 @@
 		<el-form-item label="QQ" prop="qq">
 			<el-input v-model="form.qq"></el-input>
 		</el-form-item>
-		<el-form-item label="银行" prop="bank">
-			<el-input v-model="form.bank"></el-input>
-		</el-form-item>
-		<el-form-item label="支行" prop="branch">
-			<el-input v-model="form.branch"></el-input>
-		</el-form-item>
-		<el-form-item label="银行卡" prop="bank_card">
-			<el-input v-model="form.bank_card"></el-input>
-		</el-form-item>
 		<el-form-item label="店铺电话" prop="phone">
 			<el-input v-model="form.phone"></el-input>
+		</el-form-item>
+		<el-form-item label="姓名" prop="shopuser">
+			<el-input v-model="form.shopuser"></el-input>
+		</el-form-item>
+		<el-form-item label="联系人电话" prop="tel">
+			<el-input v-model="form.tel"></el-input>
 		</el-form-item>
 		<el-form-item label="身份证" prop="card">
 			<el-input v-model="form.card"></el-input>
 		</el-form-item>
 		<el-form-item label="籍贯" prop="place">
 			<el-input v-model="form.place"></el-input>
+		</el-form-item>
+		<el-form-item label="银行" prop="bank">
+			<el-select v-model="form.bank" placeholder="请选择银行">
+				<el-option v-for="item in banklist" :key="item.bankName" :label="item.bankName" :value="item.bankName"></el-option>
+			</el-select>
+		</el-form-item>
+		<el-form-item label="支行" prop="branch">
+			<el-input v-model="form.branch"></el-input>
+		</el-form-item>
+		<el-form-item label="银行卡" prop="bank_card">
+			<el-input v-model="form.bank_card"></el-input>
 		</el-form-item>
 		<el-form-item label="状态" prop="status">
 			<!--1启用 2停用-->
@@ -68,7 +72,6 @@
 			<el-input type="hidden" v-model="form.latitude"></el-input>
 		</el-form-item>
 		<el-form-item prop="latitude">
-	
 			<el-input type="hidden" v-model="form.latitude"></el-input>
 		</el-form-item>
 		<el-form-item>
@@ -89,6 +92,7 @@ import Sign from 'common/sign'
 export default {
 	data() {
 		return {
+			banklist: [ { "id": 51, "bankName": "北京银行" },  { "id": 63, "bankName": "光大银行" }, { "id": 64, "bankName": "广发银行" }, { "id": 65, "bankName": "工商银行" },{ "id": 74, "bankName": "花旗银行" }, { "id": 75, "bankName": "恒生银行" }, { "id": 76, "bankName": "华夏银行" }, { "id": 85, "bankName": "建设银行" }, { "id": 86, "bankName": "交通银行" }, { "id": 90, "bankName": "兰州银行" }, { "id": 91, "bankName": "民生银行" },{ "id": 95, "bankName": "农业银行" },{ "id": 97, "bankName": "平安银行" }, { "id": 98, "bankName": "浦发银行" }, { "id": 103, "bankName": "上海银行" }, { "id": 113, "bankName": "兴业银行" }, { "id": 116, "bankName": "邮储银行" },  { "id": 118, "bankName": "中国银行" }, { "id": 123, "bankName": "招商银行" } ,{ "id": 125, "bankName": "中信银行" }, { "id": 126, "bankName": "郑州银行" }],
 			editLoading: false,
 			isstatus: true,
 			//图片上传
@@ -221,7 +225,7 @@ export default {
 				bank: '',
 				branch: '',
 				bankCard: '',
-				bank_card:''
+				bank_card: ''
 			},
 			options: regionData,
 			selectedOptions: [],
@@ -235,7 +239,7 @@ export default {
 	mounted() {
 
 		let { params } = this.$route;
-
+		
 		if (params.id != 0) {
 			this.form.id = params.id;
 			request.get(config.api.shop.getSingleShop, { id: this.form.id })
@@ -252,7 +256,7 @@ export default {
 						this.selectedOptions = [];
 
 						this.selectedOptions = [TextToCode[this.form.province].code, TextToCode[this.form.province][this.form.city].code, TextToCode[this.form.province][this.form.city][this.form.area].code];
-						this.filelist=[{name:"",url:this.form.avatar}]
+						this.filelist = [{ name: "", url: this.form.avatar }]
 						this.form.status += '';
 						this.form.password = '';
 						this.isstatus = this.form.status == 1 ? true : false;
@@ -287,7 +291,7 @@ export default {
 		//图片上传
 		handleRemove(file, fileList) {
 			console.log(file, fileList);
-			this.form.avatar='';
+			this.form.avatar = '';
 		},
 		handlePictureCardPreview(file) {
 			console.log(file)
@@ -328,7 +332,7 @@ export default {
 
 			let file = files.file
 			Sign.then((client) => {
-				client.multipartUpload('/pic/'+new Date().getTime()+Math.floor(Math.random()*1000)+'.png', file)
+				client.multipartUpload('/pic/' + new Date().getTime() + Math.floor(Math.random() * 1000) + '.png', file)
 					.then(res => {
 						this.form.avatar = (res.res.requestUrls[0]).split('?')[0];
 					}).catch(err => {
