@@ -1,24 +1,27 @@
 <template>
 	<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit" style="margin:20px;width:60%;min-width:600px;">
 		<el-form-item label="上传图片" prop="avatar">
-			<el-upload action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
+			<el-upload class="avatar-uploader" action="" :file-list="filelist" :http-request="handleRequestOss" list-type="picture-card" :on-change="handlechange" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="getUpstr">
 				<i class="el-icon-plus"></i>
 			</el-upload>
 			<el-dialog v-model="dialogVisible" size="tiny">
 				<img width="100%" :src="dialogImageUrl" alt="">
 			</el-dialog>
 		</el-form-item>
-		<el-form-item label="店铺名字" prop="shopname">
+		<el-form-item label="店铺名称" prop="shopname">
 			<el-input v-model="form.shopname"></el-input>
 		</el-form-item>
-	
+		<el-form-item label="服务电话" prop="phone">
+			<el-input v-model="form.phone"></el-input>
+		</el-form-item>
 		<el-form-item label="密码" prop="password">
 			<el-input v-model="form.password"></el-input>
 		</el-form-item>
-	
+		<el-form-item >
+			<el-input type="hidden" v-model="form.avatar"></el-input>
+		</el-form-item>
 		<el-form-item label="微信" prop="wx">
 			<el-input v-model="form.wx"></el-input>
-			<el-input type="hidden" v-model="form.avatar"></el-input>
 		</el-form-item>
 		<el-form-item label="邮箱" prop="email">
 			<el-input v-model="form.email"></el-input>
@@ -26,20 +29,23 @@
 		<el-form-item label="QQ" prop="qq">
 			<el-input v-model="form.qq"></el-input>
 		</el-form-item>
-		<el-form-item label="店铺电话" prop="phone">
-			<el-input v-model="form.phone"></el-input>
+		<el-form-item >
+			<el-input type="hidden" ></el-input>
 		</el-form-item>
-		<el-form-item label="姓名" prop="shopuser">
+		<el-form-item label="联系人" prop="shopuser">
 			<el-input v-model="form.shopuser"></el-input>
-		</el-form-item>
-		<el-form-item label="联系人电话" prop="tel">
-			<el-input v-model="form.tel"></el-input>
 		</el-form-item>
 		<el-form-item label="身份证" prop="card">
 			<el-input v-model="form.card"></el-input>
 		</el-form-item>
+		<el-form-item label="联系人电话" prop="tel">
+			<el-input v-model="form.tel"></el-input>
+		</el-form-item>
 		<el-form-item label="籍贯" prop="place">
 			<el-input v-model="form.place"></el-input>
+		</el-form-item>
+		<el-form-item >
+			<el-input type="hidden" ></el-input>
 		</el-form-item>
 		<el-form-item label="银行" prop="bank">
 			<el-select v-model="form.bank" placeholder="请选择银行">
@@ -51,6 +57,9 @@
 		</el-form-item>
 		<el-form-item label="银行卡" prop="bank_card">
 			<el-input v-model="form.bank_card"></el-input>
+		</el-form-item>
+		<el-form-item >
+			<el-input type="hidden" ></el-input>
 		</el-form-item>
 		<el-form-item label="状态" prop="status">
 			<!--1启用 2停用-->
@@ -110,10 +119,10 @@ export default {
 			}, mapCenter: [121.59996, 31.197646],
 			editFormRules: {
 				shopname: [
-					{ required: true, message: '请输入姓名', trigger: 'blur' }
+					{ required: true, message: '请输入店铺名称', trigger: 'blur' }
 				],
 				shopuser: [
-					{ required: true, message: '请输入店铺名字', trigger: 'blur' }
+					{ required: true, message: '请输入联系人', trigger: 'blur' }
 				],
 				// password: [
 				// 	{ required: true, message: '请输入密码', trigger: 'blur' }
@@ -422,3 +431,26 @@ export default {
 	}
 }
 </script>
+<style>
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+	width: 375px;
+	height: 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+  }
+  .avatar-uploader .el-upload .el-icon-plus{
+	  position: absolute;
+	  top:50%;
+	  margin-top: -14px;
+  }
+  .el-upload-list--picture-card .el-upload-list__item{
+	  width: 375px;
+	  height: 50px;
+  }
+</style>

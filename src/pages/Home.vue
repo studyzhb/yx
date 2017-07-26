@@ -87,9 +87,9 @@ import NProgress from 'nprogress'
 export default {
 	data() {
 		return {
-			currentPath: '/vip',
-			currentPathName: '会员资料',
-			currentPathNameParent: '会员管理',
+			currentPath: '/shop',
+			currentPathName: '商户信息',
+			currentPathNameParent: '商户管理',
 			menulist: [],
 			user_name: '',
 			form: {

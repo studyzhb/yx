@@ -55,7 +55,10 @@ export default {
             shopqueuelist:"/lines/linesLists",
             //队列流水
             // shopqueueLog:'/bfLines/list'
-            shopqueueLog:'/shop/balanceLog'
+            shopqueueLog:'/shop/balanceLog',
+            //店铺所有队列列表展示
+            showshopqueuelist:'/queue/quLists',
+            updateshopqueueinfo:'/queue/upQueue',
         },
         vip:{
             //会员列表

@@ -44,6 +44,7 @@ export default [
                 path: '/addshop/:id', component:resolve=>require(['../pages/shop/addshop'],resolve) 
             },
             {path: '/shoporder/:id', component:resolve=>require(['../pages/shop/shoporder'],resolve)},
+            {path: '/shopqueue', component:resolve=>require(['../pages/shop/shopqueue'],resolve)},
             {path: '/shoplog/:id', component: resolve=>require(['../pages/shop/shoplog'],resolve)}
         ]
     },
