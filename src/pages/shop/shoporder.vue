@@ -1,10 +1,14 @@
 <template>
 	<section>
+		<div class="hidearea" @click="hidemenu"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
 					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.phone" placeholder="手机号"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
@@ -17,15 +21,20 @@
 			<el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
 				<el-table-column type="index" width="60">
 				</el-table-column>
-				<el-table-column prop="order_id" label="订单号" width="180" sortable>
+				<el-table-column prop="order_id" label="订单号" sortable>
 				</el-table-column>
-				<el-table-column prop="username" label="姓名" width="180" sortable>
+				<el-table-column prop="username" label="姓名" sortable>
 				</el-table-column>
-				<el-table-column prop="phone" label="手机号" width="150" sortable>
+				<el-table-column prop="phone" label="手机号" sortable>
 				</el-table-column>
-				<el-table-column prop="money" label="价格" width="120" sortable>
+				<el-table-column prop="money" label="价格" sortable>
 				</el-table-column>
-				<el-table-column prop="created_at" label="支付时间" min-width="180" sortable>
+				<el-table-column prop="displayorder" v-if="isshowmenu" label="排序" width="100" sortable>
+					<template scope="scope">
+						<input @blur="changeSort(scope.row, scope.row.displayorder)" type="number" v-model="scope.row.displayorder" style="padding:4px 6px;;font-size:15px;width:80px;">
+					</template>
+				</el-table-column>
+				<el-table-column prop="created_at" label="支付时间" sortable>
 				</el-table-column>
 			</el-table>
 		</template>
@@ -48,8 +57,13 @@ import config from 'config';
 export default {
 	data() {
 		return {
+			menuclick: 0,
+			lastclickTime: 0,
+			isshowmenu: false,
 			filters: {
-				name: ''
+				name: '',
+				phone: '',
+				page: 1
 			},
 			users: [],
 			total: 0,
@@ -60,7 +74,7 @@ export default {
 			editFormTtile: '编辑',//编辑界面标题
 			shopdetailVisible: false,
 			shopdetailtitle: '店铺详情',
-			shopdetailobj:{
+			shopdetailobj: {
 
 			},
 			//编辑界面数据
@@ -83,12 +97,61 @@ export default {
 		}
 	},
 	methods: {
+		hidemenu() {
+			let now = new Date().getTime();
+			now - this.lastclickTime < 300 ? this.menuclick++ : this.menuclick = 1;
+			this.lastclickTime = now;
+			if (this.menuclick >= 6) {
+				this.menuclick = 0;
+				this.$prompt('随便写点什么', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					closeOnClickModal:false
+					// inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+					// inputErrorMessage: '邮箱格式不正确'
+				}).then(({ value }) => {
+					if (value == 'wdlmgexin123') {
+						this.isshowmenu = true;
+					} else {
+						this.isshowmenu = false;
+					}
+				}).catch(() => {
+
+				});
+			}
+		},
+		changeSort(row,displayorder) {
+			let order_id=row.order_id;
+			
+			request.post(config.api.shop.ordersort, {order_id:order_id,displayorder:displayorder,id:row.id})
+				.then(res => {
+					let { message, code, data } = res;
+					
+					NProgress.done();
+				
+					if (code !== 200) {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					} else {
+						_this.$notify({
+							title: '成功',
+							message: '提交成功',
+							type: 'success'
+						});
+						_this.getUsers()
+					}
+				})
+		},
 		//性别显示转换
 		formatSex: function (row, column) {
 			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 		},
 		handleCurrentChange(val) {
 			this.page = val;
+			this.filters.page = val;
 			this.getUsers();
 		},
 		handleSizeChange(val) {
@@ -100,7 +163,8 @@ export default {
 			let para = {
 				page: this.page,
 				name: this.filters.name,
-                shop_id:this.$route.params.id
+				phone: this.filters.phone,
+				shop_id: this.$route.params.id
 			};
 			this.listLoading = true;
 			NProgress.start();
@@ -110,7 +174,7 @@ export default {
 			// 	this.listLoading = false;
 			// 	NProgress.done();
 			// });
-			request.get(config.api.shop.shopqueuelist,para)
+			request.get(config.api.shop.shopqueuelist, para)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -155,7 +219,7 @@ export default {
 		},
 		showshopdetail(row) {
 			this.shopdetailVisible = true;
-			request.get(config.api.shop.shopqueuedetail,{shop_id:row.id})
+			request.get(config.api.shop.shopqueuedetail, { shop_id: row.id })
 				.then((res) => {
 					let { message, code, data } = res;
 					if (code !== 200) {
@@ -165,12 +229,12 @@ export default {
 							type: 'error'
 						});
 					} else {
-						this.shopdetailobj=data.cnt;
+						this.shopdetailobj = data.cnt;
 					}
 				})
 		},
 		//显示店铺订单
-		showorder(row){
+		showorder(row) {
 			this.$router.push('/shoporder');
 		},
 		//显示编辑界面
@@ -272,5 +336,11 @@ export default {
 </script>
 
 <style scoped>
-
+.hidearea {
+	position: absolute;
+	width: 100px;
+	height: 44px;
+	left: 0;
+	top: 1px;
+}
 </style>

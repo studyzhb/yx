@@ -59,6 +59,7 @@ export default {
             //店铺所有队列列表展示
             showshopqueuelist:'/queue/quLists',
             updateshopqueueinfo:'/queue/upQueue',
+            ordersort:'/lines/changedisplayorder'
         },
         vip:{
             //会员列表
