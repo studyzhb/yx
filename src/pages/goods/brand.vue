@@ -21,17 +21,17 @@
 				<el-table-column type="index" width="60">
 				</el-table-column>
 				<el-table-column prop="logo" label="图标" width="120" sortable>
-                    <template scope="scope">
-                        <img width="24" :src="scope.row.logo" alt="">
-                    </template>
-                </el-table-column>
-				<el-table-column prop="name" label="名称"  sortable>
+					<template scope="scope">
+						<img width="24" :src="scope.row.logo" alt="">
+					</template>
+				</el-table-column>
+				<el-table-column prop="name" label="名称" sortable>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" :formatter="formatSex" sortable>
 				</el-table-column>
 				<el-table-column prop="sort" label="排序" width="120" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" >
+				<el-table-column inline-template :context="_self" label="操作">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
@@ -42,7 +42,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="filters.pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -87,27 +87,30 @@ import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
 import Sign from 'common/sign'
+import { mapState } from 'vuex'
 export default {
 	data() {
-		let checkRepeatcode=(rule,value,callback)=>{
+		let checkRepeatcode = (rule, value, callback) => {
 			console.log(value)
-			request.get(config.api.check.brand,{brand:value})
-				.then(res=>{
+			request.get(config.api.check.brand, { brand: value })
+				.then(res => {
 					console.log(res)
-					let {code,data,message}=res;
-					if(code==10){
+					let { code, data, message } = res;
+					if (code == 10) {
 						callback(new Error(message))
-					}else if(code==200){
+					} else if (code == 200) {
 						callback()
 					}
 				})
-				.catch(err=>{
+				.catch(err => {
 					console.log(err)
 				})
 		}
 		return {
 			filters: {
-				name: ''
+				name: '',
+				page: 1,
+				pagesize: 20
 			},
 			//图片上传
 			dialogImageUrl: '',
@@ -132,14 +135,14 @@ export default {
 				logo: '',
 				sort: 0,
 				note: '',
-				status:'1'
+				status: '1'
 			},
 			editLoading: false,
 			btnEditText: '提 交',
 			editFormRules: {
 				name: [
 					{ required: true, message: '请输入姓名', trigger: 'blur' },
-					{validator:checkRepeatcode,trigger:'blur'}
+					{ validator: checkRepeatcode, trigger: 'blur' }
 				],
 				logo: [
 					{ required: true, message: '请添加图片', trigger: 'blur' }
@@ -148,6 +151,9 @@ export default {
 
 		}
 	},
+	computed: mapState({
+		pagesizes: state => state.pagenum
+	}),
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
@@ -155,7 +161,7 @@ export default {
 		},
 		//图片上传
 		handleRemove(file, fileList) {
-			this.editForm.logo='';
+			this.editForm.logo = '';
 			console.log(file, fileList);
 		},
 		handleCurrentChange(val) {
@@ -164,10 +170,10 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
+			this.filters.pagesize = this.pagesize = val;
+			this.getUsers()
 		},
 		handlePictureCardPreview(file) {
-			console.log(file)
-			console.log('qianzhi')
 			this.dialogImageUrl = file.url;
 			this.dialogVisible = true;
 		},
@@ -192,9 +198,9 @@ export default {
 			// })
 
 			let file = files.file
-			
+
 			Sign.then((client) => {
-				client.multipartUpload('/pic/'+new Date().getTime()+Math.floor(Math.random()*1000)+'.png', file)
+				client.multipartUpload('/pic/' + new Date().getTime() + Math.floor(Math.random() * 1000) + '.png', file)
 					.then(res => {
 						console.log(res)
 						this.editForm.logo = (res.res.requestUrls[0]).split('?')[0];
@@ -228,7 +234,7 @@ export default {
 					} else {
 						this.total = data.cnt.total;
 						this.users = data.cnt.data;
-						this.pagesize = data.cnt.per_page || 10;
+						this.pagesize = this.filters.pagesize = data.cnt.per_page || 10;
 					}
 				})
 		},
@@ -281,8 +287,8 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			for(let key in this.editForm){
-				this.editForm[key] = row[key]+'';
+			for (let key in this.editForm) {
+				this.editForm[key] = row[key] + '';
 			}
 			this.editForm.id = row.id;
 			this.filelist = [{ name: "", url: row.logo }]
@@ -371,7 +377,7 @@ export default {
 			this.editForm.logo = '';
 			this.editForm.sort = '';
 			this.editForm.note = '';
-			this.filelist=[];
+			this.filelist = [];
 
 		}
 	},

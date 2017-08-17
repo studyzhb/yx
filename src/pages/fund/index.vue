@@ -44,15 +44,15 @@
                 </el-table-column>
                 <el-table-column prop="card_tip" label="开户行" sortable>
                 </el-table-column>
-                <el-table-column prop="card_num" label="卡号"  sortable>
+                <el-table-column prop="card_num" label="卡号" sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
                 </el-table-column>
                 <el-table-column prop="money" label="金额" sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间"  sortable>
+                <el-table-column prop="created_at" label="时间" sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" >
+                <el-table-column inline-template :context="_self" label="操作">
                     <span>
                         <el-button v-if="row.status==0" size="small" @click="audit(row)">审核</el-button>
                         <el-button v-if="row.status==1" size="small" @click="confirmdone(row)">确认打款</el-button>
@@ -64,7 +64,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="filters.page" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="filters.page" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -156,12 +156,12 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request from 'api';
 import config from 'config';
-
+import { mapState } from 'vuex';
 export default {
     data() {
         return {
-            confirmid:'',
-            excelout:config.api.fund.outputexcel,
+            confirmid: '',
+            excelout: config.api.fund.outputexcel,
             pickerOptions1: {
                 shortcuts: [{
                     text: '今天',
@@ -189,6 +189,7 @@ export default {
                 name: '',
                 dates: '',
                 page: 1,
+                pagesize:10,
                 datee: '',
                 user_mobile: '',
                 status: '10',
@@ -226,6 +227,9 @@ export default {
 
         }
     },
+    computed: mapState({
+        pagesizes: state => state.pagenum
+    }),
     methods: {
         //性别显示转换
         formatSex(row, column) {
@@ -244,21 +248,21 @@ export default {
         },
         //导出
         outputexcel() {
-            open(config.outputexcel+config.api.fund.outputexcel, '_self')
+            open(config.outputexcel + config.api.fund.outputexcel, '_self')
         },
         handleClick(tab, event) {
-            this.filters.page=1;
+            this.filters.page = 1;
             this.filters.status = tab.name;
             this.getUsers();
         },
         audit(row) {
-            let _this=this;
+            let _this = this;
             let para = {
                 id: row.id
             }
-            
-            this.confirmid=row.id;
-            
+
+            this.confirmid = row.id;
+
             this.$confirm('确认?', '提示', {
                 //type: 'warning'
             }).then(() => {
@@ -288,7 +292,7 @@ export default {
         },
         confirmdone(row) {
             this.form = row;
-            this.confirmid=row.id;
+            this.confirmid = row.id;
             this.dialogFormVisible = true;
 
             return;
@@ -403,7 +407,7 @@ export default {
             let para = {
                 id: this.confirmid
             }
-            
+
             this.dialogFormVisible = false;
             let _this = this;
             _this.$prompt('备注信息', '提示', {
@@ -488,15 +492,18 @@ export default {
             });
         },
         handleCurrentChange(val) {
-            
-            if(this.filters.page!=val){
+
+            if (this.filters.page != val) {
                 this.filters.page = val;
                 this.getUsers();
             }
-            
+
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
+            this.pagesize=val;
+            this.filters.pagesize=val;
+            this.getUsers();
         },
         //获取用户列表
         getUsers() {

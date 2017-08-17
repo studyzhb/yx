@@ -25,17 +25,17 @@
 				</el-table-column>
 				<el-table-column prop="code" label="编号" width="120" sortable>
 				</el-table-column>
-				<el-table-column prop="name" label="供应商"  sortable>
+				<el-table-column prop="name" label="供应商" sortable>
 				</el-table-column>
-				<el-table-column prop="address" label="地址"  sortable>
+				<el-table-column prop="address" label="地址" sortable>
 				</el-table-column>
-				<el-table-column prop="phone" label="电话"  sortable>
+				<el-table-column prop="phone" label="电话" sortable>
 				</el-table-column>
-				<el-table-column prop="link_name" label="联系人"  sortable>
+				<el-table-column prop="link_name" label="联系人" sortable>
 				</el-table-column>
-				<el-table-column prop="link_tel" label="联系人电话"  sortable>
+				<el-table-column prop="link_tel" label="联系人电话" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" >
+				<el-table-column inline-template :context="_self" label="操作">
 					<span>
 						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
 						<!--<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>-->
@@ -46,13 +46,13 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit" >
+			<el-form ref="form" :model="form" label-width="100px" :rules="editFormRules" @submit.prevent="onSubmit">
 				<el-form-item label="名称" prop="name">
 					<el-input v-model="form.name"></el-input>
 				</el-form-item>
@@ -100,13 +100,16 @@ import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
 import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data';
+import { mapState } from 'vuex';
+
 export default {
 	data() {
 		return {
 			filters: {
 				name: '',
 				code: '',
-				page: 1
+				page: 1,
+				pagesize: 10
 			},
 			options: regionData,
 			selectedOptions: [],
@@ -144,7 +147,7 @@ export default {
 				wechat: '',
 				qq: '',
 				emali: '',
-				note:""
+				note: ""
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -190,6 +193,9 @@ export default {
 
 		}
 	},
+	computed: mapState({
+		pagesizes: state => state.pagenum
+	}),
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
@@ -202,6 +208,8 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
+			this.filters.pagesize = this.pagesize = val;
+			this.getUsers();
 		},
 		handleaddresschange(value) {
 
@@ -238,10 +246,10 @@ export default {
 					} else {
 						this.total = data.cnt.total;
 						this.users = data.cnt.data;
-						this.pagesize = data.cnt.per_page || 10;
+						this.pagesize = this.filters.pagesize = data.cnt.per_page || 10;
 					}
 				})
-				.catch(err=>{
+				.catch(err => {
 					this.listLoading = false;
 				})
 		},
@@ -294,14 +302,14 @@ export default {
 		handleEdit: function (row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
-			for(let key in this.form){
-				this.form[key]=row[key]
+			for (let key in this.form) {
+				this.form[key] = row[key]
 			}
 			this.editForm.id = row.id;
-			this.selectedOptions=[];
+			this.selectedOptions = [];
 
-			this.selectedOptions=[TextToCode[row.province].code,TextToCode[row.province][row.city].code,TextToCode[row.province][row.city][row.area].code];
-			
+			this.selectedOptions = [TextToCode[row.province].code, TextToCode[row.province][row.city].code, TextToCode[row.province][row.city][row.area].code];
+
 			// this.editForm.id = row.id;
 			// this.editForm.name = row.name;
 			// this.editForm.sex = row.sex;
@@ -350,12 +358,12 @@ export default {
 										_this.editFormVisible = false;
 										_this.getUsers();
 									}
-								}).catch(err=>{
+								}).catch(err => {
 									_this.editLoading = false;
 								})
 						} else {
 							//编辑
-							
+
 							request.post(config.api.goods.updatesupplier, _this.form)
 								.then(res => {
 									let { message, code, data } = res;
@@ -377,7 +385,7 @@ export default {
 										_this.editFormVisible = false;
 										_this.getUsers();
 									}
-								}).catch(err=>{
+								}).catch(err => {
 									_this.editLoading = false;
 								})
 
@@ -459,8 +467,8 @@ export default {
 
 			this.editFormVisible = true;
 			this.editFormTtile = '新增';
-			for(let key in this.form){
-				this.form[key]='';
+			for (let key in this.form) {
+				this.form[key] = '';
 			}
 			this.form.id = 0;
 			// this.$router.push('/addsupplier/0');

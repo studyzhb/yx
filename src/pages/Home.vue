@@ -106,7 +106,6 @@ export default {
 	},
 	watch: {
 		'$route'(to, from) {//监听路由改变
-
 			this.currentPath = to.path;
 			this.currentPathName = to.name;
 			this.currentPathNameParent = to.matched[0].name;
@@ -129,6 +128,22 @@ export default {
 			this.$router.replace('/login')
 		}
 		this.user_name = localStorage.user_name;
+	},
+	beforeMount(){
+		request.get(config.api.getpagenum)
+			.then(res=>{
+				let { message, code, data } = res;
+				console.log(res)
+				if (code !== 200) {
+                      this.$notify({
+                        title: '错误',
+                        message: message,
+                        type: 'error'
+                      });
+                    } else {
+                      this.$store.commit('savepagenum',data.cnt)
+                    }
+			})
 	},
 	methods: {
 		onSubmit() {

@@ -20,7 +20,7 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="title" label="名称"  sortable>
+                <el-table-column prop="title" label="名称" sortable>
                 </el-table-column>
                 <el-table-column prop="cover" label="封面" width="120" sortable>
                     <template scope="scope">
@@ -29,16 +29,16 @@
                 </el-table-column>
                 <el-table-column prop="type" label="类别" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column prop="intro" label="文章介绍"  sortable>
+                <el-table-column prop="intro" label="文章介绍" sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" :formatter="formatStatus" width="150" sortable>
                     <!--<template scope="scope">
-                        <el-button size="small" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
-                    </template>-->
+                            <el-button size="small" :type="scope.row.status == '0' ? 'primary' : 'success'" close-transition>{{scope.row.status == 1 ? '已启用' :scope.row.status == 0 ? '已停用' : '未知'}}</el-button>
+                        </template>-->
                 </el-table-column>
-                <el-table-column prop="created_at" label="创建时间"  sortable>
+                <el-table-column prop="created_at" label="创建时间" sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" >
+                <el-table-column inline-template :context="_self" label="操作">
                     <span>
                         <el-button size="small" @click="handleEdit(row)">编辑</el-button>
                     </span>
@@ -48,7 +48,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -75,7 +75,7 @@
                 </el-form-item>
                 <el-form-item label="文章分类" prop="cate_id">
                     <el-select v-model="editForm.cate_id" placeholder="请选择">
-                        <el-option v-for="(item,index) in articlesorts" :key="index" :label="item.title "  :value="item.id+''"></el-option>
+                        <el-option v-for="(item,index) in articlesorts" :key="index" :label="item.title " :value="item.id+''"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="文章类别" prop="type">
@@ -117,14 +117,16 @@ import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
 import Sign from 'common/sign'
+import { mapState } from 'vuex';
 export default {
     data() {
         return {
             filters: {
                 title: '',
-                page: 1
+                page: 1,
+                pagesize: 10
             },
-            articlesorts:[],
+            articlesorts: [],
             //图片上传
             dialogImageUrl: '',
             dialogVisible: false,
@@ -172,32 +174,30 @@ export default {
         formatSex: function (row, column) {
             return row.type == 1 ? '文章' : row.type == 0 ? '公告' : '未知';
         },
-        formatStatus(row, column){
-             return row.status == 1 ? '正常' : row.status == 2 ? '审核中' : '禁用删除';
+        formatStatus(row, column) {
+            return row.status == 1 ? '正常' : row.status == 2 ? '审核中' : '禁用删除';
         },
         //图片上传
         handleRemove(file, fileList) {
             this.editForm.logo = "";
-            console.log(file, fileList);
+
         },
         handlePictureCardPreview(file) {
-            console.log(file)
-            console.log('qianzhi')
+
             //this.dialogImageUrl = file.url;
             //this.dialogVisible = true;
         },
         getUpstr() {
-            console.log('chenggongshi ')
+
         },
         handlechange() {
-            console.log('handlechange ')
+
         },
         handleBeforeup() {
-            console.log('handleBeforeup ')
+
         },
         filterTag(value, row) {
-            console.log(value)
-            console.log(row)
+
             return row.status === value;
         },
         handleCurrentChange(val) {
@@ -207,6 +207,8 @@ export default {
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
+            this.filters.pagesize = this.pagesize = val;
+            this.getUsers();
         },
         handleRequestOss(files) {
 
@@ -237,7 +239,7 @@ export default {
         getarticlesort() {
             request.get(config.api.help.articlesortlist)
                 .then((res) => {
-                    
+
                     let { message, code, data } = res;
                     if (code !== 200) {
                         this.$notify({
@@ -281,7 +283,7 @@ export default {
                     } else {
                         this.total = data.cnt.total;
                         this.users = data.cnt.data;
-                        this.pagesize = data.cnt.per_page || 10;
+                        this.pagesize = this.filters.pagesize = data.cnt.per_page || 10;
                     }
                 })
         },
@@ -338,12 +340,12 @@ export default {
             this.editForm.id = row.id;
             this.editForm.title = row.title;
             this.editForm.cover = row.cover;
-            this.editForm.cate_id = row.cate_id+'';
+            this.editForm.cate_id = row.cate_id + '';
             this.editForm.intro = row.intro;
             this.editForm.content = row.content;
-            this.editForm.type = row.type+'';
-            this.editForm.status = row.status+'';
-            this.editForm.is_link = row.is_link+'';
+            this.editForm.type = row.type + '';
+            this.editForm.status = row.status + '';
+            this.editForm.is_link = row.is_link + '';
             this.filelist = row.cover ? [{ name: 'editlogo', url: row.cover }] : [];
         },
         //编辑 or 新增

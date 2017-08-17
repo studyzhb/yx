@@ -7,9 +7,10 @@ export default {
         withCredentials:true
     },
     baseUrl:'/api',
-    outputexcel:'http://aadmin.gexinec.com/api',
+    outputexcel:location.protocol+'//'+location.hostname+':'+location.port+'/api',
     api:{
         menulist:'/home/menu',
+        getpagenum:'/sys/pagenum',
         //权限
         author:{
             //部门管理

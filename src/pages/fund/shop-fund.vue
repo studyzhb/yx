@@ -19,8 +19,8 @@
                     <el-button type="primary" v-on:click="getUsers">查询</el-button>
                 </el-form-item>
                 <!--<el-form-item>
-                    <el-button type="primary">导出</el-button>
-                </el-form-item>-->
+                        <el-button type="primary">导出</el-button>
+                    </el-form-item>-->
             </el-form>
         </el-col>
     
@@ -38,23 +38,23 @@
             <el-table :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
                 <el-table-column type="index" width="60">
                 </el-table-column>
-                <el-table-column prop="login" label="商户号"  sortable>
+                <el-table-column prop="login" label="商户号" sortable>
                 </el-table-column>
-                <el-table-column prop="shopname" label="商户名"  sortable>
+                <el-table-column prop="shopname" label="商户名" sortable>
                 </el-table-column>
                 <el-table-column prop="card_num" label="姓名" sortable>
                 </el-table-column>
-                <el-table-column prop="bank" label="开户行"  sortable>
+                <el-table-column prop="bank" label="开户行" sortable>
                 </el-table-column>
-                <el-table-column prop="bank_card" label="卡号"  sortable>
+                <el-table-column prop="bank_card" label="卡号" sortable>
                 </el-table-column>
                 <el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
                 </el-table-column>
-                <el-table-column prop="money" label="金额"  sortable>
+                <el-table-column prop="money" label="金额" sortable>
                 </el-table-column>
-                <el-table-column prop="created_at" label="时间"  sortable>
+                <el-table-column prop="created_at" label="时间" sortable>
                 </el-table-column>
-                <el-table-column inline-template :context="_self" label="操作" >
+                <el-table-column inline-template :context="_self" label="操作">
                     <span>
                         <el-button v-if="row.status==1" size="small" @click="audit(row)">审核</el-button>
                         <el-button v-if="row.status==2" size="small" @click="confirmdone(row)">确认打款</el-button>
@@ -66,7 +66,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page"  @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="filters.pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -157,6 +157,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request from 'api';
 import config from 'config';
+import { mapState } from 'vuex';
 
 export default {
     data() {
@@ -167,7 +168,8 @@ export default {
                 dates: '',
                 page: 1,
                 datee: '',
-                status: ''
+                status: '',
+                pagesize: 10,
             },
             users: [],
             total: 0,
@@ -199,6 +201,9 @@ export default {
 
         }
     },
+    computed: mapState({
+        pagesizes: state => state.pagenum
+    }),
     methods: {
         //性别显示转换
         formatSex(row, column) {
@@ -215,7 +220,7 @@ export default {
 
         },
         handleClick(tab, event) {
-            this.filters.page=1;
+            this.filters.page = 1;
             this.filters.status = tab.name;
             this.getUsers();
         },
@@ -253,7 +258,7 @@ export default {
             })
         },
         getShopBalance(id) {
-            request.get(config.api.fund.getOneShopApplyinfo,{id:id})
+            request.get(config.api.fund.getOneShopApplyinfo, { id: id })
                 .then((res) => {
                     console.log(res)
                     let { message, code, data } = res;
@@ -462,13 +467,15 @@ export default {
             });
         },
         handleCurrentChange(val) {
-            if(this.filters.page!=val){
+            if (this.filters.page != val) {
                 this.filters.page = val;
                 this.getUsers();
             }
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
+            this.filters.pagesize = this.pagesize = val;
+            this.getUsers();
         },
         //获取用户列表
         getUsers() {
@@ -490,7 +497,7 @@ export default {
                     } else {
                         this.total = data.cnt.total;
                         this.users = data.cnt.data;
-                        this.pagesize = data.cnt.per_page || 10;
+                        this.pagesize = this.filters.pagesize = data.cnt.per_page || 10;
                     }
                 })
         },

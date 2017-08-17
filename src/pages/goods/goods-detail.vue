@@ -58,7 +58,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="filters.pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -163,6 +163,7 @@ export default {
 				name: '',
 				code: '',
 				page: 1,
+				pagesize:10,
 				is_edit: ''
 			},
 			preData: {
@@ -221,6 +222,9 @@ export default {
 			multipleSelection: []
 		}
 	},
+	computed: mapState({
+		pagesizes: state => state.pagenum
+	}),
 	methods: {
 		//分类
 		changegoodstype(value) {
@@ -261,6 +265,8 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
+			this.filters.pagesize=this.pagesize=val;
+			this.getUsers()
 		},
 		getPreAdd() {
 			request.get(config.api.goods.preparams)
@@ -325,7 +331,7 @@ export default {
 								this.pick = '上架 ' + item.num
 							}
 						})
-						this.pagesize = data.cnt.good.per_page || 10;
+						this.pagesize=this.filters.pagesize = data.cnt.good.per_page || 10;
 					}
 				})
 		},

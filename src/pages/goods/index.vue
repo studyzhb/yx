@@ -73,7 +73,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -183,7 +183,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-
+import {mapState} from 'vuex';
 export default {
 	data() {
 		let checkRepeatcode = (rule, value, callback) => {
@@ -212,7 +212,8 @@ export default {
 				code: '',
 				page: 1,
 				status: '',
-				is_sell: ''
+				is_sell: '',
+				pagesize:10
 
 			},
 			preData: {
@@ -315,6 +316,9 @@ export default {
 			multipleSelection: []
 		}
 	},
+	computed: mapState({
+        pagesizes: state => state.pagenum
+    }),
 	methods: {
 		//标签
 		handleClose(tag) {
@@ -409,6 +413,8 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
+			this.filters.pagesize=this.pagesize=val;
+			this.getUsers()
 		},
 		getPreAdd() {
 			request.get(config.api.goods.preparams)
@@ -483,7 +489,7 @@ export default {
 								this.pick = '上架 ' + item.num
 							}
 						})
-						this.pagesize = data.cnt.good.per_page || 10;
+						this.pagesize=this.filters.pagesize = data.cnt.good.per_page || 10;
 					}
 				})
 		},

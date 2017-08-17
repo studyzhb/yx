@@ -9,7 +9,8 @@ Vue.use(Vuex)
 const state = {
     count: 10,
     user_name:'',
-    menulist:[]
+    menulist:[],
+    pagenum:[]
 }
 
 // 定义所需的 mutations
@@ -19,6 +20,9 @@ const mutations = {
     },
     DECREMENT(state) {
         state.count--
+    },
+    savepagenum(state,pagenum){
+        state.pagenum=pagenum
     }
 }
 

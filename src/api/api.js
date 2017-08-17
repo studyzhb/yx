@@ -28,10 +28,8 @@ export default {
         if (params) {
             url += '?' + queryString.stringify(params);
         }
-        console.log(url)
         return instance.get(url)
             .then(res => {
-                console.log(res);
                 if (res.data.code == 2 || res.data.code == 3) {
                     localStorage.clear();
                     location.reload();
@@ -42,13 +40,11 @@ export default {
             .catch(err => {
                 console.log(err);
             })
-
     },
     post: (url, body, option) => {
         url = config.baseUrl + url;
         body = queryString.stringify(body || {})
         let options = _.assign({}, config.header, option || {});
-        console.log(url)
         return instance.post(url, body, options)
             .then((res) => {
                 if (res.data.code == 2 || res.data.code == 3) {
@@ -69,4 +65,6 @@ export default {
         //     // 两个请求现在都执行完成
         //   }));
     }
+
+
 }

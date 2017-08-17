@@ -48,7 +48,7 @@
 	
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 	
@@ -85,13 +85,14 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request from 'api';
 import config from 'config';
-
+import {mapState} from 'vuex';
 export default {
 	data() {
 		return {
 			filters: {
 				page:1,
-                shopname:''
+				shopname:'',
+				pagesize:10
 			},
 			users: [],
 			total: 0,
@@ -116,6 +117,9 @@ export default {
 
 		}
 	},
+	computed: mapState({
+		pagesizes: state => state.pagenum
+	}),
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
@@ -128,6 +132,8 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
+			this.filters.pagesize=this.pagesize=val;
+			this.getUsers();
 		},
 		//获取用户列表
 		getUsers() {
@@ -151,7 +157,7 @@ export default {
 					} else {
 						this.total = data.cnt.total;
 						this.users = data.cnt.data;
-						this.pagesize = data.cnt.per_page || 10;
+						this.pagesize=this.filters.pagesize = data.cnt.per_page || 10;
 					}
 				})
 

@@ -17,7 +17,7 @@
 		<el-form-item label="密码" prop="password">
 			<el-input v-model="form.password"></el-input>
 		</el-form-item>
-		<el-form-item >
+		<el-form-item>
 			<el-input type="hidden" v-model="form.avatar"></el-input>
 		</el-form-item>
 		<el-form-item label="微信" prop="wx">
@@ -29,8 +29,8 @@
 		<el-form-item label="QQ" prop="qq">
 			<el-input v-model="form.qq"></el-input>
 		</el-form-item>
-		<el-form-item >
-			<el-input type="hidden" ></el-input>
+		<el-form-item>
+			<el-input type="hidden"></el-input>
 		</el-form-item>
 		<el-form-item label="联系人" prop="shopuser">
 			<el-input v-model="form.shopuser"></el-input>
@@ -44,8 +44,8 @@
 		<el-form-item label="籍贯" prop="place">
 			<el-input v-model="form.place"></el-input>
 		</el-form-item>
-		<el-form-item >
-			<el-input type="hidden" ></el-input>
+		<el-form-item>
+			<el-input type="hidden"></el-input>
 		</el-form-item>
 		<el-form-item label="银行" prop="bank">
 			<el-select v-model="form.bank" placeholder="请选择银行">
@@ -58,8 +58,8 @@
 		<el-form-item label="银行卡" prop="bank_card">
 			<el-input v-model="form.bank_card"></el-input>
 		</el-form-item>
-		<el-form-item >
-			<el-input type="hidden" ></el-input>
+		<el-form-item>
+			<el-input type="hidden"></el-input>
 		</el-form-item>
 		<el-form-item label="状态" prop="status">
 			<!--1启用 2停用-->
@@ -73,8 +73,8 @@
 			<el-input :disabled="true" v-model="form.address"></el-input>
 		</el-form-item>
 		<el-form-item>
-			<!--<el-amap-search-box class="search-box" :search-option="searchOption" :on-search-result="onSearchResult"></el-amap-search-box>-->
-			<el-amap vid="amapDemo" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
+			<el-amap-search-box class="search-box" :on-search-result="onSearchResult"></el-amap-search-box>
+			<el-amap vid="amapDemo" :center="mapCenter" style="height:600px;" :events="events" :plugin="plugins" :zoom="zoom">
 				<el-amap-marker :position="marker.position">
 				</el-amap-marker>
 			</el-amap>
@@ -101,7 +101,7 @@ import Sign from 'common/sign'
 export default {
 	data() {
 		return {
-			banklist: [ { "id": 51, "bankName": "北京银行" },  { "id": 63, "bankName": "光大银行" }, { "id": 64, "bankName": "广发银行" }, { "id": 65, "bankName": "工商银行" },{ "id": 74, "bankName": "花旗银行" }, { "id": 75, "bankName": "恒生银行" }, { "id": 76, "bankName": "华夏银行" }, { "id": 85, "bankName": "建设银行" }, { "id": 86, "bankName": "交通银行" }, { "id": 90, "bankName": "兰州银行" }, { "id": 91, "bankName": "民生银行" },{ "id": 95, "bankName": "农业银行" },{ "id": 97, "bankName": "平安银行" }, { "id": 98, "bankName": "浦发银行" }, { "id": 103, "bankName": "上海银行" }, { "id": 113, "bankName": "兴业银行" }, { "id": 116, "bankName": "邮储银行" },  { "id": 118, "bankName": "中国银行" }, { "id": 123, "bankName": "招商银行" } ,{ "id": 125, "bankName": "中信银行" }, { "id": 126, "bankName": "郑州银行" }],
+			banklist: [{ "id": 51, "bankName": "北京银行" }, { "id": 63, "bankName": "光大银行" }, { "id": 64, "bankName": "广发银行" }, { "id": 65, "bankName": "工商银行" }, { "id": 74, "bankName": "花旗银行" }, { "id": 75, "bankName": "恒生银行" }, { "id": 76, "bankName": "华夏银行" }, { "id": 85, "bankName": "建设银行" }, { "id": 86, "bankName": "交通银行" }, { "id": 90, "bankName": "兰州银行" }, { "id": 91, "bankName": "民生银行" }, { "id": 95, "bankName": "农业银行" }, { "id": 97, "bankName": "平安银行" }, { "id": 98, "bankName": "浦发银行" }, { "id": 103, "bankName": "上海银行" }, { "id": 113, "bankName": "兴业银行" }, { "id": 116, "bankName": "邮储银行" }, { "id": 118, "bankName": "中国银行" }, { "id": 123, "bankName": "招商银行" }, { "id": 125, "bankName": "中信银行" }, { "id": 126, "bankName": "郑州银行" }],
 			editLoading: false,
 			isstatus: true,
 			//图片上传
@@ -114,9 +114,10 @@ export default {
 				position: [30, 130]
 			},
 			searchOption: {
-				city: '上海',
+				city: '郑州',
 				citylimit: true
-			}, mapCenter: [121.59996, 31.197646],
+			},
+			mapCenter: [113.65, 34.76],
 			editFormRules: {
 				shopname: [
 					{ required: true, message: '请输入店铺名称', trigger: 'blur' }
@@ -196,18 +197,8 @@ export default {
 					this.form.longitude = e.lnglat.lng + '';
 					this.form.latitude = e.lnglat.lat + "";
 
-					let geocoder = new AMap.Geocoder({
-						radius: 1000,
-						extensions: "all"
-					});
-					geocoder.getAddress([e.lnglat.lng, e.lnglat.lat], (status, result) => {
-						if (status === 'complete' && result.info === 'OK') {
-							if (result && result.regeocode) {
-								this.form.address = result.regeocode.formattedAddress;
-								this.$nextTick();
-							}
-						}
-					})
+					this.getAddress(e);
+
 				}
 			},
 			form: {
@@ -248,7 +239,7 @@ export default {
 	mounted() {
 
 		let { params } = this.$route;
-		
+
 		if (params.id != 0) {
 			this.form.id = params.id;
 			request.get(config.api.shop.getSingleShop, { id: this.form.id })
@@ -279,6 +270,20 @@ export default {
 		}
 	},
 	methods: {
+		getAddress(e) {
+			let geocoder = new AMap.Geocoder({
+				radius: 1000,
+				extensions: "all"
+			});
+			geocoder.getAddress([e.lnglat.lng, e.lnglat.lat], (status, result) => {
+				if (status === 'complete' && result.info === 'OK') {
+					if (result && result.regeocode) {
+						this.form.address = result.regeocode.formattedAddress;
+						this.$nextTick();
+					}
+				}
+			})
+		},
 		onSearchResult(pois) {
 			let latSum = 0;
 			let lngSum = 0;
@@ -295,6 +300,7 @@ export default {
 					lat: latSum / pois.length
 				};
 				this.mapCenter = [center.lng, center.lat];
+				this.getAddress({lnglat:{lng:center.lng,lat:center.lat}})
 			}
 		},
 		//图片上传
@@ -433,24 +439,27 @@ export default {
 </script>
 <style>
 .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
+	border: 1px dashed #d9d9d9;
+	border-radius: 6px;
+	cursor: pointer;
 	width: 375px;
 	height: 50px;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #20a0ff;
-  }
-  .avatar-uploader .el-upload .el-icon-plus{
-	  position: absolute;
-	  top:50%;
-	  margin-top: -14px;
-  }
-  .el-upload-list--picture-card .el-upload-list__item{
-	  width: 375px;
-	  height: 50px;
-  }
+	position: relative;
+	overflow: hidden;
+}
+
+.avatar-uploader .el-upload:hover {
+	border-color: #20a0ff;
+}
+
+.avatar-uploader .el-upload .el-icon-plus {
+	position: absolute;
+	top: 50%;
+	margin-top: -14px;
+}
+
+.el-upload-list--picture-card .el-upload-list__item {
+	width: 375px;
+	height: 50px;
+}
 </style>

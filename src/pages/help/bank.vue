@@ -44,7 +44,7 @@
     
         <!--分页-->
         <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 200, 300, 400]" :page-size="pagesize" :total="total" style="float:right;">
+            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
     
@@ -82,12 +82,14 @@ import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
 import Sign from 'common/sign'
+import {mapState} from 'vuex';
 export default {
     data() {
         return {
             filters: {
                 name: '',
-                page: 1
+                page: 1,
+                pagesize:10
             },
             //图片上传
             dialogImageUrl: '',
@@ -162,6 +164,8 @@ export default {
         },
         handleSizeChange(val) {
             console.log(`每页 ${val} 条`);
+            this.filters.pagesize=this.pagesize=val;
+            this.getUsers()
         },
         handleRequestOss(files) {
 
@@ -217,7 +221,7 @@ export default {
                     } else {
                         this.total = data.cnt.total;
                         this.users = data.cnt.data;
-                        this.pagesize = data.cnt.per_page || 10;
+                        this.pagesize=this.filters.pagesize = data.cnt.per_page || 10;
                     }
                 })
         },
