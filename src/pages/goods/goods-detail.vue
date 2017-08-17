@@ -155,6 +155,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
+import {mapState} from 'vuex';
 
 export default {
 	data() {
