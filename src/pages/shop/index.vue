@@ -33,23 +33,25 @@
 				</el-table-column>
 				<el-table-column prop="created_at" label="注册时间" sortable>
 				</el-table-column>
-				<el-table-column inline-template :context="_self" label="操作" width="350" >
-					<span>
-						<el-button size="small" @click="showshopdetail(row)">队列资料</el-button>
-						<el-button size="small" @click="showorder(row)">订单</el-button>
-						<el-button size="small" @click="getShopLog(row)">流水</el-button>
-						<el-button size="small" @click="handleEdit(row)">编辑</el-button>
-						<el-button type="danger" size="small" @click="handleDel(row)">删除</el-button>
-					</span>
+				<el-table-column label="操作" width="350">
+					<template scope="scope">
+						<span v-if="scope.row.login!==80000">
+							<el-button  size="small" @click="showshopdetail(scope.row)">队列资料</el-button>
+							<el-button size="small" @click="showorder(scope.row)">订单</el-button>
+							<el-button size="small" @click="getShopLog(scope.row)">流水</el-button>
+							<el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
+							<el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
+						</span>
+					</template>
 				</el-table-column>
 			</el-table>
 		</template>
 	
 		<!--分页-->
-        <el-col :span="24" class="toolbar" style="padding-bottom:10px;">
-            <el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
-            </el-pagination>
-        </el-col>
+		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
+			<el-pagination layout="total,sizes,prev, pager, next" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
+			</el-pagination>
+		</el-col>
 	
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
@@ -59,9 +61,9 @@
 				</el-form-item>
 				<el-form-item label="性别">
 					<!--<el-select v-model="editForm.sex" placeholder="请选择性别">
-										<el-option label="男" :value="1"></el-option>
-										<el-option label="女" :value="0"></el-option>
-									</el-select>-->
+											<el-option label="男" :value="1"></el-option>
+											<el-option label="女" :value="0"></el-option>
+										</el-select>-->
 					<el-radio-group v-model="editForm.sex">
 						<el-radio class="radio" :label="1">男</el-radio>
 						<el-radio class="radio" :label="0">女</el-radio>
@@ -114,7 +116,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-import {mapState} from 'vuex';
+import { mapState } from 'vuex';
 
 
 export default {
@@ -122,8 +124,8 @@ export default {
 		return {
 			filters: {
 				shopname: '',
-				page:1,
-				pagesize:10
+				page: 1,
+				pagesize: 10
 			},
 			users: [],
 			total: 0,
@@ -141,7 +143,7 @@ export default {
 			editForm: {
 				id: 0,
 				name: '',
-				
+
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -168,7 +170,7 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
-			this.filters.pagesize=this.pagesize=val;
+			this.filters.pagesize = this.pagesize = val;
 			this.getUsers()
 		},
 		//获取用户列表
@@ -186,7 +188,7 @@ export default {
 			// 	NProgress.done();
 			// });
 			console.log(request);
-			request.get(config.api.shop.showlist,this.filters)
+			request.get(config.api.shop.showlist, this.filters)
 				.then((res) => {
 					this.listLoading = false;
 					NProgress.done();
@@ -200,7 +202,7 @@ export default {
 					} else {
 						this.total = data.cnt.total;
 						this.users = data.cnt.data;
-						this.pagesize=this.filters.pagesize = data.cnt.per_page || 10;
+						this.pagesize = this.filters.pagesize = data.cnt.per_page || 10;
 					}
 				})
 		},
@@ -214,7 +216,7 @@ export default {
 				_this.listLoading = true;
 				NProgress.start();
 				let para = { id: row.id };
-				request.post(config.api.shop.delete,para)
+				request.post(config.api.shop.delete, para)
 					.then((res) => {
 						_this.listLoading = false;
 						NProgress.done();

@@ -55,22 +55,24 @@
 	
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+			<el-form :model="editForm" label-width="120px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="最大交易额" prop="max_total_amount">
 					<el-input v-model="editForm.max_total_amount" :disabled="false" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="最高交易单数" prop="max_total_order">
 					<el-input v-model="editForm.max_total_order" auto-complete="off"></el-input>
 				</el-form-item>
-				<!--<el-form-item label="开户行" prop="">
-					<el-input v-model="editForm.bank" auto-complete="off"></el-input>
+				<el-form-item label="用户单日订单数" prop="user_day_order">
+					<el-input v-model="editForm.user_day_order" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="银行卡" prop="">
-					<el-input v-model="editForm.card" auto-complete="off"></el-input>
+				<el-form-item label="是否可回购" prop="can_back">
+					<el-switch v-model="editForm.can_back" on-color="#13ce66" off-color="#ff4949" on-value="1" off-value="0">
+					</el-switch>
 				</el-form-item>
-				<el-form-item label="备注">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>-->
+				<el-form-item v-if="editForm.can_back==='1'" label="回购价" prop="buy_back_money" :rules="[{required:true}]">
+					<el-input v-model="editForm.buy_back_money" auto-complete="off"></el-input>
+				</el-form-item>
+				
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -105,7 +107,8 @@ export default {
 			editForm: {
 				id: 0,
 				max_total_amount:'',
-				max_total_order:''
+				max_total_order:'',
+				can_back:'0'
 			},
 			editLoading: false,
 			btnEditText: '提 交',
@@ -123,7 +126,7 @@ export default {
 	methods: {
 		//性别显示转换
 		formatSex: function (row, column) {
-			return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			return row.status == 1 ? '开启' : row.status == 2 ? '关闭' : '未知';
 		},
 		handleCurrentChange(val) {
 			this.page = val;
@@ -194,6 +197,9 @@ export default {
             this.editForm.id = row.id;
 			this.editForm.max_total_amount=row.max_total_amount;
 			this.editForm.max_total_order=row.max_total_order;
+			this.editForm.user_day_order=row.user_day_order;
+			this.editForm.can_back=row.can_back+'';
+			this.editForm.buy_back_money=row.buy_back_money;
 		},
 
 		//编辑 or 新增
@@ -237,6 +243,9 @@ export default {
 						} else {
 							//编辑
 							let para = _this.editForm;
+							if(_this.editForm.can_back==='0'){
+								delete _this.editForm.buy_back_money
+							}
 							request.post(config.api.shop.updateshopqueueinfo, para)
                                 .then(res => {
                                     let { message, code, data } = res;
