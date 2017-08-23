@@ -24,7 +24,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api':{
-        target:'http://a.ejiabl.com',
+        target:'http://aadmin.gexinec.com',
         changeOrigin:true,
         pathRewrite:{
           '^/':'/'

@@ -17,7 +17,7 @@
 				</el-form-item>
 			</el-form>
 		</el-col>
-	
+
 		<el-col :span="24" class="toolbar">
 			<el-tabs v-model="activeName" type="card" @tab-click="handleClick">
 				<el-tab-pane label="全部" name="10"></el-tab-pane>
@@ -25,7 +25,7 @@
 				<el-tab-pane :label="notpick" name="0"></el-tab-pane>
 			</el-tabs>
 		</el-col>
-	
+
 		<!--列表-->
 		<template>
 			<el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="users" highlight-current-row v-loading="listLoading" style="width: 100%;">
@@ -45,10 +45,16 @@
 				<el-table-column prop="brand.name" label="品牌" sortable>
 				</el-table-column>
 				<!--<el-table-column prop="norm" label="规格" width="120" sortable>
-						</el-table-column>-->
+							</el-table-column>-->
 				<el-table-column prop="buying_price" label="进货价" sortable>
 				</el-table-column>
 				<el-table-column prop="retail_price" label="零售价" sortable>
+				</el-table-column>
+				<el-table-column prop="is_hot" label="是否推荐" sortable>
+					<template scope="scope">
+						<el-switch class="toggleBtn" v-model="scope.row.is_hot" @change="switchChanges(scope.row)" on-text="已推荐" off-text="未推荐" :on-value="1" :off-value="0" on-color="#13ce66" off-color="#ff4949">
+						</el-switch>
+					</template>
 				</el-table-column>
 				<el-table-column prop="status" label="状态" width="120" :formatter="formatSex" sortable>
 				</el-table-column>
@@ -70,13 +76,13 @@
 				<el-button @click="toggleGoodsStatus(activeName)">{{activeName=='0'?'上架':'下架'}}</el-button>
 			</div>
 		</template>
-	
+
 		<!--分页-->
 		<el-col :span="24" class="toolbar" style="padding-bottom:10px;">
 			<el-pagination layout="total,sizes,prev, pager, next" :current-page="filters.page" @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="pagesizes" :page-size="pagesize" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
-	
+
 		<!--编辑界面-->
 		<el-dialog :title="editFormTtile" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
@@ -108,9 +114,9 @@
 					</el-form-item>
 					<el-form-item label="分类" prop="goods_type_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
 						<!--<el-select v-model="editForm.goods_type_id" placeholder="请选择分类">
-																				
-																				
-																			</el-select>-->
+																					
+																					
+																				</el-select>-->
 						<el-cascader @change="changegoodstype" v-model="option" :options="options" :show-all-levels="false"></el-cascader>
 					</el-form-item>
 					<el-form-item label="品牌" prop="goods_brand_id" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
@@ -142,11 +148,11 @@
 						</el-input>
 						<el-button v-else class="button-new-tag" size="small" @click="showInput">+ 添加新规格</el-button>
 					</el-form-item>
-	
+
 					<!--<el-form-item v-for="(domain, index) in editForm.norm" :label="'规格' + index" :key="domain.key" :prop="'domains.' + index + '.value'">
-												<el-input v-model="domain.name"></el-input>
-												<el-button @click.prevent="removeDomain(domain)">删除</el-button>
-											</el-form-item>-->
+													<el-input v-model="domain.name"></el-input>
+													<el-button @click.prevent="removeDomain(domain)">删除</el-button>
+												</el-form-item>-->
 				</el-card>
 				<el-card class="box-card">
 					<div slot="header" class="clearfix">
@@ -165,10 +171,10 @@
 						<el-input v-model="editForm.market_price" auto-complete="off"></el-input>
 					</el-form-item>
 					<!--<el-form-item label="利润率" prop="name" style="display:inline-block;margin:10px;width:30%;min-width:200px;">
-																			<el-input v-model="editForm.name" auto-complete="off"></el-input>
-																		</el-form-item>-->
+																				<el-input v-model="editForm.name" auto-complete="off"></el-input>
+																			</el-form-item>-->
 				</el-card>
-	
+
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取 消</el-button>
@@ -183,7 +189,7 @@ import util from '../../common/util'
 import NProgress from 'nprogress'
 import request, { getUserListPage, removeUser, editUser, addUser } from 'api';
 import config from 'config';
-import {mapState} from 'vuex';
+import { mapState } from 'vuex';
 export default {
 	data() {
 		let checkRepeatcode = (rule, value, callback) => {
@@ -213,7 +219,7 @@ export default {
 				page: 1,
 				status: '',
 				is_sell: '',
-				pagesize:10
+				pagesize: 10
 
 			},
 			preData: {
@@ -317,9 +323,30 @@ export default {
 		}
 	},
 	computed: mapState({
-        pagesizes: state => state.pagenum
-    }),
+		pagesizes: state => state.pagenum
+	}),
 	methods: {
+		switchChanges(row){
+
+			request.post(config.api.goods.goodsHot, { id: row.id,is_hot:row.is_hot===1?0:1 })
+				.then(res => {
+					let { code, message } = res;
+					if (code == 200) {
+						this.$notify({
+							title: '成功',
+							message: message,
+							type: 'success'
+						});
+						this.getUsers();
+					} else {
+						this.$notify({
+							title: '错误',
+							message: message,
+							type: 'error'
+						});
+					}
+				})
+		},
 		//标签
 		handleClose(tag) {
 			this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
@@ -391,7 +418,7 @@ export default {
 			this.multipleSelection = val;
 		},
 		//性别显示转换
-		formatSex: function (row, column) {
+		formatSex: function(row, column) {
 			return row.is_sell == 1 ? '已上架' : row.is_sell == 0 ? '未上架' : '未知';
 		},
 		handleClick(tab, event) {
@@ -413,7 +440,7 @@ export default {
 		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
-			this.filters.pagesize=this.pagesize=val;
+			this.filters.pagesize = this.pagesize = val;
 			this.getUsers()
 		},
 		getPreAdd() {
@@ -489,12 +516,12 @@ export default {
 								this.pick = '上架 ' + item.num
 							}
 						})
-						this.pagesize=this.filters.pagesize = data.cnt.good.per_page || 10;
+						this.pagesize = this.filters.pagesize = data.cnt.good.per_page || 10;
 					}
 				})
 		},
 		//删除
-		handleDel: function (row) {
+		handleDel: function(row) {
 			//console.log(row);
 			var _this = this;
 			this.$confirm('确认删除该记录吗?', '提示', {
@@ -539,7 +566,7 @@ export default {
 			this.$router.push('/shoporder');
 		},
 		//显示编辑界面
-		handleEdit: function (row) {
+		handleEdit: function(row) {
 			this.editFormVisible = true;
 			this.editFormTtile = '编辑';
 			for (let key in this.editForm) {
@@ -566,7 +593,7 @@ export default {
 			// this.$router.push('/addshop');
 		},
 		//编辑 or 新增
-		editSubmit: function () {
+		editSubmit: function() {
 			var _this = this;
 
 			_this.$refs.editForm.validate((valid) => {
@@ -645,7 +672,7 @@ export default {
 
 		},
 		//显示新增界面
-		handleAdd: function () {
+		handleAdd: function() {
 			var _this = this;
 
 			this.editFormVisible = true;

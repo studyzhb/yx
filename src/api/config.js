@@ -148,6 +148,8 @@ export default {
         },
         goods:{
             index:'/goods/show',
+            //是否推荐
+            goodsHot:'/goods/hot',
             //添加商品
             addGoods:"/goods/create",
             //修改商品
